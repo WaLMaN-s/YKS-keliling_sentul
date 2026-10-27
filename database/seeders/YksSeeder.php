@@ -1,0 +1,148 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class YksSeeder extends Seeder
+{
+    public function run(): void
+    {
+        // 1. Categories
+        $categories = [
+            ['id' => 1, 'name' => 'Trekking Curug', 'slug' => 'trekking-curug', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2, 'name' => 'Fun Offroad 4x4', 'slug' => 'offroad-4x4', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 3, 'name' => 'Cycling / Gowes', 'slug' => 'cycling-gowes', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 4, 'name' => 'Camping & Outbound', 'slug' => 'camping-outbound', 'created_at' => now(), 'updated_at' => now()],
+        ];
+        DB::table('yks_categories')->upsert($categories, ['id'], ['name', 'slug', 'updated_at']);
+
+        // 2. Packages
+        $packages = [
+            [
+                'id' => 1,
+                'category_id' => 1,
+                'name' => 'Trekking Curug Leuwi Hejo & Leuwi Lieuk',
+                'slug' => 'curug-leuwi-hejo-lieuk',
+                'description' => 'Jelajahi surga air toska Sentul! Rute trekking melewati sungai jernih, tebing kapur alami, dan pepohonan rindang. Sangat cocok untuk pemula, keluarga, maupun penggemar cliff jumping santai.',
+                'price' => 150000,
+                'duration' => '4 - 5 Jam',
+                'distance' => '4.5 Km PP',
+                'difficulty' => 'Mudah',
+                'meeting_point' => 'Indomaret / Rest Area Leuwi Hejo Sentul',
+                'includes' => "Tiket Masuk Semua Curug (Hejo, Lieuk, Benjol, Cepet)\nTour Guide Lokal Berpengalaman\nTrekking Pole (Tongkat Jalan)\nAir Mineral & Snack Ringan\nP3K Standar Outdoor\nDokumentasi Foto Selama Trip",
+                'excludes' => "Transportasi ke Meeting Point\nPengeluaran Pribadi & Kuliner Luar Paket\nTips Sukarela untuk Guide",
+                'itinerary' => "07.30 - Berkumpul di Meeting Point & Briefing Safety\n08.00 - Mulai Trekking rute sungai & perbukitan hijau\n09.00 - Tiba di Curug Leuwi Hejo (Berenang & Foto)\n10.15 - Lanjut trekking ke Curug Leuwi Lieuk (Air toska & tebing alami)\n11.45 - Istirahat makan siang santai & kelapa muda\n12.30 - Kembali ke titik kumpul & trip selesai",
+                'image' => 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80',
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 2,
+                'category_id' => 1,
+                'name' => 'Trekking Curug Hordeng, Kembar & Ciburial',
+                'slug' => 'curug-hordeng-kembar-ciburial',
+                'description' => 'Rute petualangan eksotis dengan 3 curug spektakuler sekaligus! Melewati pematang sawah berundak, kebun kopi Sentul, dan jalur sungai alami yang menyegarkan.',
+                'price' => 185000,
+                'duration' => '5 - 6 Jam',
+                'distance' => '6.5 Km PP',
+                'difficulty' => 'Sedang',
+                'meeting_point' => 'Meeting Point Babakan Ngantay / Ciburial Sentul',
+                'includes' => "Tiket Masuk Curug Ciburial, Kembar, & Hordeng\nLocal Guide Ramah & Menguasai Jalur\nTrekking Pole & Jas Hujan Cadangan\nAir Mineral 600ml\nKotak P3K Lengkap\nSpot Foto Instagramable & Dokumentasi",
+                'excludes' => "Transportasi ke Lokasi Start\nMakan Siang Berat\nPengeluaran Pribadi",
+                'itinerary' => "07.00 - Kumpul di Meeting Point, registrasi & pemanasan\n07.30 - Memasuki jalur kebun kopi & sungai pegunungan\n08.45 - Eksplorasi Curug Ciburial (Tebing batu megah & kolam dalam)\n10.00 - Berpindah ke Curug Kembar (Air terjun kembar memukau)\n11.15 - Menuju Curug Hordeng (Bentuk mirip tirai alami yang indah)\n12.30 - Bersih-bersih & kembali ke meeting point",
+                'image' => 'https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=800&q=80',
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 3,
+                'category_id' => 1,
+                'name' => 'Trekking Santai Curug Putri Kencana & Love',
+                'slug' => 'curug-putri-kencana-love',
+                'description' => 'Paket trekking santai yang sangat ramah anak-anak dan pemula. Menyusuri aliran sungai dangkal berbatu, jembatan gantung bambu, dan kolam renang alami yang teduh.',
+                'price' => 160000,
+                'duration' => '3 - 4 Jam',
+                'distance' => '3.5 Km PP',
+                'difficulty' => 'Mudah',
+                'meeting_point' => 'Area Parkir Utama Curug Putri Kencana',
+                'includes' => "Tiket Masuk Kawasan Wisata Putri Kencana\nGuide Pendamping Khusus Keluarga\nPelampung / Life Vest untuk Anak\nTongkat Trekking\nAir Mineral & Teh Hangat",
+                'excludes' => "Parkir Kendaraan Pribadi\nMakanan di Warung Lokal",
+                'itinerary' => "08.00 - Sambutan & pengenalan jalur di Pos Kencana\n08.20 - Menyeberangi jembatan gantung & jalur setapak rindang\n09.15 - Berenang di Curug Putri Kencana yang jernih\n10.30 - Melanjutkan ke Curug Love (Grand Canyon mini khas Sentul)\n11.30 - Bilas badan & sharing session santai",
+                'image' => 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=800&q=80',
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 4,
+                'category_id' => 2,
+                'name' => 'Fun Offroad Sentul Land Rover 4x4',
+                'slug' => 'offroad-sentul-land-rover',
+                'description' => 'Pacu adrenalin menaklukkan jalur berlumpur, tanjakan terjal bukit Sentul, dan lintasan sungai menggunakan mobil offroad legendaris 4x4 dipandu driver profesional.',
+                'price' => 450000,
+                'duration' => '4 - 5 Jam',
+                'distance' => '15 Km Jalur Tanah',
+                'difficulty' => 'Menantang',
+                'meeting_point' => 'Rest Area Sentul Nirwana / Jungleland',
+                'includes' => "Sewa Mobil Offroad 4x4 (Kapasitas 6-7 Orang/Mobil)\nDriver Offroad Profesional & Berpengalaman\nBahan Bakar & Tiket Lintasan Offroad\nAir Mineral & Kelapa Muda Segar\nAsuransi Perjalanan Wisata",
+                'excludes' => "Pengeluaran Pribadi\nMakan Siang Tambahan",
+                'itinerary' => "08.30 - Registrasi di Sentul Nirwana & briefing driver\n09.00 - Start convoy menuju rute tanah Bukit Paniisan / Cisadon\n10.15 - Uji lumpur, tanjakan ekstrem, dan penyeberangan sungai\n11.30 - Berhenti di Puncak Panorama Sentul (Foto bersama & kelapa muda)\n13.00 - Rute kembali & drop off di meeting point",
+                'image' => 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=800&q=80',
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 5,
+                'category_id' => 3,
+                'name' => 'Gowes Sentul Guide (Km 0 & Rainbow Hills)',
+                'slug' => 'cycling-gowes-sentul',
+                'description' => 'Bagi pecinta sepeda jalan raya maupun gravel! Ditemani guide pesepeda lokal yang paham rute tanjakan aman, spot kopi estetik, serta titik istirahat terbaik.',
+                'price' => 200000,
+                'duration' => '3 - 4 Jam',
+                'distance' => '25 Km Loop',
+                'difficulty' => 'Sedang',
+                'meeting_point' => 'Sentul City / SPBU Babakan Madang',
+                'includes' => "Marshal / Guide Pesepeda Lokal Berpengalaman\nTechnical Support & Pompa Ban Cadangan\nAir Mineral & Isotonik\nSpot Foto Bersepeda Keren di Tanjakan Populer",
+                'excludes' => "Sepeda & Helm (Wajib Bawa Sendiri)\nMakanan & Minuman di Cafe Sepeda",
+                'itinerary' => "06.00 - Kumpul & briefing rute di Babakan Madang\n06.30 - Rolling start menuju Rainbow Hills\n07.30 - Melibas tanjakan legendaris Km 0 Sentul\n08.30 - Istirahat & sarapan santai di Warung Kopi Km 0\n09.45 - Turunan aman kembali ke titik kumpul",
+                'image' => 'https://images.unsplash.com/photo-1474962558142-9ca83af74bb7?auto=format&fit=crop&w=800&q=80',
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 6,
+                'category_id' => 4,
+                'name' => 'Sunset Camping & Sunrise Bukit Paniisan',
+                'slug' => 'camping-bukit-paniisan',
+                'description' => 'Sensasi bermalam di perbukitan Sentul dengan pemandangan gemerlap lampu kota Bogor dan kabut pagi pegunungan. Dilengkapi fasilitas tenda nyaman dan api unggun.',
+                'price' => 275000,
+                'duration' => '2 Hari 1 Malam',
+                'distance' => 'Overnight',
+                'difficulty' => 'Mudah',
+                'meeting_point' => 'Basecamp Paniisan Sentul',
+                'includes' => "Tenda Dome Double Layer (Matras & Sleeping Bag)\nGuide & Porter Camp\nApi Unggun Bersama\nMakan Malam BBQ & Sarapan Pagi\nTiket Camp Area & Toilet Bersih",
+                'excludes' => "Peralatan Pribadi & Jaket Hangat\nCamilan Tambahan",
+                'itinerary' => "HARI 1:\n15.00 - Tiba di Basecamp & trekking santai ke camp area\n16.30 - Pembagian tenda & menikmati matahari terbenam (sunset)\n19.00 - Makan malam BBQ, seduh kopi & api unggun\n\nHARI 2:\n05.30 - Bangun pagi menyambut Sunrise & lautan kabut\n07.00 - Sarapan hangat & teh/kopi\n09.00 - Berkemas & kembali ke Basecamp",
+                'image' => 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=800&q=80',
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ];
+        DB::table('yks_packages')->upsert($packages, ['id'], ['name', 'slug', 'description', 'price', 'duration', 'distance', 'difficulty', 'meeting_point', 'includes', 'excludes', 'itinerary', 'image', 'is_active', 'updated_at']);
+
+        // 3. Testimonials
+        $testimonials = [
+            ['id' => 1, 'name' => 'Budi Santoso', 'city' => 'Jakarta Selatan', 'package_name' => 'Trekking Curug Leuwi Hejo', 'review' => 'Pengalaman pertama trekking sama keluarga dan seru banget! Guide YKS ramah banget, sabar nemenin anak-anak.', 'rating' => 5, 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2, 'name' => 'Sarah Amelia', 'city' => 'Tangerang', 'package_name' => 'Trekking Curug Hordeng', 'review' => 'Airnya jernih banget, guide-nya jago ngambil foto estetik buat IG. Bakal balik lagi pesan paket yang offroad!', 'rating' => 5, 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 3, 'name' => 'Rian Pratama', 'city' => 'Bekasi', 'package_name' => 'Fun Offroad Sentul 4x4', 'review' => 'Jalurnya bener-bener mantap, sopir offroad-nya pro banget lewat lumpur dalam. Adrenalin terpacu abis!', 'rating' => 5, 'created_at' => now(), 'updated_at' => now()],
+        ];
+        DB::table('yks_testimonials')->upsert($testimonials, ['id'], ['name', 'city', 'package_name', 'review', 'rating', 'updated_at']);
+    }
+}
