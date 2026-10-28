@@ -13,10 +13,18 @@ class BookingController extends Controller
     public function create(Request $request)
     {
         $packageId = $request->query('paket_id');
-        $package = YksPackage::where('id', $packageId)->where('is_active', true)->firstOrFail();
+        $package = $packageId 
+            ? YksPackage::where('id', $packageId)->where('is_active', true)->first() 
+            : YksPackage::where('is_active', true)->first();
+
+        if (!$package) {
+            return redirect()->route('packages.index')->with('info', 'Silakan pilih paket wisata terlebih dahulu.');
+        }
+
+        $allPackages = YksPackage::where('is_active', true)->get();
         $user = Auth::user();
 
-        return view('bookings.create', compact('package', 'user'));
+        return view('bookings.create', compact('package', 'allPackages', 'user'));
     }
 
     public function store(Request $request)

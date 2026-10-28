@@ -1,74 +1,124 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="background: var(--dark); color: #fff; padding: 48px 0; text-align: center;">
-    <div class="container">
-        <h1 style="font-size: 2.4rem; font-weight: 800; margin-bottom: 10px;">Semua Paket Wisata Sentul</h1>
-        <p style="color: #cbd5e1; max-width: 600px; margin: 0 auto;">Pilih paket petualangan terbaik yang paling cocok dengan waktu dan preferensi fisik Anda.</p>
+<!-- Page Breadcrumb & Header -->
+<div class="container" style="padding-top: 36px;">
+    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+        <a href="{{ route('home') }}" style="color: var(--text-sub);">Beranda</a> &nbsp;/&nbsp; <span>Katalog Paket</span>
     </div>
-</div>
+    <div class="section-tag">
+        ━ &nbsp; PILIHAN JELAJAH SENTUL
+    </div>
+    <h1 class="section-title" style="font-size: 2.8rem; max-width: 800px; margin-bottom: 16px;">
+        Enam cara menikmati Sentul.
+    </h1>
+    <p class="section-desc" style="font-size: 1.15rem; max-width: 720px; margin-bottom: 36px;">
+        Temukan paket sesuai waktu luang, tingkat tantangan fisik, dan suasana yang ingin Anda rasakan bersama sahabat maupun keluarga.
+    </p>
 
-<section class="section">
-    <div class="container">
-        <!-- Filter Tabs -->
-        <div class="filter-pills" style="margin-bottom: 36px;">
-            <a href="{{ route('packages.index') }}" class="filter-pill {{ !$categorySlug || $categorySlug === 'all' ? 'active' : '' }}">Semua Kategori</a>
+    <!-- Search & Quick Filter Pills -->
+    <div style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 40px;">
+        <form method="GET" action="{{ route('packages.index') }}" style="display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px;">
+            <div style="flex-grow: 1; position: relative;">
+                <input type="text" name="cari" value="{{ request('cari') }}" placeholder="Cari nama curug, offroad, atau aktivitas..." 
+                       class="form-control" style="background-color: var(--bg-body); padding-left: 42px;">
+                <i class="bi bi-search" style="position: absolute; left: 16px; top: 14px; color: var(--text-muted);"></i>
+            </div>
+            @if(request('kategori'))
+                <input type="hidden" name="kategori" value="{{ request('kategori') }}">
+            @endif
+            <button type="submit" class="btn btn-forest" style="padding: 12px 24px;">Cari Paket</button>
+            @if(request('cari') || request('kategori'))
+                <a href="{{ route('packages.index') }}" class="btn btn-outline" style="padding: 12px 20px;">Reset</a>
+            @endif
+        </form>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-sub); text-transform: uppercase; margin-right: 8px;">Kategori:</span>
+            <a href="{{ route('packages.index', request()->except('kategori')) }}" 
+               class="btn btn-sm {{ !request('kategori') ? 'btn-forest' : 'btn-outline' }}">
+                Semua Paket
+            </a>
             @foreach ($categories as $cat)
-                <a href="{{ route('packages.index', ['kategori' => $cat->slug]) }}" 
-                   class="filter-pill {{ $categorySlug === $cat->slug ? 'active' : '' }}">
+                <a href="{{ route('packages.index', array_merge(request()->all(), ['kategori' => $cat->slug])) }}" 
+                   class="btn btn-sm {{ request('kategori') === $cat->slug ? 'btn-forest' : 'btn-outline' }}">
                     {{ $cat->name }}
                 </a>
             @endforeach
         </div>
+    </div>
+</div>
 
+<!-- Tour Cards Grid Section -->
+<section class="section-wrapper" style="padding-top: 0;">
+    <div class="container">
         @if ($packages->isEmpty())
-            <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: var(--radius-lg); border: 1px dashed var(--border);">
-                <i class="bi bi-inbox text-muted" style="font-size: 48px;"></i>
-                <h3 style="margin-top: 14px; color: var(--dark);">Belum Ada Paket di Kategori Ini</h3>
-                <p style="color: var(--text-muted); margin-bottom: 20px;">Silakan pilih kategori lain atau hubungi kami via WhatsApp.</p>
-                <a href="{{ route('packages.index') }}" class="btn btn-primary">Lihat Semua Paket</a>
+            <div style="text-align: center; padding: 64px 20px; background: #FFFFFF; border-radius: var(--radius-lg); border: 1px dashed var(--border);">
+                <i class="bi bi-compass text-muted" style="font-size: 52px; color: var(--text-sub);"></i>
+                <h3 style="margin-top: 16px; color: var(--primary);">Tidak ada paket yang sesuai kriteria</h3>
+                <p style="color: var(--text-muted); margin-bottom: 24px;">Silakan atur ulang kata kunci pencarian Anda atau hubungi admin kami.</p>
+                <a href="{{ route('packages.index') }}" class="btn btn-forest">Lihat Semua Paket</a>
             </div>
         @else
-            <div class="cards-grid">
+            <div class="packages-grid">
                 @foreach ($packages as $pkg)
-                    <div class="tour-card">
-                        <div class="tour-card-img">
+                    <div class="package-card">
+                        <div class="package-card-media">
                             <img src="{{ $pkg->image ?: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80' }}" alt="{{ $pkg->name }}" loading="lazy">
-                            <div class="card-badge-top">
+                            <span class="package-badge-tag">
                                 @if ($pkg->difficulty === 'Mudah')
-                                    <span class="badge badge-easy"><i class="bi bi-shield-check"></i> Mudah / Pemula</span>
+                                    Santai & Pemula
                                 @elseif ($pkg->difficulty === 'Sedang')
-                                    <span class="badge badge-medium"><i class="bi bi-lightning-charge"></i> Sedang</span>
+                                    Menengah Favorit
                                 @else
-                                    <span class="badge badge-hard"><i class="bi bi-fire"></i> Menantang</span>
+                                    Tantangan Ekstrem
                                 @endif
-                            </div>
-                            <div class="card-price-tag">
-                                Rp {{ number_format($pkg->price, 0, ',', '.') }} <small>/ orang</small>
-                            </div>
-                        </div>
-                        <div class="tour-card-body">
-                            <span style="font-size: 0.78rem; text-transform: uppercase; font-weight: 800; color: var(--primary); letter-spacing: 0.05em; margin-bottom: 4px;">
-                                {{ $pkg->category->name ?? 'Wisata' }}
                             </span>
-                            <h3 class="card-title">{{ $pkg->name }}</h3>
-                            <p class="card-desc">{{ $pkg->description }}</p>
+                        </div>
+                        <div class="package-card-content">
+                            <span class="package-category-chip">{{ $pkg->category->name ?? 'Wisata Alam' }}</span>
+                            <h3 class="package-name">{{ $pkg->name }}</h3>
+                            <p class="package-desc">{{ Str::limit($pkg->description, 110) }}</p>
                             
-                            <div class="card-meta">
-                                <span class="card-meta-item"><i class="bi bi-clock-history"></i> {{ $pkg->duration }}</span>
-                                <span class="card-meta-item"><i class="bi bi-signpost-2"></i> {{ $pkg->distance }}</span>
-                                <span class="card-meta-item"><i class="bi bi-geo-alt"></i> Sentul</span>
+                            <div class="package-meta-row">
+                                <span class="package-meta-item"><i class="bi bi-clock"></i> {{ $pkg->duration }}</span>
+                                <span class="package-meta-item"><i class="bi bi-speedometer2"></i> {{ $pkg->difficulty }}</span>
+                                <span class="package-meta-item"><i class="bi bi-geo-alt"></i> Sentul</span>
                             </div>
 
-                            <div class="card-action">
-                                <a href="{{ route('packages.show', $pkg->slug) }}" class="btn btn-outline btn-block">Detail Trip</a>
-                                <a href="{{ route('booking.create', ['paket_id' => $pkg->id]) }}" class="btn btn-primary btn-block">Pesan</a>
+                            <div class="package-bottom-row">
+                                <div class="package-price-wrap">
+                                    <span class="package-price-label">Mulai dari</span>
+                                    <span class="package-price-val">Rp {{ number_format($pkg->price, 0, ',', '.') }}</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="{{ route('packages.show', $pkg->slug) }}" class="btn btn-outline btn-sm">
+                                        Detail
+                                    </a>
+                                    <a href="{{ route('booking.create', ['paket_id' => $pkg->id]) }}" class="btn btn-primary btn-sm">
+                                        Pesan &nbsp;↗
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
         @endif
+
+        <!-- Bantuan Memilih Section (Figma: Bantuan Memilih) -->
+        <div style="background-color: var(--bg-sage); border: 1px solid var(--bg-pill); border-radius: var(--radius-lg); padding: 36px 40px; margin-top: 64px; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;">
+            <div>
+                <span class="section-tag" style="margin-bottom: 6px;">━ &nbsp; KONSULTASI RUTE</span>
+                <h3 style="font-size: 1.5rem; color: var(--primary); margin-bottom: 6px;">Masih ragu memilih rute yang pas?</h3>
+                <p style="font-size: 0.95rem; color: var(--text-muted); max-width: 620px;">
+                    Sampaikan usia rombongan, kondisi fisik, atau preferensi kendaraan Anda. Admin kami akan menyarankan opsi terbaik.
+                </p>
+            </div>
+            <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281234567890') }}?text=Halo%20Admin%20YKS,%20bisa%20bantu%20rekomendasi%20paket%20yang%20cocok%20untuk%20rombongan%20saya" target="_blank" class="btn btn-forest">
+                <i class="bi bi-whatsapp"></i> Chat WhatsApp &nbsp;↗
+            </a>
+        </div>
     </div>
 </section>
 @endsection

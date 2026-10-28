@@ -17,4 +17,23 @@ class HomeController extends Controller
 
         return view('home', compact('categories', 'packages', 'testimonials'));
     }
+
+    public function about()
+    {
+        return view('about');
+    }
+
+    public function gallery()
+    {
+        $testimonials = YksTestimonial::all();
+        $packages = YksPackage::where('is_active', true)->get();
+
+        return view('gallery', compact('testimonials', 'packages'));
+    }
+
+    public function info()
+    {
+        return view('info');
+    }
 }
+

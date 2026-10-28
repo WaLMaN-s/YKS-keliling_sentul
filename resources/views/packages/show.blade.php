@@ -7,132 +7,174 @@
     $itinerary_steps = array_filter(explode("\n", str_replace("\r", "", $package->itinerary)));
 @endphp
 
-<!-- Package Header Banner -->
-<div class="package-hero">
-    <div class="container">
-        <a href="{{ route('packages.index') }}" style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 12px; display: inline-flex; align-items: center; gap: 6px;">
-            <i class="bi bi-arrow-left"></i> Kembali ke Daftar Paket
-        </a>
-        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
-            <span class="badge badge-medium" style="background: rgba(255,255,255,0.15); color: #fef08a;">
-                {{ $package->category->name ?? 'Wisata' }}
+<!-- Page Breadcrumb & Header -->
+<div class="container" style="padding-top: 36px;">
+    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+        <a href="{{ route('home') }}" style="color: var(--text-sub);">Beranda</a> &nbsp;/&nbsp; 
+        <a href="{{ route('packages.index') }}" style="color: var(--text-sub);">Katalog Paket</a> &nbsp;/&nbsp; 
+        <span>{{ $package->name }}</span>
+    </div>
+    
+    <div class="section-tag">
+        ━ &nbsp; DETAIL JELAJAH · {{ strtoupper($package->category->name ?? 'SENTUL') }}
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; margin-bottom: 24px;">
+        <div>
+            <h1 class="section-title" style="font-size: 2.6rem; margin-bottom: 8px;">{{ $package->name }}</h1>
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: 0.9rem; color: var(--text-muted);">
+                <span class="package-badge-tag" style="position: static; display: inline-block;">
+                    {{ $package->difficulty }}
+                </span>
+                <span><i class="bi bi-clock"></i> {{ $package->duration }}</span>
+                <span><i class="bi bi-signpost-2"></i> {{ $package->distance }}</span>
+                <span><i class="bi bi-geo-alt"></i> Sentul, Babakan Madang</span>
+            </div>
+        </div>
+
+        <div style="text-align: right;">
+            <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Mulai dari</span>
+            <span style="font-family: var(--font-heading); font-size: 2.2rem; font-weight: 900; color: var(--accent);">
+                Rp {{ number_format($package->price, 0, ',', '.') }}
             </span>
-            @if ($package->difficulty === 'Mudah')
-                <span class="badge badge-easy"><i class="bi bi-shield-check"></i> Mudah / Pemula</span>
-            @elseif ($package->difficulty === 'Sedang')
-                <span class="badge badge-medium"><i class="bi bi-lightning-charge"></i> Sedang</span>
-            @else
-                <span class="badge badge-hard"><i class="bi bi-fire"></i> Menantang</span>
-            @endif
+            <span style="font-size: 0.85rem; color: var(--text-sub); display: block;">/ pax / unit jip</span>
         </div>
-        <h1 style="font-size: 2.3rem; font-weight: 800;">{{ $package->name }}</h1>
+    </div>
+
+    <!-- Gallery Image Preview -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 18px; margin-bottom: 48px;">
+        <div style="border-radius: var(--radius-lg); overflow: hidden; height: 420px; border: 1px solid var(--border);">
+            <img src="{{ $package->image ?: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1200&q=80' }}" alt="{{ $package->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 18px;">
+            <div style="border-radius: var(--radius-md); overflow: hidden; height: 201px; border: 1px solid var(--border);">
+                <img src="https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=600&q=80" alt="Spot Alami Sentul" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div style="border-radius: var(--radius-md); overflow: hidden; height: 201px; border: 1px solid var(--border);">
+                <img src="https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=600&q=80" alt="Panorama Alam" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="container section">
-    <div class="package-grid">
-        <!-- Main Content -->
-        <div class="package-main">
-            <!-- Cover Image -->
-            <div style="border-radius: var(--radius-md); overflow: hidden; margin-bottom: 28px; max-height: 420px;">
-                <img src="{{ $package->image ?: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1200&q=80' }}" alt="{{ $package->name }}" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
+<!-- Main Details & Booking Sidebar Layout -->
+<section class="section-wrapper" style="padding-top: 0;">
+    <div class="container">
+        <div class="booking-layout-grid">
+            <!-- Left Column: Details, Itinerary, Facilities -->
+            <div style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px;">
+                <!-- Description -->
+                <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 14px;">Gambaran Perjalanan</h3>
+                <p style="font-size: 1rem; color: var(--text-dark); line-height: 1.8; margin-bottom: 36px;">
+                    {!! nl2br(e($package->description)) !!}
+                </p>
 
-            <!-- Quick Specs -->
-            <div class="card-meta" style="font-size: 0.95rem; padding: 16px 0; margin-bottom: 24px;">
-                <span class="card-meta-item"><i class="bi bi-clock-history"></i> Durasi: <strong>{{ $package->duration }}</strong></span>
-                <span class="card-meta-item"><i class="bi bi-signpost-2"></i> Jarak Trekking: <strong>{{ $package->distance }}</strong></span>
-                <span class="card-meta-item"><i class="bi bi-geo-alt"></i> Lokasi: <strong>Sentul, Bogor</strong></span>
-            </div>
-
-            <!-- Description -->
-            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 12px; color: var(--dark);">Deskripsi Trip</h3>
-            <p style="color: var(--text-muted); line-height: 1.8; margin-bottom: 30px; font-size: 1rem;">
-                {!! nl2br(e($package->description)) !!}
-            </p>
-
-            <!-- Meeting Point -->
-            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-md); padding: 18px 20px; margin-bottom: 32px; display: flex; align-items: flex-start; gap: 14px;">
-                <i class="bi bi-pin-map-fill text-primary" style="font-size: 24px;"></i>
-                <div>
-                    <strong style="color: #166534; font-size: 1.05rem; display: block; margin-bottom: 4px;">Titik Kumpul (Meeting Point)</strong>
-                    <span style="color: #14532d; font-size: 0.95rem;">{{ $package->meeting_point }}</span>
-                    <small style="display: block; color: #15803d; margin-top: 4px;">*Share location GPS akurat akan dikirimkan oleh admin via WhatsApp setelah booking.</small>
-                </div>
-            </div>
-
-            <!-- Itinerary Timeline -->
-            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 16px; color: var(--dark);">Jadwal & Rencana Perjalanan (Itinerary)</h3>
-            <div class="itinerary-list">
-                @foreach ($itinerary_steps as $step)
-                    @php
-                        $parts = explode('-', $step, 2);
-                        $waktu = trim($parts[0]);
-                        $aktivitas = isset($parts[1]) ? trim($parts[1]) : '';
-                    @endphp
-                    <div class="itinerary-item">
-                        <strong style="color: var(--primary); font-size: 0.95rem;">{{ $waktu }}</strong>
-                        <p style="color: var(--text-main); font-size: 0.92rem; margin-top: 2px;">{{ $aktivitas }}</p>
+                <!-- Meeting Point Box -->
+                <div style="background-color: var(--bg-sage); border: 1px solid var(--bg-pill); border-radius: var(--radius-md); padding: 22px 24px; margin-bottom: 40px; display: flex; align-items: flex-start; gap: 16px;">
+                    <i class="bi bi-geo-alt-fill" style="color: var(--primary); font-size: 1.8rem; flex-shrink: 0;"></i>
+                    <div>
+                        <strong style="color: var(--primary); font-size: 1.05rem; display: block; margin-bottom: 4px;">Titik Kumpul (Meeting Point):</strong>
+                        <span style="color: var(--text-dark); font-size: 0.95rem;">{{ $package->meeting_point }}</span>
+                        <small style="display: block; color: var(--text-muted); margin-top: 6px;">*Petunjuk rute GPS dan kontak koordinator lapangan dikirimkan via WhatsApp setelah pesanan diverifikasi.</small>
                     </div>
-                @endforeach
+                </div>
+
+                <!-- Itinerary Timeline -->
+                <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 20px;">Rencana Sesi (Itinerary)</h3>
+                <div style="display: flex; flex-direction: column; gap: 18px; margin-bottom: 40px; padding-left: 8px;">
+                    @foreach ($itinerary_steps as $idx => $step)
+                        @php
+                            $parts = explode('-', $step, 2);
+                            $waktu = trim($parts[0]);
+                            $aktivitas = isset($parts[1]) ? trim($parts[1]) : '';
+                        @endphp
+                        <div style="display: flex; gap: 16px; align-items: flex-start;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--bg-sage); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;">
+                                {{ $idx + 1 }}
+                            </div>
+                            <div style="padding-top: 4px;">
+                                <strong style="font-family: var(--font-heading); color: var(--primary); font-size: 0.95rem;">{{ $waktu }}</strong>
+                                <p style="font-size: 0.92rem; color: var(--text-muted); margin-top: 2px;">{{ $aktivitas }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <hr style="border: none; border-top: 1px solid var(--border-light); margin-bottom: 36px;">
+
+                <!-- Facilities Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                    <div>
+                        <h4 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-check-circle-fill" style="color: #10b981;"></i> Fasilitas Termasuk
+                        </h4>
+                        <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 0.92rem; color: var(--text-dark);">
+                            @foreach ($includes as $inc)
+                                <li style="display: flex; align-items: flex-start; gap: 10px;">
+                                    <i class="bi bi-check2" style="color: #10b981; font-weight: 800;"></i>
+                                    <span>{{ $inc }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-x-circle-fill" style="color: #ef4444;"></i> Tidak Termasuk
+                        </h4>
+                        <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 0.92rem; color: var(--text-muted);">
+                            @foreach ($excludes as $exc)
+                                <li style="display: flex; align-items: flex-start; gap: 10px;">
+                                    <i class="bi bi-dash" style="color: #ef4444; font-weight: 800;"></i>
+                                    <span>{{ $exc }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <hr style="border: 0; border-top: 1px solid var(--border); margin: 32px 0;">
+            <!-- Right Column: Sticky Booking Widget -->
+            <div>
+                <div class="booking-summary-sidebar">
+                    <span class="section-tag" style="margin-bottom: 6px;">━ &nbsp; RESERVASI JADWAL</span>
+                    <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 18px;">Pesan Paket Ini</h3>
 
-            <!-- Facilities Grid -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                <div>
-                    <h4 style="font-size: 1.1rem; font-weight: 700; color: #15803d; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                        <i class="bi bi-check-circle-fill"></i> Fasilitas Termasuk (Include)
-                    </h4>
-                    <ul class="facility-list facility-include">
-                        @foreach ($includes as $inc)
-                            <li><i class="bi bi-check-lg"></i> {{ $inc }}</li>
-                        @endforeach
-                    </ul>
+                    <div style="background-color: var(--bg-body); border-radius: var(--radius-md); padding: 18px; margin-bottom: 24px;">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Harga Resmi:</span>
+                        <div style="font-family: var(--font-heading); font-size: 2rem; font-weight: 900; color: var(--accent); margin: 4px 0;">
+                            Rp {{ number_format($package->price, 0, ',', '.') }}
+                        </div>
+                        <small style="color: var(--text-muted);">Sudah termasuk tiket retribusi & asuransi lapangan.</small>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; font-size: 0.88rem; color: var(--text-dark);">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-shield-check" style="color: var(--accent);"></i>
+                            <span>Pemandu Lokal Berlisensi Resmi</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-arrow-repeat" style="color: var(--accent);"></i>
+                            <span>Garansi Reschedule saat Cuaca Buruk</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-chat-dots" style="color: var(--accent);"></i>
+                            <span>Koordinasi Instan via WhatsApp</span>
+                        </div>
+                    </div>
+
+                    <a href="{{ route('booking.create', ['paket_id' => $package->id]) }}" class="btn btn-primary btn-block btn-lg" style="margin-bottom: 12px;">
+                        Lanjut ke Reservasi &nbsp;↗
+                    </a>
+
+                    <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281234567890') }}?text=Halo%20Admin%20YKS,%20saya%20tertarik%20tanya%20paket%20{{ urlencode($package->name) }}" 
+                       target="_blank" 
+                       class="btn btn-outline btn-block">
+                        <i class="bi bi-whatsapp"></i> Tanya Admin via WA
+                    </a>
                 </div>
-
-                <div>
-                    <h4 style="font-size: 1.1rem; font-weight: 700; color: #b91c1c; margin-bottom: 12px; display: center; gap: 8px;">
-                        <i class="bi bi-x-circle-fill"></i> Tidak Termasuk (Exclude)
-                    </h4>
-                    <ul class="facility-list facility-exclude">
-                        @foreach ($excludes as $exc)
-                            <li><i class="bi bi-x-lg"></i> {{ $exc }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sidebar Sticky Booking Box -->
-        <div class="package-sidebar">
-            <div class="booking-card">
-                <div class="price-header">
-                    <span style="font-size: 0.82rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">Harga Paket</span>
-                    <div class="price-val">Rp {{ number_format($package->price, 0, ',', '.') }} <span style="font-size: 0.9rem; font-weight: 500; color: var(--text-muted);">/ orang</span></div>
-                    <small style="color: var(--text-muted); display: block; margin-top: 4px;">Minimal booking 1 orang &bull; Bisa grup/rombongan</small>
-                </div>
-
-                <div style="margin-bottom: 20px;">
-                    <ul style="list-style: none; font-size: 0.88rem; color: var(--text-main);">
-                        <li style="margin-bottom: 8px;"><i class="bi bi-check2 text-primary"></i> Konfirmasi Booking Instan</li>
-                        <li style="margin-bottom: 8px;"><i class="bi bi-check2 text-primary"></i> Gratis Tongkat Trekking</li>
-                        <li style="margin-bottom: 8px;"><i class="bi bi-check2 text-primary"></i> Garansi Pemandu Lokal Resmi</li>
-                    </ul>
-                </div>
-
-                <a href="{{ route('booking.create', ['paket_id' => $package->id]) }}" class="btn btn-primary btn-block btn-lg" style="margin-bottom: 10px;">
-                    <i class="bi bi-calendar-check"></i> Pesan Sekarang
-                </a>
-
-                <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281234567890') }}?text=Halo%20Admin%20YKS,%20saya%20tertarik%20tanya%20paket%20wisata%20{{ urlencode($package->name) }}" 
-                   target="_blank" 
-                   class="btn btn-outline btn-block">
-                    <i class="bi bi-whatsapp text-primary"></i> Konsultasi via WA
-                </a>
             </div>
         </div>
     </div>
-</div>
+</section>
 @endsection

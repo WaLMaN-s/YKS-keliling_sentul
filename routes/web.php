@@ -12,8 +12,11 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Home & Catalog
+// Home & Static Info Pages (Matching Figma)
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/tentang-yks', [HomeController::class, 'about'])->name('about');
+Route::get('/galeri-testimoni', [HomeController::class, 'gallery'])->name('gallery');
+Route::get('/informasi', [HomeController::class, 'info'])->name('info');
 Route::get('/paket', [PackageController::class, 'index'])->name('packages.index');
 Route::get('/paket/{slug}', [PackageController::class, 'show'])->name('packages.show');
 
