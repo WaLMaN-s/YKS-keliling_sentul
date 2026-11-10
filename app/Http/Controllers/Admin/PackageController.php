@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class PackageController extends Controller
+{
+    /**
+     * Administrasi / Kelola Paket (Figma).
+     */
+    public function index()
+    {
+        $packages = DB::table('yks_packages')->orderBy('id', 'asc')->get();
+        return view('admin.packages.index', compact('packages'));
+    }
+}
