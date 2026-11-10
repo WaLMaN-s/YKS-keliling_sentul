@@ -226,6 +226,39 @@
             align-items: center;
             gap: 6px;
         }
+
+        /* Pagination Styling */
+        .pagination {
+            display: flex;
+            list-style: none;
+            gap: 6px;
+            align-items: center;
+            margin-top: 12px;
+        }
+        .page-item .page-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 10px;
+            border: 1px solid var(--admin-border);
+            border-radius: 8px;
+            background: #FFFFFF;
+            color: #1F3D2B;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .page-item.active .page-link {
+            background: var(--admin-sidebar-bg);
+            color: #FFFFFF;
+            border-color: var(--admin-sidebar-bg);
+        }
+        .page-item.disabled .page-link {
+            opacity: 0.5;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
