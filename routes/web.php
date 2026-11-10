@@ -70,8 +70,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Jadwal & Slot
     Route::get('/jadwal-slot', [AdminScheduleSlotController::class, 'index'])->name('schedules.index');
 
-    // Kelola Paket
+    // Kelola Paket (CRUD, Upload Foto & Toggle Status Aktif/Nonaktif)
     Route::get('/paket', [AdminPackageController::class, 'index'])->name('packages.index');
+    Route::post('/paket', [AdminPackageController::class, 'store'])->name('packages.store');
+    Route::put('/paket/{id}', [AdminPackageController::class, 'update'])->name('packages.update');
+    Route::patch('/paket/{id}/toggle-status', [AdminPackageController::class, 'toggleStatus'])->name('packages.toggle_status');
+    Route::delete('/paket/{id}', [AdminPackageController::class, 'destroy'])->name('packages.destroy');
 
     // Data Pelanggan
     Route::get('/pelanggan', [AdminCustomerController::class, 'index'])->name('customers.index');
