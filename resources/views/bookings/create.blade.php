@@ -19,19 +19,19 @@
     <div class="reservation-steps-nav">
         <div class="step-indicator-item completed">
             <span class="step-badge"><i class="bi bi-check"></i></span>
-            <span>01 Pilih Paket</span>
+            <span>Pilih Jadwal</span>
         </div>
         <div class="step-indicator-item active">
             <span class="step-badge">02</span>
-            <span>02 Jadwal & Data</span>
+            <span>Data Pemesan</span>
         </div>
         <div class="step-indicator-item">
             <span class="step-badge">03</span>
-            <span>03 Pembayaran</span>
+            <span>Pembayaran</span>
         </div>
         <div class="step-indicator-item">
             <span class="step-badge">04</span>
-            <span>04 Konfirmasi</span>
+            <span>Konfirmasi</span>
         </div>
     </div>
 </div>
@@ -70,7 +70,7 @@
                         1. Pilih Tanggal & Sesi Keberangkatan
                     </h3>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px;">
+                    <div class="resp-grid-2" style="margin-bottom: 28px;">
                         <div class="form-group" style="margin-bottom: 0;">
                             <label class="form-label">Tanggal Jelajah <span class="text-accent">*</span></label>
                             <input type="date" name="trip_date" class="form-control" required 
@@ -104,7 +104,7 @@
                                value="{{ old('customer_name', $user->name ?? '') }}">
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="resp-grid-2" style="margin-bottom: 20px;">
                         <div class="form-group" style="margin-bottom: 0;">
                             <label class="form-label">Nomor WhatsApp Aktif <span class="text-accent">*</span></label>
                             <input type="tel" name="customer_phone" class="form-control" required 

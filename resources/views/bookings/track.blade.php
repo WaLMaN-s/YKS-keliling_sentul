@@ -18,19 +18,19 @@
     <div class="reservation-steps-nav">
         <div class="step-indicator-item completed">
             <span class="step-badge"><i class="bi bi-check"></i></span>
-            <span>01 Pilih Paket</span>
+            <span>Pilih Jadwal</span>
         </div>
         <div class="step-indicator-item completed">
             <span class="step-badge"><i class="bi bi-check"></i></span>
-            <span>02 Jadwal & Data</span>
+            <span>Data Pemesan</span>
         </div>
         <div class="step-indicator-item completed">
             <span class="step-badge"><i class="bi bi-check"></i></span>
-            <span>03 Pembayaran</span>
+            <span>Pembayaran</span>
         </div>
         <div class="step-indicator-item active">
             <span class="step-badge">04</span>
-            <span>04 Konfirmasi</span>
+            <span>Konfirmasi</span>
         </div>
     </div>
 </div>
@@ -38,11 +38,11 @@
 <section class="section-wrapper" style="padding-top: 0;">
     <div class="container" style="max-width: 820px;">
         <!-- Search Box -->
-        <div style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; margin-bottom: 36px;">
+        <div class="resp-card-pad" style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 36px;">
             <form method="GET" action="{{ route('booking.track') }}">
                 <label class="form-label" style="font-size: 0.95rem;">Masukkan Kode Booking atau Nomor WhatsApp</label>
-                <div style="display: flex; gap: 12px; margin-top: 8px;">
-                    <input type="text" name="kode" class="form-control" 
+                <div style="display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap;">
+                    <input type="text" name="kode" class="form-control" style="flex: 1; min-width: 200px;"
                            placeholder="Contoh: YKS-20261028-XXXX atau 08123456789" 
                            value="{{ $kode ?? '' }}" required>
                     <button type="submit" class="btn btn-forest" style="padding: 12px 28px; white-space: nowrap;">
@@ -81,7 +81,7 @@
                 </div>
 
                 <!-- Body Card -->
-                <div style="padding: 36px 32px;">
+                <div class="resp-card-pad">
                     <div style="margin-bottom: 24px;">
                         <span class="section-tag" style="margin-bottom: 4px;">━ &nbsp; PAKET TERPILIH</span>
                         <h3 style="font-size: 1.5rem; color: var(--primary); margin: 0 0 6px;">
@@ -90,7 +90,7 @@
                     </div>
 
                     <!-- Details Grid -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background-color: var(--bg-body); padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border-light); margin-bottom: 28px;">
+                    <div class="resp-grid-2" style="background-color: var(--bg-body); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-light); margin-bottom: 28px;">
                         <div>
                             <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Tanggal Jelajah:</span>
                             <strong style="color: var(--primary); font-size: 1.05rem;">

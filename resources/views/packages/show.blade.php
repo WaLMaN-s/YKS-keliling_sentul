@@ -42,15 +42,15 @@
     </div>
 
     <!-- Gallery Image Preview -->
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 18px; margin-bottom: 48px;">
-        <div style="border-radius: var(--radius-lg); overflow: hidden; height: 420px; border: 1px solid var(--border);">
+    <div class="pkg-hero-gallery">
+        <div class="pkg-hero-main-img">
             <img src="{{ $package->image ?: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1200&q=80' }}" alt="{{ $package->name }}" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
-        <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 18px;">
-            <div style="border-radius: var(--radius-md); overflow: hidden; height: 201px; border: 1px solid var(--border);">
+        <div class="pkg-hero-side-grid">
+            <div class="pkg-hero-side-img">
                 <img src="https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=600&q=80" alt="Spot Alami Sentul" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
-            <div style="border-radius: var(--radius-md); overflow: hidden; height: 201px; border: 1px solid var(--border);">
+            <div class="pkg-hero-side-img">
                 <img src="https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=600&q=80" alt="Panorama Alam" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         </div>
@@ -62,7 +62,7 @@
     <div class="container">
         <div class="booking-layout-grid">
             <!-- Left Column: Details, Itinerary, Facilities -->
-            <div style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px;">
+            <div class="resp-card-pad" style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg);">
                 <!-- Description -->
                 <h3 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 14px;">Gambaran Perjalanan</h3>
                 <p style="font-size: 1rem; color: var(--text-dark); line-height: 1.8; margin-bottom: 36px;">
@@ -103,7 +103,7 @@
                 <hr style="border: none; border-top: 1px solid var(--border-light); margin-bottom: 36px;">
 
                 <!-- Facilities Grid -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                <div class="resp-grid-2" style="gap: 32px;">
                     <div>
                         <h4 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
                             <i class="bi bi-check-circle-fill" style="color: #10b981;"></i> Fasilitas Termasuk

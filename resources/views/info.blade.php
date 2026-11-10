@@ -31,9 +31,9 @@
 <!-- Main Two Column Layout (Layanan Admin & Rekening Bank) -->
 <section class="section-wrapper section-white-bg" style="padding-top: 48px;">
     <div class="container">
-        <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 48px; align-items: start;">
+        <div class="resp-grid-info">
             <!-- Kolom Kiri: Layanan Admin YKS -->
-            <div style="background-color: var(--bg-body); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px;">
+            <div class="resp-card-pad" style="background-color: var(--bg-body); border: 1px solid var(--border); border-radius: var(--radius-lg);">
                 <div class="section-tag">
                     ━ &nbsp; ADMIN LAYANAN YKS
                 </div>
@@ -161,7 +161,7 @@
             Ikuti panduan berikut agar pesanan Anda dapat segera diverifikasi oleh tim administrasi YKS.
         </p>
 
-        <div class="workflow-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="workflow-grid">
             <div class="step-card">
                 <span class="step-number-tag">01</span>
                 <h3 class="step-card-title">Transfer Sesuai Tagihan</h3>

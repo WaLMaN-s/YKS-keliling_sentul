@@ -1413,3 +1413,190 @@ h1, h2, h3, h4, h5, h6 {
     right: 20px;
   }
 }
+
+/* ==========================================================================
+   Responsive Mobile Adaptations (Matching Figma Seluler 360px - 390px)
+   ========================================================================== */
+.mobile-header-reservasi {
+  display: none;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.resp-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.resp-grid-story {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.resp-grid-safety {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.resp-grid-info {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.pkg-hero-gallery {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 18px;
+  margin-bottom: 48px;
+}
+
+.pkg-hero-main-img {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  height: 420px;
+  border: 1px solid var(--border);
+}
+
+.pkg-hero-side-grid {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 18px;
+}
+
+.pkg-hero-side-img {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  height: 201px;
+  border: 1px solid var(--border);
+}
+
+.about-hero-banner {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  height: 440px;
+  margin-bottom: 64px;
+  border: 1px solid var(--border);
+}
+
+.resp-card-pad {
+  padding: 36px;
+}
+
+@media (max-width: 900px) {
+  .resp-grid-story,
+  .resp-grid-safety,
+  .resp-grid-info,
+  .pkg-hero-gallery {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .pkg-hero-main-img {
+    height: 260px;
+  }
+
+  .pkg-hero-side-grid {
+    grid-template-rows: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .pkg-hero-side-img {
+    height: 130px;
+  }
+}
+
+@media (max-width: 768px) {
+  .d-none-mobile {
+    display: none !important;
+  }
+
+  .mobile-header-reservasi {
+    display: inline-block;
+  }
+
+  .resp-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .about-hero-banner {
+    height: 240px;
+    margin-bottom: 36px;
+  }
+
+  .resp-card-pad,
+  .booking-form-card,
+  .booking-summary-sidebar {
+    padding: 20px !important;
+    position: static;
+  }
+
+  .cta-banner-title {
+    font-size: 1.65rem;
+  }
+
+  /* 4-Step Progress Indicator matching Figma Mobile (figma_reservasi_seluler.png) */
+  .reservation-steps-nav {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 24px;
+  }
+
+  .step-indicator-item {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 4px;
+    border-radius: 12px;
+    background-color: #F2EFE9;
+    border: 1px solid var(--border);
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1.25;
+    gap: 4px;
+    color: var(--text-muted);
+  }
+
+  .step-indicator-item .step-badge {
+    width: auto;
+    height: auto;
+    background: transparent !important;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: inherit;
+  }
+
+  .step-indicator-item.completed {
+    background-color: #EAF0E7;
+    border-color: #C1D1BE;
+    color: var(--primary);
+  }
+
+  .step-indicator-item.completed .step-badge {
+    color: var(--primary);
+  }
+
+  .step-indicator-item.active {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #FFFFFF;
+  }
+
+  .step-indicator-item.active .step-badge {
+    color: #FFFFFF;
+  }
+}

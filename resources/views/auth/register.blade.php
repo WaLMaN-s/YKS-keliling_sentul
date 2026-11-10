@@ -24,7 +24,7 @@
                     <input type="email" name="email" class="form-control" placeholder="nama@email.com" required value="{{ old('email') }}">
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
+                <div class="resp-grid-2" style="gap: 14px; margin-bottom: 24px;">
                     <div class="form-group" style="margin-bottom: 0;">
                         <label class="form-label">Password <span class="text-accent">*</span></label>
                         <input type="password" name="password" class="form-control" placeholder="Min. 6 karakter" required>

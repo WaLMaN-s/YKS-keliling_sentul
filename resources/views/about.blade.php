@@ -18,8 +18,7 @@
         </p>
 
         <!-- Hero Image Potret Tim -->
-        <div
-            style="border-radius: var(--radius-lg); overflow: hidden; height: 440px; margin-bottom: 64px; border: 1px solid var(--border);">
+        <div class="about-hero-banner">
             <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1600&q=80"
                 alt="Tim YKS di Jalur Sentul" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
@@ -28,7 +27,7 @@
     <!-- Cerita YKS Section -->
     <section class="section-wrapper section-white-bg">
         <div class="container">
-            <div style="display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; align-items: start;">
+            <div class="resp-grid-story">
                 <div>
                     <div class="section-tag">
                         ━ &nbsp; CERITA KAMI
@@ -180,7 +179,7 @@
     <!-- Komitmen Keselamatan -->
     <section class="section-wrapper section-white-bg">
         <div class="container">
-            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center;">
+            <div class="resp-grid-safety">
                 <div>
                     <div class="section-tag">
                         ━ &nbsp; SEBELUM GAS, PASTIKAN SIAP

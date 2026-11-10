@@ -26,7 +26,7 @@
     </div>
 
     <!-- Gallery Grid -->
-    <div class="gallery-mosaic" style="grid-template-columns: repeat(3, 1fr); gap: 24px;">
+    <div class="gallery-mosaic">
         <div class="gallery-mosaic-item gallery-item-filter" data-cat="offroad" style="height: 300px;">
             <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80" alt="Jip 4x4 di Jalur Sentul">
             <span class="gallery-mosaic-caption">Aksi Menembus Jalur Tanah Merah Cisadon</span>
@@ -65,7 +65,7 @@
             Ulasan jujur tanpa rekayasa dari wisatawan yang telah membuktikan profesionalisme pemandu dan keseruan rute kami.
         </p>
 
-        <div class="testimonials-row" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="testimonials-row">
             @forelse ($testimonials as $t)
                 <div class="testi-card">
                     <div>

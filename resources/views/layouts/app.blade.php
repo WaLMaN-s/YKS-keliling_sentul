@@ -53,7 +53,7 @@
             </a>
 
             @auth
-                <div class="user-menu-wrapper">
+                <div class="user-menu-wrapper d-none-mobile">
                     <button class="user-pill-btn" onclick="toggleUserDropdown()" id="userBtn">
                         <div class="user-pill-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
                         <span>{{ explode(' ', Auth::user()->name)[0] }}</span>
@@ -77,12 +77,17 @@
                     </div>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="btn btn-outline btn-sm" style="padding: 10px 16px;">Masuk</a>
+                <a href="{{ route('login') }}" class="btn btn-outline btn-sm d-none-mobile" style="padding: 10px 16px;">Masuk</a>
             @endauth
 
-            <!-- CTA Reservasi Sekarang ↗ (Figma Button) -->
-            <a href="{{ route('booking.create') }}" class="btn btn-primary" style="padding: 12px 20px;">
+            <!-- CTA Reservasi Sekarang ↗ (Desktop) -->
+            <a href="{{ route('booking.create') }}" class="btn btn-primary d-none-mobile" style="padding: 12px 20px;">
                 Reservasi Sekarang &nbsp;↗
+            </a>
+
+            <!-- Mobile Reservasi Link (Figma Seluler Header) -->
+            <a href="{{ route('booking.create') }}" class="mobile-header-reservasi">
+                Reservasi
             </a>
 
             <!-- Mobile Hamburger Toggle -->

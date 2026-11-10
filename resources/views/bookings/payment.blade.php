@@ -19,19 +19,19 @@
     <div class="reservation-steps-nav">
         <div class="step-indicator-item completed">
             <span class="step-badge"><i class="bi bi-check"></i></span>
-            <span>01 Pilih Paket</span>
+            <span>Pilih Jadwal</span>
         </div>
         <div class="step-indicator-item completed">
             <span class="step-badge"><i class="bi bi-check"></i></span>
-            <span>02 Jadwal & Data</span>
+            <span>Data Pemesan</span>
         </div>
         <div class="step-indicator-item active">
             <span class="step-badge">03</span>
-            <span>03 Pembayaran</span>
+            <span>Pembayaran</span>
         </div>
         <div class="step-indicator-item">
             <span class="step-badge">04</span>
-            <span>04 Konfirmasi</span>
+            <span>Konfirmasi</span>
         </div>
     </div>
 </div>
@@ -42,7 +42,7 @@
             <!-- Left Column: Bank Accounts & Upload Bukti -->
             <div>
                 <!-- Transfer Bank Card -->
-                <div style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px; margin-bottom: 32px;">
+                <div class="resp-card-pad" style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 32px;">
                     <h3 style="font-size: 1.3rem; color: var(--primary); margin-bottom: 8px;">
                         Tujuan Transfer Resmi YKS
                     </h3>
@@ -95,7 +95,7 @@
                 </div>
 
                 <!-- Upload Bukti Form -->
-                <div style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px;">
+                <div class="resp-card-pad" style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg);">
                     <h3 style="font-size: 1.3rem; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
                         <i class="bi bi-upload" style="color: var(--accent);"></i> Unggah Bukti Transfer
                     </h3>
