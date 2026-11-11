@@ -47,7 +47,7 @@
 
         <!-- Header Actions & CTA -->
         <div class="header-right">
-            <a href="{{ route('booking.track') }}" class="nav-link-item d-none-sm" title="Lacak Pesanan" style="display: flex; align-items: center; gap: 6px;">
+            <a href="{{ route('booking.track') }}" class="nav-link-item d-none-mobile" title="Lacak Pesanan" style="display: flex; align-items: center; gap: 6px;">
                 <i class="bi bi-search"></i>
                 <span style="font-size: 0.85rem;">Lacak Trip</span>
             </a>
@@ -90,65 +90,121 @@
                 Reservasi
             </a>
 
-            <!-- Mobile Hamburger Toggle -->
-            <button class="mobile-nav-toggle" onclick="toggleMobileNav()" aria-label="Buka Menu">
-                <i class="bi bi-list"></i>
+            <!-- Mobile Hamburger Toggle (Figma 3-Line Menu Icon) -->
+            <button type="button" class="mobile-nav-toggle" id="mobileMenuBtn" onclick="toggleMobileNav()" aria-label="Buka Menu Navigasi" aria-expanded="false">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
             </button>
         </div>
     </div>
+</header>
 
-    <!-- Mobile Drawer Navigation -->
-    <div class="mobile-drawer" id="mobileDrawer">
-        <div class="mobile-drawer-content">
-            <div class="mobile-drawer-header">
-                <div class="brand-logo">
-                    <div class="logo-icon-box" style="width: 36px; height: 36px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                            <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
-                        </svg>
-                    </div>
-                    <div class="logo-brand-info">
-                        <span class="logo-brand-title" style="font-size: 1.2rem;">YKS</span>
-                        <span class="logo-brand-subtitle">Yuk Keliling Sentul</span>
-                    </div>
+<!-- Mobile Drawer Navigation (Placed outside header so backdrop-filter does not clip fixed positioning) -->
+<div class="mobile-drawer" id="mobileDrawer" onclick="handleDrawerBackdrop(event)" aria-hidden="true">
+    <div class="mobile-drawer-content" role="dialog" aria-modal="true" aria-label="Menu Navigasi Seluler">
+        <div class="mobile-drawer-header">
+            <a href="{{ route('home') }}" class="brand-logo" onclick="toggleMobileNav()">
+                <div class="logo-icon-box" style="width: 38px; height: 38px; border-radius: 10px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+                    </svg>
                 </div>
-                <button onclick="toggleMobileNav()" style="background: none; border: none; font-size: 1.6rem; color: var(--primary); cursor: pointer;">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </div>
+                <div class="logo-brand-info">
+                    <span class="logo-brand-title" style="font-size: 1.25rem;">YKS</span>
+                    <span class="logo-brand-subtitle">Yuk Keliling Sentul</span>
+                </div>
+            </a>
+            <button type="button" class="mobile-drawer-close" onclick="toggleMobileNav()" aria-label="Tutup Menu">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
 
-            <nav class="mobile-drawer-links">
-                <a href="{{ route('home') }}" class="mobile-drawer-link" onclick="toggleMobileNav()"><i class="bi bi-house"></i> Beranda</a>
-                <a href="{{ route('about') }}" class="mobile-drawer-link" onclick="toggleMobileNav()"><i class="bi bi-compass"></i> Tentang YKS</a>
-                <a href="{{ route('packages.index') }}" class="mobile-drawer-link" onclick="toggleMobileNav()"><i class="bi bi-signpost-2"></i> Paket Wisata</a>
-                <a href="{{ route('gallery') }}" class="mobile-drawer-link" onclick="toggleMobileNav()"><i class="bi bi-images"></i> Galeri & Testimoni</a>
-                <a href="{{ route('info') }}" class="mobile-drawer-link" onclick="toggleMobileNav()"><i class="bi bi-info-circle"></i> Informasi Admin & Bank</a>
-                <a href="{{ route('booking.track') }}" class="mobile-drawer-link" onclick="toggleMobileNav()"><i class="bi bi-search"></i> Lacak Status Booking</a>
-                
-                <hr style="margin: 16px 0; border: none; border-top: 1px solid var(--border);">
-                
-                @auth
-                    <a href="{{ route('user.history') }}" class="mobile-drawer-link"><i class="bi bi-clock-history"></i> Riwayat Trip Saya</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" style="background: none; border: none; color: #dc2626; font-weight: 600; padding: 8px 0; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 1rem;">
-                            <i class="bi bi-box-arrow-right"></i> Keluar Akun
-                        </button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="btn btn-outline btn-block" style="margin-bottom: 10px;">Masuk Akun</a>
-                    <a href="{{ route('register') }}" class="btn btn-forest btn-block">Daftar Akun Baru</a>
-                @endauth
-            </nav>
+        <div class="mobile-drawer-section-label">MENU JELAJAH</div>
 
-            <div style="margin-top: 24px;">
-                <a href="{{ route('booking.create') }}" class="btn btn-primary btn-block">
-                    Reservasi Sekarang ↗
+        <nav class="mobile-drawer-links">
+            <a href="{{ route('home') }}" class="mobile-drawer-link {{ request()->routeIs('home') ? 'active' : '' }}" onclick="toggleMobileNav()">
+                <span class="mobile-drawer-link-left">
+                    <span class="mobile-drawer-icon"><i class="bi bi-house-door"></i></span>
+                    <span>Beranda</span>
+                </span>
+                <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
+            </a>
+            <a href="{{ route('about') }}" class="mobile-drawer-link {{ request()->routeIs('about') ? 'active' : '' }}" onclick="toggleMobileNav()">
+                <span class="mobile-drawer-link-left">
+                    <span class="mobile-drawer-icon"><i class="bi bi-compass"></i></span>
+                    <span>Tentang YKS</span>
+                </span>
+                <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
+            </a>
+            <a href="{{ route('packages.index') }}" class="mobile-drawer-link {{ request()->routeIs('packages.*') ? 'active' : '' }}" onclick="toggleMobileNav()">
+                <span class="mobile-drawer-link-left">
+                    <span class="mobile-drawer-icon"><i class="bi bi-signpost-2"></i></span>
+                    <span>Paket Wisata</span>
+                </span>
+                <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
+            </a>
+            <a href="{{ route('gallery') }}" class="mobile-drawer-link {{ request()->routeIs('gallery') ? 'active' : '' }}" onclick="toggleMobileNav()">
+                <span class="mobile-drawer-link-left">
+                    <span class="mobile-drawer-icon"><i class="bi bi-images"></i></span>
+                    <span>Galeri & Testimoni</span>
+                </span>
+                <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
+            </a>
+            <a href="{{ route('info') }}" class="mobile-drawer-link {{ request()->routeIs('info') ? 'active' : '' }}" onclick="toggleMobileNav()">
+                <span class="mobile-drawer-link-left">
+                    <span class="mobile-drawer-icon"><i class="bi bi-info-circle"></i></span>
+                    <span>Informasi Admin & Bank</span>
+                </span>
+                <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
+            </a>
+            <a href="{{ route('booking.track') }}" class="mobile-drawer-link {{ request()->routeIs('booking.track') ? 'active' : '' }}" onclick="toggleMobileNav()">
+                <span class="mobile-drawer-link-left">
+                    <span class="mobile-drawer-icon"><i class="bi bi-search"></i></span>
+                    <span>Lacak Status Booking</span>
+                </span>
+                <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
+            </a>
+
+            @auth
+                <div class="mobile-drawer-section-label" style="margin-top: 12px;">AKUN SAYA</div>
+                <a href="{{ route('user.history') }}" class="mobile-drawer-link {{ request()->routeIs('user.history') ? 'active' : '' }}" onclick="toggleMobileNav()">
+                    <span class="mobile-drawer-link-left">
+                        <span class="mobile-drawer-icon"><i class="bi bi-clock-history"></i></span>
+                        <span>Riwayat Trip Saya</span>
+                    </span>
+                    <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
                 </a>
+            @endauth
+        </nav>
+
+        <div class="mobile-drawer-footer">
+            <a href="{{ route('booking.create') }}" class="btn btn-primary btn-block" style="padding: 13px 20px; margin-bottom: 10px;">
+                Reservasi Sekarang &nbsp;↗
+            </a>
+
+            @auth
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-outline btn-block" style="color: #dc2626; border-color: #fecaca; background: #fff5f5; padding: 11px 16px;">
+                        <i class="bi bi-box-arrow-right"></i> Keluar Akun ({{ explode(' ', Auth::user()->name)[0] }})
+                    </button>
+                </form>
+            @else
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <a href="{{ route('login') }}" class="btn btn-outline btn-sm" style="padding: 11px 12px; font-size: 0.85rem;">Masuk</a>
+                    <a href="{{ route('register') }}" class="btn btn-forest btn-sm" style="padding: 11px 12px; font-size: 0.85rem;">Daftar Akun</a>
+                </div>
+            @endauth
+
+            <div class="mobile-drawer-meta">
+                <span><i class="bi bi-clock"></i> Layanan Admin: 08.00 – 17.00 WIB</span>
             </div>
         </div>
     </div>
-</header>
+</div>
 
 <!-- Flash Alerts Notification -->
 <div class="container" style="margin-top: 20px;">
@@ -265,8 +321,28 @@
 
     function toggleMobileNav() {
         const drawer = document.getElementById('mobileDrawer');
-        if (drawer) drawer.classList.toggle('active');
+        const btn = document.getElementById('mobileMenuBtn');
+        if (!drawer) return;
+        const isActive = drawer.classList.toggle('active');
+        drawer.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+        if (btn) btn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+        document.body.style.overflow = isActive ? 'hidden' : '';
     }
+
+    function handleDrawerBackdrop(event) {
+        if (event.target.id === 'mobileDrawer') {
+            toggleMobileNav();
+        }
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const drawer = document.getElementById('mobileDrawer');
+            if (drawer && drawer.classList.contains('active')) {
+                toggleMobileNav();
+            }
+        }
+    });
 
     window.onclick = function(event) {
         if (!event.target.closest('#userBtn') && !event.target.closest('#userDropdown')) {

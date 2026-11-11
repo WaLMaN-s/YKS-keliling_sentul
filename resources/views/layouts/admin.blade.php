@@ -302,7 +302,7 @@
         }
 
         @media print {
-            .admin-sidebar, .admin-header, .no-print {
+            .admin-sidebar, .admin-header, .no-print, .admin-sidebar-backdrop {
                 display: none !important;
             }
             .admin-content {
@@ -310,6 +310,56 @@
             }
             body {
                 background: #FFFFFF !important;
+            }
+        }
+
+        /* Mobile Responsive Admin Sidebar & Hamburger */
+        .admin-mobile-toggle {
+            display: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            background: #F8F5EF;
+            border: 1px solid var(--admin-border);
+            color: #1F3D2B;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+        }
+        .admin-sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(14, 33, 24, 0.58);
+            backdrop-filter: blur(3px);
+            z-index: 1999;
+        }
+        @media (max-width: 900px) {
+            .admin-mobile-toggle {
+                display: inline-flex;
+            }
+            .admin-sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100dvh;
+                z-index: 2000;
+                transform: translateX(-100%);
+                transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+                box-shadow: 12px 0 32px rgba(14, 33, 24, 0.25);
+            }
+            .admin-sidebar.open {
+                transform: translateX(0);
+            }
+            .admin-sidebar-backdrop.open {
+                display: block;
+            }
+            .admin-header {
+                padding: 12px 16px;
+            }
+            .admin-content {
+                padding: 20px 16px;
             }
         }
     </style>
@@ -322,8 +372,11 @@
             ->count();
     @endphp
 
+    <!-- Sidebar Backdrop (Mobile) -->
+    <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop" onclick="toggleAdminSidebar()"></div>
+
     <!-- Sidebar Administrasi YKS (Figma Order) -->
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" id="adminSidebar">
         <a href="{{ route('admin.dashboard') }}" class="admin-brand">
             <div class="brand-icon">YKS.</div>
             <div>
@@ -418,6 +471,13 @@
     <main class="admin-main">
         <header class="admin-header">
             <div class="breadcrumb">
+                <button type="button" class="admin-mobile-toggle" onclick="toggleAdminSidebar()" aria-label="Buka Menu Admin">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
                 <span>Administrasi</span>
                 <span>/</span>
                 <span class="current">{{ $title ?? 'Ringkasan' }}</span>
@@ -455,5 +515,13 @@
         </section>
     </main>
 
+    <script>
+        function toggleAdminSidebar() {
+            const sidebar = document.getElementById('adminSidebar');
+            const backdrop = document.getElementById('adminSidebarBackdrop');
+            if (sidebar) sidebar.classList.toggle('open');
+            if (backdrop) backdrop.classList.toggle('open');
+        }
+    </script>
 </body>
 </html>
