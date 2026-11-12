@@ -19,8 +19,8 @@
 
         <!-- Hero Image Potret Tim -->
         <div class="about-hero-banner">
-            <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1600&q=80"
-                alt="Tim YKS di Jalur Sentul" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="{{ asset('galeri/Untitled10.jpg') }}"
+                alt="Tim & Rombongan YKS di Jalur Sentul" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
     </div>
 
@@ -235,8 +235,8 @@
 
                 <div
                     style="border-radius: var(--radius-lg); overflow: hidden; height: 380px; border: 1px solid var(--border);">
-                    <img src="https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=800&q=80"
-                        alt="Pengarahan Keselamatan YKS" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{{ asset('galeri/Untitled5.jpg') }}"
+                        alt="Perlengkapan & Pengarahan Keselamatan YKS" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
             </div>
         </div>

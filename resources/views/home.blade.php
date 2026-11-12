@@ -231,20 +231,20 @@
 
         <div class="gallery-mosaic">
             <div class="gallery-mosaic-item">
-                <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=600&q=80" alt="Offroad 4x4 Sentul">
-                <span class="gallery-mosaic-caption">Aksi 4x4 di Jalur Cisadon</span>
+                <img src="{{ asset('galeri/Untitled.jpg') }}" alt="Trabas Motor Trail di Curug Sentul" loading="lazy">
+                <span class="gallery-mosaic-caption">Spot Curug & Unit Trail YKS Hambalang</span>
             </div>
             <div class="gallery-mosaic-item">
-                <img src="https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=600&q=80" alt="Trekking Curug Sentul">
-                <span class="gallery-mosaic-caption">Segarnya Air Curug Leuwi Hejo</span>
+                <img src="{{ asset('galeri/Untitled3.jpg') }}" alt="Konvoi Wisata Jeep 4x4 Sentul" loading="lazy">
+                <span class="gallery-mosaic-caption">Konvoi Wisata Jeep 4x4 Jalur Hutan</span>
             </div>
             <div class="gallery-mosaic-item">
-                <img src="https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=600&q=80" alt="Camping Bukit Paniisan">
-                <span class="gallery-mosaic-caption">Senja di Puncak Bukit Paniisan</span>
+                <img src="{{ asset('galeri/Untitled9.jpg') }}" alt="Trabas Sungai Sentul" loading="lazy">
+                <span class="gallery-mosaic-caption">Aksi Trabas Menerobos Aliran Sungai</span>
             </div>
             <div class="gallery-mosaic-item">
-                <img src="https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?auto=format&fit=crop&w=600&q=80" alt="Gowes Sentul">
-                <span class="gallery-mosaic-caption">Gowes Pagi di Jalur Rainbow Hills</span>
+                <img src="{{ asset('galeri/Untitled8.jpg') }}" alt="Jeep 4x4 di Sungai Sentul" loading="lazy">
+                <span class="gallery-mosaic-caption">Keseruan Wisata Jeep 4x4 di Sungai</span>
             </div>
         </div>
     </div>
