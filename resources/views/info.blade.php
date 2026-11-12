@@ -68,15 +68,16 @@
 
                     <div>
                         <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 4px;">
-                            Kontak Cepat:
+                            Kontak Cepat (WhatsApp Resmi):
                         </span>
                         <p style="font-size: 0.95rem; color: var(--text-dark); margin-top: 4px;">
-                            WhatsApp: <strong>+62 812-3456-7890</strong><br>
-                            Email: <strong>info@kelilingsentul.id</strong>
+                            WhatsApp 1: <strong>0812-1084-2032</strong><br>
+                            WhatsApp 2: <strong>0857-7071-5553</strong><br>
+                            Instagram: <strong>@yuk_keliling_sentul</strong>
                         </p>
                     </div>
 
-                    <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281234567890') }}?text=Halo%20Admin%20YKS,%20saya%20ingin%20tanya%20info%20pembayaran" target="_blank" class="btn btn-primary btn-block" style="margin-top: 12px;">
+                    <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281210842032') }}?text=Halo%20Admin%20YKS,%20saya%20ingin%20tanya%20info%20paket%20dan%20pembayaran" target="_blank" class="btn btn-primary btn-block" style="margin-top: 12px;">
                         <i class="bi bi-whatsapp"></i> Hubungi Admin WhatsApp &nbsp;↗
                     </a>
                 </div>

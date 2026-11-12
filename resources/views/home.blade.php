@@ -89,13 +89,13 @@
                         
                         <div class="package-meta-row">
                             <span class="package-meta-item"><i class="bi bi-clock"></i> {{ $pkg->duration }}</span>
-                            <span class="package-meta-item"><i class="bi bi-speedometer2"></i> {{ $pkg->difficulty }}</span>
+                            <span class="package-meta-item"><i class="bi bi-signpost-2"></i> {{ $pkg->distance }}</span>
                             <span class="package-meta-item"><i class="bi bi-geo-alt"></i> Sentul</span>
                         </div>
 
                         <div class="package-bottom-row">
                             <div class="package-price-wrap">
-                                <span class="package-price-label">Mulai dari</span>
+                                <span class="package-price-label">{{ str_contains(strtolower($pkg->name), 'jeep') ? 'Harga per Unit (3-4 Org)' : 'Harga per Orang' }}</span>
                                 <span class="package-price-val">Rp {{ number_format($pkg->price, 0, ',', '.') }}</span>
                             </div>
                             <a href="{{ route('packages.show', $pkg->slug) }}" class="btn btn-forest btn-sm">

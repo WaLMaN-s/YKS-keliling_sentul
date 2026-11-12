@@ -9,11 +9,11 @@
     <div class="section-tag">
         ━ &nbsp; PILIHAN JELAJAH SENTUL
     </div>
-    <h1 class="section-title" style="font-size: 2.8rem; max-width: 800px; margin-bottom: 16px;">
-        Enam cara menikmati Sentul.
+    <h1 class="section-title" style="font-size: 2.8rem; max-width: 820px; margin-bottom: 16px;">
+        Pricelist Resmi Trabas Trail & Wisata Jeep Sentul.
     </h1>
-    <p class="section-desc" style="font-size: 1.15rem; max-width: 720px; margin-bottom: 36px;">
-        Temukan paket sesuai waktu luang, tingkat tantangan fisik, dan suasana yang ingin Anda rasakan bersama sahabat maupun keluarga.
+    <p class="section-desc" style="font-size: 1.15rem; max-width: 740px; margin-bottom: 36px;">
+        Pilih paket sewa motor trail Hambalang (150cc, KLX 140cc, Enduro 300cc), paket bawa motor trail pribadi, atau edisi Wisata Jeep 4x4 + Trekking Curug Sentul.
     </p>
 
     <!-- Search & Quick Filter Pills -->
@@ -82,13 +82,13 @@
                             
                             <div class="package-meta-row">
                                 <span class="package-meta-item"><i class="bi bi-clock"></i> {{ $pkg->duration }}</span>
-                                <span class="package-meta-item"><i class="bi bi-speedometer2"></i> {{ $pkg->difficulty }}</span>
+                                <span class="package-meta-item"><i class="bi bi-signpost-2"></i> {{ $pkg->distance }}</span>
                                 <span class="package-meta-item"><i class="bi bi-geo-alt"></i> Sentul</span>
                             </div>
 
                             <div class="package-bottom-row">
                                 <div class="package-price-wrap">
-                                    <span class="package-price-label">Mulai dari</span>
+                                    <span class="package-price-label">{{ str_contains(strtolower($pkg->name), 'jeep') ? 'Harga per Unit (3-4 Org)' : 'Harga per Orang' }}</span>
                                     <span class="package-price-val">Rp {{ number_format($pkg->price, 0, ',', '.') }}</span>
                                 </div>
                                 <div style="display: flex; gap: 8px;">

@@ -257,8 +257,8 @@
                 <p class="footer-brand-bio">
                     Jauh dari rutinitas. Dekat dengan alam. Jelajahi rute perbukitan, jalur tanah offroad 4x4, dan keindahan tersembunyi Sentul bersama tim kami.
                 </p>
-                <a href="https://instagram.com" target="_blank" class="footer-social-pill">
-                    <i class="bi bi-instagram"></i> Instagram · @yks.sentul
+                <a href="https://instagram.com/yuk_keliling_sentul" target="_blank" class="footer-social-pill">
+                    <i class="bi bi-instagram"></i> Instagram · @yuk_keliling_sentul
                 </a>
             </div>
 
@@ -279,17 +279,20 @@
             <div class="footer-contact-info">
                 <h4 class="footer-heading">Temui Kami</h4>
                 <p>
-                    <strong>Pos Jelajah YKS</strong><br>
-                    Kawasan Sentul, Babakan Madang, Kabupaten Bogor, Jawa Barat 16810
+                    <strong>Basecamp Yuk Keliling Sentul</strong><br>
+                    Kawasan Hambalang & Sentul, Babakan Madang, Kabupaten Bogor, Jawa Barat 16810
                 </p>
                 <p>
                     <strong>Jam Layanan Admin:</strong><br>
                     Senin – Minggu · 08.00 – 17.00 WIB
                 </p>
                 <p>
-                    <strong>WhatsApp Konsultasi:</strong><br>
-                    <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281234567890') }}" target="_blank" style="color: #6ee7b7; font-weight: 700;">
-                        <i class="bi bi-whatsapp"></i> +62 812-3456-7890
+                    <strong>WhatsApp Booking & Konsultasi:</strong><br>
+                    <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281210842032') }}" target="_blank" style="color: #6ee7b7; font-weight: 700; display: block;">
+                        <i class="bi bi-whatsapp"></i> 0812-1084-2032
+                    </a>
+                    <a href="https://wa.me/6285770715553" target="_blank" style="color: #6ee7b7; font-weight: 700; display: block; margin-top: 2px;">
+                        <i class="bi bi-whatsapp"></i> 0857-7071-5553
                     </a>
                 </p>
             </div>

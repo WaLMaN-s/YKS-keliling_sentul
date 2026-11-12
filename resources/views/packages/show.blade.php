@@ -33,25 +33,25 @@
         </div>
 
         <div style="text-align: right;">
-            <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Mulai dari</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Harga Paket Resmi</span>
             <span style="font-family: var(--font-heading); font-size: 2.2rem; font-weight: 900; color: var(--accent);">
                 Rp {{ number_format($package->price, 0, ',', '.') }}
             </span>
-            <span style="font-size: 0.85rem; color: var(--text-sub); display: block;">/ pax / unit jip</span>
+            <span style="font-size: 0.85rem; color: var(--text-sub); display: block;">{{ str_contains(strtolower($package->name), 'jeep') ? '/ unit Jeep (3 s/d 4 Orang)' : '/ orang' }}</span>
         </div>
     </div>
 
     <!-- Gallery Image Preview -->
     <div class="pkg-hero-gallery">
         <div class="pkg-hero-main-img">
-            <img src="{{ $package->image ?: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1200&q=80' }}" alt="{{ $package->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="{{ $package->image ?: '/uploads/packages/pricelist-trabas-trail.jpg' }}" alt="{{ $package->name }}" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div class="pkg-hero-side-grid">
             <div class="pkg-hero-side-img">
-                <img src="https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=600&q=80" alt="Spot Alami Sentul" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="/uploads/packages/pricelist-trabas-trail.jpg" alt="Pricelist Sewa Motor Trail Hambalang" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <div class="pkg-hero-side-img">
-                <img src="https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=600&q=80" alt="Panorama Alam" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="/uploads/packages/wisata-jeep-4x4-sentul.jpg" alt="Edisi Wisata Jeep 4x4 Sentul" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         </div>
     </div>
