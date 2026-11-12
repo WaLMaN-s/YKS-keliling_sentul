@@ -149,7 +149,12 @@
                         <small style="color: #10b981; font-weight: 600;"><i class="bi bi-check2-circle"></i> Status: {{ $booking->payment_status }}</small>
                     </div>
 
-                    <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281234567890') }}?text=Halo%20Admin%20YKS,%20saya%20sudah%20melakukan%20booking%20dengan%20kode%20{{ $booking->booking_code }}" 
+                    <a href="{{ route('booking.track', ['kode' => $booking->booking_code]) }}"
+                       class="btn btn-forest btn-block" style="margin-bottom: 10px;">
+                        <i class="bi bi-search"></i> Lacak Status Booking Ini &nbsp;↗
+                    </a>
+
+                    <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281210842032') }}?text=Halo%20Admin%20YKS,%20saya%20sudah%20melakukan%20booking%20dengan%20kode%20{{ $booking->booking_code }}" 
                        target="_blank" 
                        class="btn btn-outline btn-block">
                         <i class="bi bi-whatsapp"></i> Konfirmasi ke WA Admin

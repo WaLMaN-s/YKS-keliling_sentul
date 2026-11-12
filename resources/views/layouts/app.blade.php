@@ -45,40 +45,11 @@
             <a href="{{ route('info') }}" class="nav-link-item {{ request()->routeIs('info') ? 'active' : '' }}">Informasi</a>
         </nav>
 
-        <!-- Header Actions & CTA -->
+        <!-- Header Actions & CTA (Tanpa Login User — Langsung Lacak Status Booking & Reservasi) -->
         <div class="header-right">
-            <a href="{{ route('booking.track') }}" class="nav-link-item d-none-mobile" title="Lacak Pesanan" style="display: flex; align-items: center; gap: 6px;">
-                <i class="bi bi-search"></i>
-                <span style="font-size: 0.85rem;">Lacak Trip</span>
+            <a href="{{ route('booking.track') }}" class="btn btn-outline btn-sm d-none-mobile" title="Lacak Status Booking" style="padding: 10px 16px;">
+                <i class="bi bi-search"></i> Lacak Status Booking
             </a>
-
-            @auth
-                <div class="user-menu-wrapper d-none-mobile">
-                    <button class="user-pill-btn" onclick="toggleUserDropdown()" id="userBtn">
-                        <div class="user-pill-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
-                        <span>{{ explode(' ', Auth::user()->name)[0] }}</span>
-                        <i class="bi bi-chevron-down" style="font-size: 0.75rem;"></i>
-                    </button>
-                    <div class="user-dropdown-panel" id="userDropdown">
-                        <div class="dropdown-user-header">
-                            <strong>{{ Auth::user()->name }}</strong>
-                            <small>{{ Auth::user()->email }}</small>
-                        </div>
-                        <a href="{{ route('user.history') }}" class="dropdown-item-link">
-                            <i class="bi bi-clock-history"></i> Riwayat Trip Saya
-                        </a>
-                        <hr style="margin: 6px 0; border: none; border-top: 1px solid var(--border-light);">
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="dropdown-item-link" style="width: 100%; border: none; background: none; cursor: pointer; color: #dc2626;">
-                                <i class="bi bi-box-arrow-right"></i> Keluar
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @else
-                <a href="{{ route('login') }}" class="btn btn-outline btn-sm d-none-mobile" style="padding: 10px 16px;">Masuk</a>
-            @endauth
 
             <!-- CTA Reservasi Sekarang ↗ (Desktop) -->
             <a href="{{ route('booking.create') }}" class="btn btn-primary d-none-mobile" style="padding: 12px 20px;">
@@ -167,37 +138,15 @@
                 </span>
                 <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
             </a>
-
-            @auth
-                <div class="mobile-drawer-section-label" style="margin-top: 12px;">AKUN SAYA</div>
-                <a href="{{ route('user.history') }}" class="mobile-drawer-link {{ request()->routeIs('user.history') ? 'active' : '' }}" onclick="toggleMobileNav()">
-                    <span class="mobile-drawer-link-left">
-                        <span class="mobile-drawer-icon"><i class="bi bi-clock-history"></i></span>
-                        <span>Riwayat Trip Saya</span>
-                    </span>
-                    <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
-                </a>
-            @endauth
         </nav>
 
         <div class="mobile-drawer-footer">
             <a href="{{ route('booking.create') }}" class="btn btn-primary btn-block" style="padding: 13px 20px; margin-bottom: 10px;">
                 Reservasi Sekarang &nbsp;↗
             </a>
-
-            @auth
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="btn btn-outline btn-block" style="color: #dc2626; border-color: #fecaca; background: #fff5f5; padding: 11px 16px;">
-                        <i class="bi bi-box-arrow-right"></i> Keluar Akun ({{ explode(' ', Auth::user()->name)[0] }})
-                    </button>
-                </form>
-            @else
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <a href="{{ route('login') }}" class="btn btn-outline btn-sm" style="padding: 11px 12px; font-size: 0.85rem;">Masuk</a>
-                    <a href="{{ route('register') }}" class="btn btn-forest btn-sm" style="padding: 11px 12px; font-size: 0.85rem;">Daftar Akun</a>
-                </div>
-            @endauth
+            <a href="{{ route('booking.track') }}" class="btn btn-outline btn-block" style="padding: 11px 16px; font-size: 0.88rem;">
+                <i class="bi bi-search"></i> Lacak Status Booking
+            </a>
 
             <div class="mobile-drawer-meta">
                 <span><i class="bi bi-clock"></i> Layanan Admin: 08.00 – 17.00 WIB</span>

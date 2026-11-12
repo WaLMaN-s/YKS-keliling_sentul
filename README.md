@@ -1,207 +1,87 @@
-# 🚙 Yuk Keliling Sentul (YKS) — Adventure & Offroad Tour Platform
+# YKS - Keliling Sentul
 
-> **Platform Pemesanan Wisata Petualangan & Offroad 4x4 Sentul, Jawa Barat**  
-> Dibangun menggunakan **Laravel 12** berdasarkan spesifikasi desain resmi Figma **`YKS_desain`**.
+Platform website pemesanan dan katalog wisata petualangan alam di **Sentul, Bogor**, Jawa Barat. Menyediakan layanan reservasi paket trekking curug, petualangan fun offroad 4x4, gowes/cycling tour guide, serta camping keluarga bersama pemandu lokal (Local Tour Guide) berlisensi.
 
----
-
-## 🎨 1. Referensi Desain Figma
-* **Figma File:** [`YKS_desain`](https://www.figma.com/design/5WB0Bqa2deoGdpd8Y8QNMi/YKS_desain?node-id=0-1)
-* **Node ID Utama:** `0:1`
-* **File Key:** `5WB0Bqa2deoGdpd8Y8QNMi`
-
-### 🌿 Design System & Visual Tokens
-Berdasarkan ekstraksi langsung dari Figma token:
-
-| Kategori | Token / Kode Hex | Keterangan & Penggunaan |
-| :--- | :--- | :--- |
-| **Primary (Forest Dark)** | `#1F3D2B` | Warna utama, header/sidebar, tombol primer |
-| **Secondary (Forest Medium)** | `#304F3B` | State hover, card container, active nav item |
-| **Accent (Adventure Orange)** | `#F26B1D` | Badge sorotan, CTA konfirmasi, indikator status |
-| **Canvas / Background** | `#F8F5EF` | Background halaman bernuansa earthy warm |
-| **Muted Sage** | `#C1D1BE` / `#DFE4DC` | Border pemisah, avatar placeholder, tag ringan |
-| **Text Dark** | `#1A1A1A` / `#1F3D2B` | Heading dan teks utama |
-| **Text Muted** | `#6B756E` / `#667066` | Teks keterangan, subtitle, instruksi |
-| **Typography** | `Montserrat` & `Inter` | Montserrat (Headings & Brand), Inter (Body & Data) |
-| **Border Radius** | `8px` (sm), `12px` (md) | Card, modal, container, tombol |
+> **Catatan Rilis**: Sesuai kebutuhan tahap awal, versi ini berfokus 100% pada **Role Pengunjung (User)**. Role Admin akan dikembangkan pada tahap berikutnya.
 
 ---
 
-## 🏛️ 2. Arsitektur & Modul Sistem
+## Fitur Utama (Role User / Pengunjung)
 
-Sistem dibagi menjadi **2 portal utama** sesuai dengan rancangan Figma:
-
-```
-                            ┌───────────────────────────────────┐
-                            │    YUK KELILING SENTUL (YKS)      │
-                            └─────────────────┬─────────────────┘
-                                              │
-                     ┌────────────────────────┴────────────────────────┐
-                     ▼                                                 ▼
-     ┌───────────────────────────────┐                 ┌───────────────────────────────┐
-     │ 🌐 1. PORTAL PUBLIK (USER)    │                 │ 🛡️ 2. PORTAL ADMIN (BACKOFFICE│
-     ├───────────────────────────────┤                 ├───────────────────────────────┤
-     │ • Beranda (Landing Page)      │                 │ • Ringkasan (Dashboard KPI)   │
-     │ • Katalog & Detail Paket      │                 │ • Verifikasi Pembayaran       │
-     │ • 4-Step Checkout Wizard      │                 │ • Data Reservasi              │
-     │ • Pembayaran & Upload Bukti   │                 │ • Jadwal & Kuota Slot Harian  │
-     │ • Lacak Status Reservasi      │                 │ • Kelola Paket Petualangan    │
-     │ • Akun & Riwayat Pemesanan    │                 │ • Data Pelanggan              │
-     │ • Informasi & Galeri Sentul   │                 │ • Laporan Keuangan (CSV/PDF)  │
-     │                               │                 │ • Jam Operasional & Info Pos  │
-     └───────────────────────────────┘                 └───────────────────────────────┘
-```
-
----
-
-## 🧭 3. Rincian Modul & Alur Kerja Sesuai Figma
-
-### A. Modul Pengunjung / Pelanggan (Front Office)
-1. **Beranda (`/`)**:
-   - Hero Section: *"SENTUL, JAWA BARAT · JELAJAH TANPA BIASA"*.
-   - Filter & Quick Booking Widget (Tanggal & Jumlah Peserta).
-   - Kartu Pilihan Paket (Jelajah Rimba, Jelajah Senja, Offroad 4x4).
-   - Nilai Unggulan (Local Guides, Safety First, Rute Eksklusif).
-   - Galeri Dokumentasi & Testimoni Pelanggan.
-2. **Katalog & Detail Paket (`/paket`, `/paket/{slug}`)**:
-   - Menampilkan harga dasar (e.g. *1 jip × Rp1.200.000*).
-   - Rincian fasilitas (Include/Exclude), rute, itinerary per jam, meeting point.
-3. **Alur Reservasi Interaktif 4 Langkah (`/booking`)**:
-   - **Step 1 - Pilih Jadwal & Slot**: Kalender pemilihan tanggal, jam trip (Batch 08.00–13.00 WIB, 11.00, atau 14.00), dan jumlah armada jip.
-   - **Step 2 - Data Pemesan**: Form kontak WhatsApp, nama, email, serta catatan preferensi (misal: *peserta pemula*).
-   - **Step 3 - Pembayaran (`/pembayaran/{booking_code}`)**: Rekening resmi BCA YKS, rincian biaya tanpa admin, dan form upload bukti transfer.
-   - **Step 4 - Konfirmasi**: Halaman ringkasan status *"Menunggu Verifikasi"* beserta instruksi titik temu & pengarahan.
-4. **Lacak Pesanan (`/lacak-pesanan`)**:
-   - Pengecekan status real-time cukup dengan memasukkan Kode Booking (e.g. `YKS-202611...`).
-5. **Autentikasi & Akun (`/login`, `/register`, `/riwayat-saya`)**:
-   - Login pelanggan untuk melihat riwayat perjalanan dan e-voucher.
+1. **Beranda & Eksplorasi Interaktif**:
+   - Filter paket instan berdasarkan kategori (*Trekking Curug*, *Fun Offroad 4x4*, *Cycling/Gowes*, *Camping & Outbound*).
+   - Badge tingkat kesulitan jalur (*Mudah/Pemula*, *Sedang*, *Menantang*).
+   - Ringkasan statistik & testimoni nyata wisatawan.
+   - FAQ interaktif seputar keamanan anak/lansia, titik kumpul, dan perlengkapan.
+2. **Katalog & Detail Paket Wisata**:
+   - Informasi lengkap jarak (km), durasi trip, dan titik kumpul (Meeting Point).
+   - Jadwal & rencana perjalanan jam demi jam (*Itinerary*).
+   - Rincian fasilitas yang termasuk (*Include*) dan tidak termasuk (*Exclude*).
+3. **Formulir Pemesanan (Booking)**:
+   - Pemilihan tanggal trip fleksibel & counter jumlah peserta.
+   - Perhitungan estimasi total harga secara *real-time* di sisi browser.
+   - Catatan request khusus (misal bawa anak, request jam kumpul, dsb).
+4. **Instruksi & Konfirmasi Pembayaran**:
+   - Pilihan metode: **Transfer Bank BCA**, **Bank Mandiri**, dan **QRIS Digital** instan.
+   - Tombol *One-Click Copy* nomor rekening.
+   - Form upload bukti transfer / struk pembayaran (JPG, PNG, WEBP, PDF).
+5. **Pelacak Status Booking (Order Tracker)**:
+   - Pencarian pesanan menggunakan **Kode Booking** (contoh: `YKS-20261027-A8C2`) atau Nomor WhatsApp.
+   - Menampilkan status booking (*Belum Bayar*, *Menunggu Verifikasi*, *Lunas*).
+   - Tombol integrasi langsung ke WhatsApp Admin & Guide lapangan.
+6. **Autentikasi & Akun Pengguna**:
+   - Registrasi & Login simpel bagi pengguna yang ingin menyimpan riwayat trip.
+   - Halaman **Riwayat Pesanan** untuk melihat daftar trip yang pernah dipesan.
 
 ---
 
-### B. Modul Administrasi YKS (Back Office)
-Akses melalui prefix `/admin`:
-1. **Ringkasan (`/admin`)**:
-   - Metrik total reservasi, rasio lunas (70%), antrean verifikasi bukti transfer, dan proyeksi pendapatan.
-   - Tabel reservasi terbaru dengan aksi langsung.
-2. **Verifikasi Pembayaran (`/admin/verifikasi-pembayaran`)**:
-   - Antrean bukti transfer yang diunggah pelanggan.
-   - Aksi cepat: **Setujui Pembayaran (Lunas)** atau **Tolak Bukti**.
-3. **Data Reservasi (`/admin/reservasi`)**:
-   - Filter status: *Semua, Lunas, Menunggu Verifikasi, Menunggu Pembayaran, Dibatalkan*.
-   - Detail lengkap pemesan, rincian biaya, dan catatan khusus.
-4. **Jadwal & Kuota Slot (`/admin/jadwal-slot`)**:
-   - Manajemen kapasitas harian (standar 12 slot jip harian).
-   - Monitoring kuota tersisa vs kuota terisi.
-5. **Kelola Paket (`/admin/paket`)**:
-   - Master data paket wisata (Jelajah Rimba, Jelajah Senja, Curug, dsb.).
-   - Pengaturan harga, durasi, dan status aktif/nonaktif.
-6. **Data Pelanggan (`/admin/pelanggan`)**:
-   - Direktori pelanggan, total frekuensi trip, dan akumulasi transaksi.
-7. **Laporan & Ekspor (`/admin/laporan`)**:
-   - Laporan transaksi berdasarkan periode tanggal pesanan.
-   - Tombol **Ekspor CSV** (data mentah) dan **Unduh PDF** (ringkasan cetak).
-8. **Jam Operasional & Pos (`/admin/jam-operasional`)**:
-   - Konfigurasi informasi pos jelajah Babakan Madang Sentul dan jam respon admin.
+## Struktur Folder
 
----
-
-## 🗄️ 4. Struktur Database & Model
-
-```
-┌──────────────────┐       1:N       ┌────────────────────────┐
-│  yks_categories  │◄────────────────┤      yks_packages      │
-│──────────────────│                 │────────────────────────│
-│ id               │                 │ id                     │
-│ name             │                 │ category_id            │
-│ slug             │                 │ name, slug             │
-└──────────────────┘                 │ description            │
-                                     │ price, duration        │
-                                     │ difficulty             │
-                                     │ includes, excludes     │
-                                     │ itinerary, image       │
-                                     │ is_active              │
-                                     └───────────┬────────────┘
-                                                 │ 1:N
-                                                 ▼
-┌──────────────────┐       1:N       ┌────────────────────────┐
-│      users       │◄────────────────┤      yks_bookings      │
-│──────────────────│                 │────────────────────────│
-│ id               │                 │ id                     │
-│ name, email      │                 │ booking_code (UNIQUE)  │
-│ phone, password  │                 │ user_id, package_id    │
-│ role_id          │                 │ customer_name, phone   │
-└──────────────────┘                 │ trip_date, slot_time   │
-                                     │ participant_count      │
-                                     │ total_price            │
-                                     │ payment_method         │
-                                     │ payment_proof          │
-                                     │ payment_status         │
-                                     │ notes                  │
-                                     └────────────────────────┘
+```text
+YKS-keliling_sentul/
+├── includes/
+│   ├── config.php          # Konfigurasi aplikasi & database (Auto-detect SQLite / MySQL)
+│   ├── functions.php       # Fungsi format rupiah, tanggal Indo, badge, flash alerts
+│   ├── session.php         # Manajemen sesi & autentikasi pengguna
+│   ├── header.php          # Komponen navbar responsif & top bar kontak
+│   └── footer.php          # Footer, quick links & floating button WhatsApp
+├── public/
+│   ├── index.php           # Halaman utama (Hero, Filter, Testimoni, FAQ)
+│   ├── paket.php           # Katalog lengkap paket wisata
+│   ├── paket-detail.php    # Detail rute, itinerary, fasilitas & meeting point
+│   ├── booking.php         # Form reservasi paket & kalkulasi harga
+│   ├── pembayaran.php      # Halaman rekening bayar & upload bukti transfer
+│   ├── status-pesanan.php  # Cek status pesanan & kode booking
+│   ├── riwayat.php         # Riwayat pesanan untuk akun pengguna
+│   ├── login.php               # Masuk akun user
+│   ├── register.php        # Pendaftaran akun user baru
+│   ├── logout.php          # Keluar sesi
+│   ├── uploads/            # Direktori penyimpanan bukti transfer
+│   └── assets/
+│       ├── css/style.css   # Custom CSS modern (Nature theme: Emerald, Slate, Amber)
+│       └── js/main.js      # Filter kategori, accordion FAQ, kalkulator booking
+├── sql/
+│   └── init_db.sql         # Skema database & data awal untuk MySQL / XAMPP
+└── README.md
 ```
 
 ---
 
-## 📋 5. Roadmap & Checklist Pengerjaan Sesuai Figma
+## Cara Menjalankan Aplikasi
 
-- [x] **Fase 1: Setup Framework & Design System Tokens**
-  - [x] Konfigurasi environment Laravel 12 & basis data.
-  - [x] Token CSS Figma di `public/assets/css/style.css` (Warna `#1F3D2B`, `#F8F5EF`, `#F26B1D`).
-  - [x] Layout utama publik (`layouts/app.blade.php`) & layout admin (`layouts/admin.blade.php`).
+### Opsi 1: Paling Cepat (PHP Built-in Server — Zero Config)
+Proyek ini dilengkapi konfigurasi database otomatis (*auto-seed SQLite*). Anda bisa langsung menjalankannya tanpa perlu setting database manual:
 
-- [x] **Fase 2: Portal Publik (Role User)**
-  - [x] Slicing Beranda sesuai Figma (Hero, Value Prop, Highlight).
-  - [x] Halaman Katalog & Detail Paket Jelajah.
-  - [x] Form 4-Langkah Reservasi Booking.
-  - [x] Upload bukti pembayaran & halaman konfirmasi.
-  - [x] Fitur Lacak Pesanan mandiri dengan Kode Booking.
-
-- [x] **Fase 3: Kerangka Administrasi YKS (Role Admin)**
-  - [x] Controller & Routing Administrasi YKS (`/admin/*`).
-  - [x] Dashboard Ringkasan & Widget KPI Operasional.
-  - [x] Halaman Antrean Verifikasi Pembayaran dengan tombol Approve/Reject.
-  - [x] Data Reservasi & Filter status.
-  - [x] Halaman Kuota Jadwal & Slot Jip.
-  - [x] Kelola Paket Petualangan.
-  - [x] Direktori Data Pelanggan.
-  - [x] Modul Laporan dengan fitur Ekspor CSV.
-  - [x] Pengaturan Jam Operasional & Pos Jelajah.
-
-- [ ] **Fase 4: Integrasi Lanjutan & Penyempurnaan (Next Steps)**
-  - [ ] Integrasi otomatisasi pesan WhatsApp notifikasi konfirmasi booking.
-  - [ ] Generate otomatis E-Ticket PDF dengan QR Code booking.
-  - [ ] Sinkronisasi kalender ketersediaan jip harian berbasis real-time datepicker.
-
----
-
-## 🚀 6. Panduan Menjalankan Proyek
-
-### Kebutuhan Sistem:
-* PHP $\ge$ 8.2
-* Composer $\ge$ 2.0
-* Node.js & NPM
-* Database MySQL atau SQLite
-
-### Langkah Menjalankan:
 ```bash
-# 1. Masuk ke direktori proyek
+
 cd /home/man/WEB/YKS-keliling_sentul
-
-# 2. Instalasi dependensi
-composer install
-npm install
-
-# 3. Konfigurasi Environment & Generate Key (jika baru)
-cp .env.example .env
-php artisan key:generate
-
-# 4. Migrasi & Seed Database Contoh
-php artisan migrate --seed
-
-# 5. Jalankan Server Pengembangan
-php artisan serve
+php -S localhost:8000 -t public
 ```
+Buka browser di: **`http://localhost:8000`**
 
-Aplikasi dapat diakses pada browser:
-* **Portal Publik:** `http://localhost:8000`
-* **Portal Administrasi:** `http://localhost:8000/admin`
+### Opsi 2: Menggunakan XAMPP / MariaDB / Apache
+1. Pastikan Apache & MySQL di XAMPP menyala.
+2. Buka **phpMyAdmin** (`http://localhost/phpmyadmin`).
+3. Buat database baru bernama `yks_sentul`.
+4. Import file SQL: [`sql/init_db.sql`](sql/init_db.sql).
+5. Atur koneksi di file [`includes/config.php`](includes/config.php) bila password database Anda berbeda.
