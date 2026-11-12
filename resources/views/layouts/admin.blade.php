@@ -461,9 +461,12 @@
             <a href="{{ route('home') }}" target="_blank" style="color: var(--admin-text-sub); text-decoration: none; font-size: 0.8rem; padding: 6px 10px; display: flex; align-items: center; gap: 8px;">
                 <span>↗</span> <span>Lihat situs pelanggan</span>
             </a>
-            <a href="{{ route('home') }}" style="color: var(--admin-text-sub); text-decoration: none; font-size: 0.8rem; padding: 6px 10px; display: flex; align-items: center; gap: 8px;">
-                <span>↪</span> <span>Keluar ke Beranda</span>
-            </a>
+            <form method="POST" action="{{ route('admin.logout') }}">
+                @csrf
+                <button type="submit" style="width: 100%; background: none; border: none; color: #FCA5A5; text-align: left; font-family: inherit; font-size: 0.8rem; font-weight: 600; padding: 6px 10px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <span>↪</span> <span>Keluar Sesi Admin</span>
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -489,10 +492,10 @@
                 </span>
 
                 <div class="header-profile">
-                    <div class="header-avatar">AD</div>
+                    <div class="header-avatar">{{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 2)) }}</div>
                     <div>
-                        <div style="font-size: 0.8rem; font-weight: 700; color: #1F3D2B; line-height: 1.1;">Admin YKS</div>
-                        <div style="font-size: 0.7rem; color: #6B756E;">Pengelola utama</div>
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #1F3D2B; line-height: 1.1;">{{ Auth::user()->name ?? 'Admin YKS' }}</div>
+                        <div style="font-size: 0.7rem; color: #6B756E;">{{ Auth::user()->email ?? 'Pengelola utama' }}</div>
                     </div>
                 </div>
             </div>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\PackageController as AdminPackageController;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // ==========================================
-// 1. FRONT OFFICE / ROLE USER (PORTAL PUBLIK)
+// 1. FRONT OFFICE / ROLE USER (PORTAL PUBLIK TANPA LOGIN)
 // ==========================================
 
 // Home & Static Info Pages
@@ -42,43 +43,48 @@ Route::get('/lacak-pesanan', [BookingController::class, 'track'])->name('booking
 // 2. BACK OFFICE / ROLE ADMIN (ADMINISTRASI YKS)
 // ==========================================
 Route::prefix('admin')->name('admin.')->group(function () {
-    // 1. Ringkasan / Dashboard
-    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    // Autentikasi Admin (/admin/login & /admin/logout)
+    Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
-    // 2. Kelola Paket (CRUD, Upload Foto & Toggle Status Aktif/Nonaktif)
-    Route::get('/paket', [AdminPackageController::class, 'index'])->name('packages.index');
-    Route::post('/paket', [AdminPackageController::class, 'store'])->name('packages.store');
-    Route::put('/paket/{id}', [AdminPackageController::class, 'update'])->name('packages.update');
-    Route::patch('/paket/{id}/toggle-status', [AdminPackageController::class, 'toggleStatus'])->name('packages.toggle_status');
-    Route::delete('/paket/{id}', [AdminPackageController::class, 'destroy'])->name('packages.destroy');
+    // Seluruh modul /admin/* wajib login Admin terlebih dahulu
+    Route::middleware('admin')->group(function () {
+        // 1. Ringkasan / Dashboard
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    // 3. Jadwal & Slot (Kalender Bulanan, Sesi Harian, & Blokir Tanggal)
-    Route::get('/jadwal-slot', [AdminScheduleSlotController::class, 'index'])->name('schedules.index');
-    Route::post('/jadwal-slot/sesi', [AdminScheduleSlotController::class, 'saveSession'])->name('schedules.save_session');
-    Route::post('/jadwal-slot/blokir', [AdminScheduleSlotController::class, 'blockDate'])->name('schedules.block_date');
-    Route::delete('/jadwal-slot/blokir/{date}', [AdminScheduleSlotController::class, 'unblockDate'])->name('schedules.unblock_date');
+        // 2. Kelola Paket (CRUD, Upload Foto & Toggle Status Aktif/Nonaktif)
+        Route::get('/paket', [AdminPackageController::class, 'index'])->name('packages.index');
+        Route::post('/paket', [AdminPackageController::class, 'store'])->name('packages.store');
+        Route::put('/paket/{id}', [AdminPackageController::class, 'update'])->name('packages.update');
+        Route::patch('/paket/{id}/toggle-status', [AdminPackageController::class, 'toggleStatus'])->name('packages.toggle_status');
+        Route::delete('/paket/{id}', [AdminPackageController::class, 'destroy'])->name('packages.destroy');
 
-    // 4. Data Reservasi (Filter, Pencarian, Detail Samping & Ubah Status)
-    Route::get('/reservasi', [AdminReservationController::class, 'index'])->name('reservations.index');
-    Route::get('/reservasi/{booking_code}', [AdminReservationController::class, 'show'])->name('reservations.show');
-    Route::patch('/reservasi/{booking_code}/status', [AdminReservationController::class, 'updateStatus'])->name('reservations.update_status');
+        // 3. Jadwal & Slot
+        Route::get('/jadwal-slot', [AdminScheduleSlotController::class, 'index'])->name('schedules.index');
+        Route::post('/jadwal-slot/sesi', [AdminScheduleSlotController::class, 'updateSessions'])->name('schedules.update_sessions');
+        Route::post('/jadwal-slot/blokir', [AdminScheduleSlotController::class, 'blockDate'])->name('schedules.block_date');
+        Route::delete('/jadwal-slot/blokir/{date}', [AdminScheduleSlotController::class, 'unblockDate'])->name('schedules.unblock_date');
 
-    // 5. Verifikasi Pembayaran (Antrean Bukti Transfer & Pemeriksaan 2 Kolom)
-    Route::get('/verifikasi-pembayaran', [AdminVerificationController::class, 'index'])->name('verifications.index');
-    Route::post('/verifikasi-pembayaran/{booking_code}/setujui', [AdminVerificationController::class, 'approve'])->name('verifications.approve');
-    Route::post('/verifikasi-pembayaran/{booking_code}/tolak', [AdminVerificationController::class, 'reject'])->name('verifications.reject');
+        // 4. Data Reservasi
+        Route::get('/reservasi', [AdminReservationController::class, 'index'])->name('reservations.index');
+        Route::patch('/reservasi/{id}/status', [AdminReservationController::class, 'updateStatus'])->name('reservations.update_status');
 
-    // 6. Data Pelanggan (KPI, Pencarian, Profil Pelanggan, & Unduh CSV)
-    Route::get('/pelanggan', [AdminCustomerController::class, 'index'])->name('customers.index');
-    Route::get('/pelanggan/unduh-csv', [AdminCustomerController::class, 'exportCsv'])->name('customers.export_csv');
+        // 5. Verifikasi Pembayaran
+        Route::get('/verifikasi', [AdminVerificationController::class, 'index'])->name('verifications.index');
+        Route::patch('/verifikasi/{id}/approve', [AdminVerificationController::class, 'approve'])->name('verifications.approve');
+        Route::patch('/verifikasi/{id}/reject', [AdminVerificationController::class, 'reject'])->name('verifications.reject');
 
-    // 7. Laporan & Ekspor (Filter Periode, Kinerja Paket, CSV & PDF)
-    Route::get('/laporan', [AdminReportController::class, 'index'])->name('reports.index');
-    Route::get('/laporan/export-csv', [AdminReportController::class, 'exportCsv'])->name('reports.export_csv');
+        // 6. Data Pelanggan
+        Route::get('/pelanggan', [AdminCustomerController::class, 'index'])->name('customers.index');
 
-    // 8. Jam Operasional & Pengecualian Tanggal
-    Route::get('/jam-operasional', [AdminSettingController::class, 'index'])->name('settings.index');
-    Route::post('/jam-operasional/mingguan', [AdminSettingController::class, 'saveWeekly'])->name('settings.save_weekly');
-    Route::post('/jam-operasional/pengecualian', [AdminSettingController::class, 'addException'])->name('settings.add_exception');
-    Route::delete('/jam-operasional/pengecualian/{id}', [AdminSettingController::class, 'removeException'])->name('settings.remove_exception');
+        // 7. Laporan
+        Route::get('/laporan', [AdminReportController::class, 'index'])->name('reports.index');
+
+        // 8. Jam Operasional
+        Route::get('/jam-operasional', [AdminSettingController::class, 'index'])->name('settings.index');
+        Route::post('/jam-operasional', [AdminSettingController::class, 'update'])->name('settings.update');
+        Route::post('/jam-operasional/pengecualian', [AdminSettingController::class, 'storeException'])->name('settings.store_exception');
+        Route::delete('/jam-operasional/pengecualian/{index}', [AdminSettingController::class, 'destroyException'])->name('settings.destroy_exception');
+    });
 });

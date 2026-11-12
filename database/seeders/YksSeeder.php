@@ -2,13 +2,39 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class YksSeeder extends Seeder
 {
     public function run(): void
     {
+        // 0. Default Admin Account untuk Login /admin/login
+        $adminRole = Role::firstOrCreate(['slug' => 'admin'], ['name' => 'Admin']);
+        User::updateOrCreate(
+            ['email' => 'admin@yks.id'],
+            [
+                'role_id' => $adminRole->id,
+                'name' => 'Admin YKS',
+                'phone' => '081210842032',
+                'password' => Hash::make('admin123'),
+                'is_blocked' => false,
+            ]
+        );
+        User::updateOrCreate(
+            ['email' => 'admin@kelilingsentul.id'],
+            [
+                'role_id' => $adminRole->id,
+                'name' => 'Admin Utama YKS',
+                'phone' => '085770715553',
+                'password' => Hash::make('admin123'),
+                'is_blocked' => false,
+            ]
+        );
+
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('yks_categories')->truncate();
         DB::table('yks_packages')->truncate();
