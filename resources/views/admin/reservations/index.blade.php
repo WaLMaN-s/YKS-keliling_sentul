@@ -256,6 +256,49 @@
                 </div>
             </div>
 
+            <!-- Bukti Pembayaran -->
+            @php
+                $resProofUrl = \App\Models\YksBooking::resolveProofUrl($selectedBooking->payment_proof);
+            @endphp
+            <div style="border-top: 1px solid #ECECE6; padding-top: 14px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="font-weight: 700; font-size: 0.86rem; color: #1F3D2B;">
+                        <i class="bi bi-file-earmark-image"></i> Bukti Pembayaran
+                    </div>
+                    @if($resProofUrl)
+                        <a href="{{ $resProofUrl }}" target="_blank" style="font-size: 0.75rem; font-weight: 600; color: #F26B1D; text-decoration: none;">
+                            Buka Ukuran Penuh ↗
+                        </a>
+                    @endif
+                </div>
+
+                @if($resProofUrl)
+                    <div style="border: 1px solid #DFE4DC; border-radius: 8px; padding: 6px; background: #FFFFFF; text-align: center; margin-bottom: 10px;">
+                        <a href="{{ $resProofUrl }}" target="_blank" title="Klik untuk memperbesar di tab baru">
+                            <img src="{{ $resProofUrl }}" alt="Bukti Transfer" style="max-width: 100%; max-height: 220px; object-fit: contain; border-radius: 6px; cursor: zoom-in;">
+                        </a>
+                    </div>
+                @else
+                    <div style="background: #F8F5EF; border: 1px dashed #DFE4DC; border-radius: 8px; padding: 12px; font-size: 0.78rem; color: #6B756E; text-align: center; margin-bottom: 10px;">
+                        Belum ada berkas bukti transfer yang diunggah oleh pelanggan.
+                    </div>
+                @endif
+
+                <!-- Form Upload / Ganti Bukti dari Admin -->
+                <details style="font-size: 0.76rem; color: #6B756E;">
+                    <summary style="cursor: pointer; color: #1F3D2B; font-weight: 600; margin-bottom: 6px;">
+                        <i class="bi bi-upload"></i> {{ $resProofUrl ? 'Ganti / Unggah ulang bukti (dari WA)' : 'Unggah bukti transfer (dari WA)' }}
+                    </summary>
+                    <form action="{{ route('admin.reservations.upload_proof', $selectedBooking->booking_code) }}" method="POST" enctype="multipart/form-data" style="margin-top: 8px; display: flex; gap: 8px; flex-direction: column;">
+                        @csrf
+                        <input type="file" name="payment_proof" accept="image/*" required style="font-size: 0.75rem; padding: 6px; border: 1px solid #DFE4DC; border-radius: 6px; background: #FFF;">
+                        <button type="submit" class="btn-outline-yks" style="padding: 6px 12px; font-size: 0.75rem; justify-content: center;">
+                            Simpan Berkas Bukti
+                        </button>
+                    </form>
+                </details>
+            </div>
+
             <!-- Form Ubah Status & Tombol Periksa Bukti -->
             <div style="border-top: 1px solid #ECECE6; padding-top: 14px; margin-bottom: 16px;">
                 <form action="{{ route('admin.reservations.update_status', $selectedBooking->booking_code) }}" method="POST" style="display: flex; gap: 8px; align-items: center;">

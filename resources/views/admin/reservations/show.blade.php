@@ -70,11 +70,19 @@
             <div style="font-size: 0.8rem; color: #6B756E; margin-top: 4px;">Metode: {{ $booking->payment_method }}</div>
         </div>
 
-        @if($booking->payment_proof)
+        @php
+            $showProofUrl = \App\Models\YksBooking::resolveProofUrl($booking->payment_proof);
+        @endphp
+        @if($showProofUrl)
             <div style="margin-top: 20px;">
-                <span style="color: #6B756E; font-size: 0.8rem; display: block; margin-bottom: 8px;">Bukti Transfer Pelanggan</span>
-                <a href="{{ asset('storage/' . $booking->payment_proof) }}" target="_blank">
-                    <img src="{{ asset('storage/' . $booking->payment_proof) }}" alt="Bukti Transfer" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; border: 1px solid #DFE4DC;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="color: #6B756E; font-size: 0.8rem;">Bukti Transfer Pelanggan</span>
+                    <a href="{{ $showProofUrl }}" target="_blank" style="font-size: 0.75rem; font-weight: 600; color: #F26B1D; text-decoration: none;">
+                        Buka Tab Baru ↗
+                    </a>
+                </div>
+                <a href="{{ $showProofUrl }}" target="_blank">
+                    <img src="{{ $showProofUrl }}" alt="Bukti Transfer" style="width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; border: 1px solid #DFE4DC; background: #FFF;">
                 </a>
             </div>
         @endif

@@ -91,4 +91,32 @@ class VerificationController extends Controller
             ->route('admin.verifications.index')
             ->with('warning', "Bukti pembayaran {$booking_code} ditolak ({$reason}). Status dikembalikan ke Menunggu Pembayaran.");
     }
+
+    /**
+     * Unggah / Perbarui Bukti Pembayaran oleh Admin (misal pelanggan mengirim via WhatsApp)
+     */
+    public function uploadProof(Request $request, $booking_code)
+    {
+        $request->validate([
+            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
+
+        $file = $request->file('payment_proof');
+        $filename = 'BUKTI_' . $booking_code . '_' . time() . '.' . $file->getClientOriginalExtension();
+        $uploadDir = public_path('uploads/bukti');
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0775, true);
+        }
+        $file->move($uploadDir, $filename);
+
+        DB::table('yks_bookings')->where('booking_code', $booking_code)->update([
+            'payment_proof' => 'uploads/bukti/' . $filename,
+            'payment_status' => 'Menunggu Verifikasi',
+            'updated_at' => now(),
+        ]);
+
+        return redirect()
+            ->route('admin.verifications.index', ['select' => $booking_code])
+            ->with('success', "Bukti pembayaran pesanan {$booking_code} berhasil diperbarui.");
+    }
 }

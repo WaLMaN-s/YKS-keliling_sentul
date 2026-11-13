@@ -89,7 +89,7 @@ class BookingController extends Controller
         $file->move($uploadDir, $filename);
 
         $booking->update([
-            'payment_proof' => $filename,
+            'payment_proof' => 'uploads/bukti/' . $filename,
             'payment_status' => 'Menunggu Verifikasi',
         ]);
 

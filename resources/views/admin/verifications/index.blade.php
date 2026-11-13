@@ -129,34 +129,61 @@
             </div>
 
             <!-- Preview Gambar Bukti dengan Kontrol Zoom (− 100% +) -->
+            @php
+                $verifProofUrl = \App\Models\YksBooking::resolveProofUrl($selectedItem->payment_proof);
+            @endphp
             <div style="background: #F8F5EF; border: 1px solid #DFE4DC; border-radius: 10px; padding: 14px; margin-bottom: 18px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
                     <span style="font-size: 0.78rem; font-weight: 600; color: #1F3D2B;">
                         <i class="bi bi-file-earmark-image"></i>
                         {{ $selectedItem->payment_proof ? basename($selectedItem->payment_proof) : 'bukti-transfer-' . strtolower($selectedItem->booking_code) . '.jpg' }}
                     </span>
 
-                    <div style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; border: 1px solid #DFE4DC; border-radius: 6px; padding: 2px 8px;">
-                        <button type="button" onclick="adjustProofZoom(-20)" style="border: none; background: none; cursor: pointer; font-weight: 700; color: #1F3D2B; padding: 2px 4px;">−</button>
-                        <span id="zoomLabel" style="font-size: 0.75rem; font-weight: 600; min-width: 38px; text-align: center;">100%</span>
-                        <button type="button" onclick="adjustProofZoom(20)" style="border: none; background: none; cursor: pointer; font-weight: 700; color: #1F3D2B; padding: 2px 4px;">+</button>
+                    <div style="display: inline-flex; align-items: center; gap: 8px;">
+                        @if($verifProofUrl)
+                            <a href="{{ $verifProofUrl }}" target="_blank" style="font-size: 0.75rem; font-weight: 600; color: #F26B1D; text-decoration: none; padding: 3px 8px; border-radius: 6px; background: #FFF; border: 1px solid #DFE4DC;">
+                                <i class="bi bi-box-arrow-up-right"></i> Buka Asli ↗
+                            </a>
+                        @endif
+
+                        <div style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; border: 1px solid #DFE4DC; border-radius: 6px; padding: 2px 8px;">
+                            <button type="button" onclick="adjustProofZoom(-20)" style="border: none; background: none; cursor: pointer; font-weight: 700; color: #1F3D2B; padding: 2px 4px;">−</button>
+                            <span id="zoomLabel" style="font-size: 0.75rem; font-weight: 600; min-width: 38px; text-align: center;">100%</span>
+                            <button type="button" onclick="adjustProofZoom(20)" style="border: none; background: none; cursor: pointer; font-weight: 700; color: #1F3D2B; padding: 2px 4px;">+</button>
+                        </div>
                     </div>
                 </div>
 
-                <div style="height: 220px; overflow: auto; background: #FFFFFF; border: 1px solid #ECECE6; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 10px;">
-                    @if($selectedItem->payment_proof)
-                        <img id="proofImg" src="{{ asset('storage/' . $selectedItem->payment_proof) }}" alt="Bukti Transfer"
-                             style="max-width: 100%; max-height: 200px; object-fit: contain; transition: transform 0.2s;">
+                <div style="min-height: 260px; max-height: 380px; overflow: auto; background: #FFFFFF; border: 1px solid #ECECE6; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 14px;">
+                    @if($verifProofUrl)
+                        <a href="{{ $verifProofUrl }}" target="_blank" title="Klik untuk membuka ukuran penuh di tab baru">
+                            <img id="proofImg" src="{{ $verifProofUrl }}" alt="Bukti Transfer"
+                                 style="max-width: 100%; max-height: 340px; object-fit: contain; transition: transform 0.2s; cursor: zoom-in; border-radius: 6px;">
+                        </a>
                     @else
                         <!-- Ilustrasi Struk Transfer sesuai Figma jika bukti contoh -->
-                        <div id="proofImg" style="border: 1px dashed #C1D1BE; border-radius: 8px; padding: 18px 24px; background: #FCFCFA; text-align: center; width: 320px; transition: transform 0.2s;">
+                        <div id="proofImg" style="border: 1px dashed #C1D1BE; border-radius: 8px; padding: 24px; background: #FCFCFA; text-align: center; width: 340px; transition: transform 0.2s;">
                             <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6B756E; font-weight: 700;">BUKTI TRANSFER BANK</div>
-                            <div style="font-size: 1.25rem; font-weight: 800; color: #1F3D2B; margin: 8px 0;">Rp{{ number_format($selectedItem->total_price, 0, ',', '.') }}</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #1F3D2B; margin: 8px 0;">Rp{{ number_format($selectedItem->total_price, 0, ',', '.') }}</div>
                             <div style="font-size: 0.75rem; color: #6B756E;">Metode: {{ $selectedItem->payment_method }}</div>
                             <div style="font-size: 0.74rem; color: #1F3D2B; margin-top: 6px; font-weight: 600;">Ref: {{ $selectedItem->booking_code }}</div>
                         </div>
                     @endif
                 </div>
+
+                <!-- Admin Upload/Update Bukti -->
+                <details style="margin-top: 10px; font-size: 0.76rem; color: #6B756E;">
+                    <summary style="cursor: pointer; color: #1F3D2B; font-weight: 600;">
+                        <i class="bi bi-upload"></i> {{ $verifProofUrl ? 'Ganti berkas bukti (dari WhatsApp)' : 'Unggah berkas bukti (dari WhatsApp)' }}
+                    </summary>
+                    <form action="{{ route('admin.verifications.upload_proof', $selectedItem->booking_code) }}" method="POST" enctype="multipart/form-data" style="margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        @csrf
+                        <input type="file" name="payment_proof" accept="image/*" required style="font-size: 0.75rem; padding: 5px 8px; border: 1px solid #DFE4DC; border-radius: 6px; background: #FFF; flex: 1;">
+                        <button type="submit" class="btn-outline-yks" style="padding: 5px 12px; font-size: 0.75rem;">
+                            Unggah
+                        </button>
+                    </form>
+                </details>
             </div>
 
             <!-- Rincian Pesanan & Perbandingan Tagihan (Figma) -->

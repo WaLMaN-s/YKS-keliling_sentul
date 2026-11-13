@@ -205,10 +205,18 @@
                 <div style="margin-bottom: 24px;">
                     <span style="font-size: 0.85rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 8px;">Status Bukti Pembayaran:</span>
                     @if ($booking->payment_proof)
+                        @php
+                            $trackProofUrl = \App\Models\YksBooking::resolveProofUrl($booking->payment_proof);
+                        @endphp
                         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; color: #065F46; font-weight: 600; background-color: #EBF8F2; padding: 14px 18px; border-radius: var(--radius-md); border: 1px solid #A7E3CB;">
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <i class="bi bi-check-circle-fill" style="font-size: 1.2rem; color: #10b981;"></i>
-                                <span>Bukti transfer telah terunggah (<code>{{ $booking->payment_proof }}</code>).</span>
+                                <span>Bukti transfer telah terunggah.</span>
+                                @if($trackProofUrl)
+                                    <a href="{{ $trackProofUrl }}" target="_blank" style="text-decoration: underline; color: #065F46; font-size: 0.82rem; margin-left: 6px;">
+                                        Lihat Bukti ↗
+                                    </a>
+                                @endif
                             </div>
                             <a href="{{ route('payment.show', $booking->booking_code) }}" class="btn btn-outline btn-sm">
                                 Ganti Bukti Transfer

@@ -69,11 +69,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 4. Data Reservasi
         Route::get('/reservasi', [AdminReservationController::class, 'index'])->name('reservations.index');
         Route::match(['post', 'patch'], '/reservasi/{id}/status', [AdminReservationController::class, 'updateStatus'])->name('reservations.update_status');
+        Route::post('/reservasi/{id}/upload-bukti', [AdminReservationController::class, 'uploadProof'])->name('reservations.upload_proof');
 
         // 5. Verifikasi Pembayaran
         Route::get('/verifikasi', [AdminVerificationController::class, 'index'])->name('verifications.index');
         Route::match(['post', 'patch'], '/verifikasi/{id}/approve', [AdminVerificationController::class, 'approve'])->name('verifications.approve');
         Route::match(['post', 'patch'], '/verifikasi/{id}/reject', [AdminVerificationController::class, 'reject'])->name('verifications.reject');
+        Route::post('/verifikasi/{id}/upload-bukti', [AdminVerificationController::class, 'uploadProof'])->name('verifications.upload_proof');
 
         // 6. Data Pelanggan
         Route::get('/pelanggan', [AdminCustomerController::class, 'index'])->name('customers.index');
