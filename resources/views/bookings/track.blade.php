@@ -55,24 +55,6 @@
                     *Anda tidak perlu membuat akun atau login. Cukup masukkan Kode Booking atau Nomor WhatsApp yang digunakan saat reservasi.
                 </small>
             </form>
-
-            <!-- Quick Links: Recent Session Bookings or Sample Reference Codes -->
-            <div style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border-light); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                @if(isset($recentBookings) && $recentBookings->isNotEmpty())
-                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--primary);">Pesanan Anda baru-baru ini:</span>
-                    @foreach($recentBookings as $rb)
-                        <a href="{{ route('booking.track', ['kode' => $rb->booking_code]) }}"
-                           style="font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: var(--bg-sage); color: var(--primary); border: 1px solid #C1D1BE;">
-                            {{ $rb->booking_code }} ({{ $rb->payment_status }})
-                        </a>
-                    @endforeach
-                @else
-                    <span style="font-size: 0.78rem; color: var(--text-muted);">Contoh kode reservasi aktif:</span>
-                    <a href="{{ route('booking.track', ['kode' => 'YKS-261114-018']) }}" style="font-size: 0.76rem; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: var(--bg-sage); color: var(--primary);">YKS-261114-018</a>
-                    <a href="{{ route('booking.track', ['kode' => 'YKS-261114-016']) }}" style="font-size: 0.76rem; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: var(--bg-sage); color: var(--primary);">YKS-261114-016 (Lunas)</a>
-                    <a href="{{ route('booking.track', ['kode' => '081200000018']) }}" style="font-size: 0.76rem; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: var(--bg-body); color: var(--text-muted); border: 1px solid var(--border);">WA: 081200000018</a>
-                @endif
-            </div>
         </div>
 
         @if ($kode && !$booking)

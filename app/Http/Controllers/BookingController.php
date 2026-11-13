@@ -57,11 +57,6 @@ class BookingController extends Controller
             'payment_status' => 'Menunggu Pembayaran',
         ]);
 
-        // Simpan kode booking ke session browser agar user mudah melacak tanpa perlu login
-        $recentCodes = session('recent_bookings', []);
-        array_unshift($recentCodes, $booking->booking_code);
-        session(['recent_bookings' => array_values(array_unique(array_slice($recentCodes, 0, 5)))]);
-
         return redirect()->route('payment.show', $booking->booking_code)
             ->with('success', "Reservasi berhasil dibuat dengan Kode Booking {$booking->booking_code}! Silakan simpan kode ini untuk melacak status pesanan.");
     }
@@ -123,13 +118,12 @@ class BookingController extends Controller
             }
         }
 
-        // Ambil daftar booking terakhir dari session browser (jika user baru saja memesan di perangkat ini)
-        $recentCodes = session('recent_bookings', []);
-        $recentBookings = !empty($recentCodes)
-            ? YksBooking::with('package')->whereIn('booking_code', $recentCodes)->latest()->get()
-            : collect();
+        // Bersihkan session recent_bookings agar tidak tertinggal di browser
+        if (session()->has('recent_bookings')) {
+            session()->forget('recent_bookings');
+        }
 
-        return view('bookings.track', compact('booking', 'matchedBookings', 'recentBookings', 'kode'));
+        return view('bookings.track', compact('booking', 'matchedBookings', 'kode'));
     }
 
     /**
