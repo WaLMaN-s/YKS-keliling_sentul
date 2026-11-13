@@ -165,10 +165,17 @@
         </div>
     @endif
 
-    @if (session('danger'))
+    @if (session('danger') || session('error'))
         <div class="alert alert-danger">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            <div>{{ session('danger') }}</div>
+            <div>{{ session('danger') ?? session('error') }}</div>
+        </div>
+    @endif
+
+    @if (session('warning'))
+        <div class="alert alert-warning" style="background-color: #FEF3C7; border: 1px solid #FCD34D; color: #92400E; padding: 14px 18px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <i class="bi bi-exclamation-circle-fill" style="font-size: 1.25rem;"></i>
+            <div>{{ session('warning') }}</div>
         </div>
     @endif
 

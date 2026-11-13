@@ -131,4 +131,62 @@ class BookingController extends Controller
 
         return view('bookings.track', compact('booking', 'matchedBookings', 'recentBookings', 'kode'));
     }
+
+    /**
+     * Pelanggan Mengubah Jadwal Trip (Reschedule Mandiri Maksimal H-2)
+     */
+    public function reschedule(Request $request, $booking_code)
+    {
+        $booking = YksBooking::where('booking_code', $booking_code)->firstOrFail();
+
+        // Validasi Aturan H-2
+        if (!$booking->can_reschedule) {
+            return redirect()->route('booking.track', ['kode' => $booking->booking_code])
+                ->with('error', 'Perubahan jadwal mandiri hanya dapat dilakukan minimal H-2 sebelum hari kegiatan. Untuk perubahan H-1 atau hari kegiatan, silakan hubungi Admin via WhatsApp.');
+        }
+
+        $minNewDate = now()->addDays(2)->format('Y-m-d');
+
+        $validated = $request->validate([
+            'new_trip_date' => 'required|date|after_or_equal:' . $minNewDate,
+            'reschedule_reason' => 'nullable|string|max:255',
+        ], [
+            'new_trip_date.required' => 'Silakan pilih tanggal jadwal trip yang baru.',
+            'new_trip_date.after_or_equal' => 'Tanggal baru minimal H+2 dari hari ini.',
+        ]);
+
+        $newDateStr = substr($validated['new_trip_date'], 0, 10);
+        $currentDateStr = substr((string) $booking->trip_date, 0, 10);
+
+        if ($newDateStr === $currentDateStr) {
+            return redirect()->route('booking.track', ['kode' => $booking->booking_code])
+                ->with('info', 'Tanggal yang Anda pilih sama dengan tanggal reservasi saat ini.');
+        }
+
+        // Cek apakah tanggal ditutup/diblokir oleh admin
+        $schedulePath = storage_path('app/yks_schedules.json');
+        if (file_exists($schedulePath)) {
+            $scheduleConfig = json_decode(file_get_contents($schedulePath), true);
+            $blockedDates = $scheduleConfig['blocked_dates'] ?? [];
+            if (isset($blockedDates[$newDateStr])) {
+                $blockReason = $blockedDates[$newDateStr];
+                return redirect()->route('booking.track', ['kode' => $booking->booking_code])
+                    ->with('error', "Tanggal {$newDateStr} sedang tidak tersedia untuk trip ({$blockReason}). Silakan pilih tanggal lain.");
+            }
+        }
+
+        $oldDateFormatted = \Carbon\Carbon::parse($booking->trip_date)->translatedFormat('d M Y');
+        $newDateFormatted = \Carbon\Carbon::parse($validated['new_trip_date'])->translatedFormat('d M Y');
+        $reasonText = !empty($validated['reschedule_reason']) ? ' (Alasan: ' . trim($validated['reschedule_reason']) . ')' : '';
+        $timestamp = now()->format('d/m/Y H:i');
+
+        $logEntry = "\n[Ganti Jadwal: Diubah dari {$oldDateFormatted} ke {$newDateFormatted} oleh Pelanggan pada {$timestamp}{$reasonText}]";
+
+        $booking->trip_date = $validated['new_trip_date'];
+        $booking->notes = ($booking->notes ?? '') . $logEntry;
+        $booking->save();
+
+        return redirect()->route('booking.track', ['kode' => $booking->booking_code])
+            ->with('success', "Jadwal kegiatan berhasil diubah ke tanggal {$newDateFormatted}. Reservasi Anda telah diperbarui!");
+    }
 }

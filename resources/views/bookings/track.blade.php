@@ -100,11 +100,47 @@
         @endif
 
         @if ($booking)
+            @if ($booking->has_active_rejection)
+                <!-- Rejection Notice Banner -->
+                <div style="background-color: #FEF2F2; border: 1.5px solid #F87171; border-radius: var(--radius-lg); padding: 22px 24px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.08);">
+                    <div style="display: flex; gap: 16px; align-items: flex-start;">
+                        <div style="width: 44px; height: 44px; border-radius: 50%; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
+                            <i class="bi bi-x-octagon-fill"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <span style="display: inline-block; padding: 4px 10px; border-radius: 99px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 6px; background-color: #FEE2E2; color: #991B1B;">
+                                PERHATIAN · BUKTI PEMBAYARAN DITOLAK
+                            </span>
+                            <h4 style="color: #991B1B; font-size: 1.15rem; font-weight: 800; margin-bottom: 6px;">
+                                Bukti Pembayaran Sebelumnya Ditolak oleh Admin
+                            </h4>
+                            <div style="background: #FFFFFF; border: 1px solid #FECACA; border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 12px; color: #7F1D1D; font-size: 0.94rem;">
+                                <strong>Alasan Penolakan:</strong> “{{ $booking->rejection_reason }}”
+                            </div>
+                            <p style="color: #4B5563; font-size: 0.88rem; margin-bottom: 14px;">
+                                Mohon unggah ulang foto struk ATM / tangkapan layar mutasi yang sesuai dengan total tagihan <strong>{{ $booking->formatted_total }}</strong> dan mencantumkan nama rekening pengirim dengan jelas.
+                            </p>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <a href="{{ route('payment.show', $booking->booking_code) }}" class="btn btn-sm btn-primary" style="background: #DC2626; border-color: #DC2626; color: #FFFFFF;">
+                                    <i class="bi bi-upload"></i> Unggah Ulang Bukti Pembayaran &nbsp;↗
+                                </a>
+                                <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281210842032') }}?text=Halo%20Admin%20YKS,%20bukti%20pembayaran%20saya%20dengan%20kode%20{{ urlencode($booking->booking_code) }}%20ditolak%20dengan%20alasan:%20{{ urlencode($booking->rejection_reason) }}.%20Mohon%20bantuannya."
+                                   target="_blank" class="btn btn-sm btn-outline">
+                                    <i class="bi bi-whatsapp"></i> Hubungi Admin via WA
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Figma Banner Status Card (Rencana Tersusun / Terkonfirmasi) -->
             <div class="resp-card-pad" style="background-color: #EAF0E7; border: 1px solid #C1D1BE; border-radius: var(--radius-lg); margin-bottom: 24px;">
                 <div style="width: 48px; height: 48px; border-radius: 50%; background: #FFFFFF; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; margin-bottom: 14px; box-shadow: var(--shadow-sm);">
                     @if($booking->payment_status === 'Lunas')
                         <i class="bi bi-patch-check-fill" style="color: #10b981;"></i>
+                    @elseif($booking->has_active_rejection)
+                        <i class="bi bi-exclamation-octagon-fill" style="color: #DC2626;"></i>
                     @elseif($booking->payment_status === 'Menunggu Verifikasi')
                         <i class="bi bi-clock-history" style="color: var(--primary);"></i>
                     @else
@@ -113,14 +149,20 @@
                 </div>
 
                 <span style="display: inline-block; padding: 5px 12px; border-radius: 99px; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 10px;
-                      background-color: {{ $booking->payment_status === 'Lunas' ? '#D1FAE5' : ($booking->payment_status === 'Menunggu Verifikasi' ? '#F3E5D0' : '#FEE2E2') }};
-                      color: {{ $booking->payment_status === 'Lunas' ? '#065F46' : ($booking->payment_status === 'Menunggu Verifikasi' ? '#8A4F17' : '#991B1B') }};">
-                    STATUS RESERVASI · {{ strtoupper($booking->payment_status) }}
+                      background-color: {{ $booking->payment_status === 'Lunas' ? '#D1FAE5' : ($booking->has_active_rejection ? '#FEE2E2' : ($booking->payment_status === 'Menunggu Verifikasi' ? '#F3E5D0' : '#FEF3C7')) }};
+                      color: {{ $booking->payment_status === 'Lunas' ? '#065F46' : ($booking->has_active_rejection ? '#991B1B' : ($booking->payment_status === 'Menunggu Verifikasi' ? '#8A4F17' : '#92400E')) }};">
+                    @if ($booking->has_active_rejection)
+                        STATUS RESERVASI · BUKTI DITOLAK (PERLU PERBAIKAN)
+                    @else
+                        STATUS RESERVASI · {{ strtoupper($booking->payment_status) }}
+                    @endif
                 </span>
 
                 <h2 style="font-size: 1.85rem; color: var(--primary); margin-bottom: 8px;">
                     @if($booking->payment_status === 'Lunas')
                         Reservasi Terkonfirmasi. Siap Berangkat!
+                    @elseif($booking->has_active_rejection)
+                        Bukti Pembayaran Ditolak Admin
                     @elseif($booking->payment_status === 'Menunggu Verifikasi')
                         Rencana tersusun. Menunggu pemeriksaan.
                     @else
@@ -130,6 +172,8 @@
                 <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px; max-width: 640px;">
                     @if($booking->payment_status === 'Lunas')
                         Pembayaran Anda telah diverifikasi oleh Admin YKS. Tunjukkan Nomor Referensi di bawah ini kepada koordinator lapangan saat tiba di titik kumpul.
+                    @elseif($booking->has_active_rejection)
+                        Bukti transfer sebelumnya tidak dapat diverifikasi oleh admin. Silakan periksa alasan di atas dan lakukan pengunggahan ulang bukti pembayaran yang sah.
                     @elseif($booking->payment_status === 'Menunggu Verifikasi')
                         Bukti pembayaran Anda sudah diterima dan sedang dicocokkan oleh tim administrasi YKS.
                     @else
@@ -201,10 +245,110 @@
                     </p>
                 </div>
 
+                <!-- Section Ganti Jadwal (Reschedule) Mandiri Min H-2 -->
+                <div style="background: #F9FAF8; border: 1.5px solid #C1D1BE; border-radius: var(--radius-md); padding: 18px 20px; margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <strong style="color: var(--primary); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+                                <i class="bi bi-calendar-range" style="color: var(--accent);"></i> Jadwal Keberangkatan Trip:
+                            </strong>
+                            <span style="font-size: 0.88rem; color: var(--text-dark); display: inline-block; margin-top: 4px;">
+                                {{ \Carbon\Carbon::parse($booking->trip_date)->translatedFormat('l, d F Y') }}
+                                @if ($booking->days_until_trip > 0)
+                                    <span style="font-size: 0.78rem; color: var(--text-muted); margin-left: 4px;">({{ $booking->days_until_trip }} hari lagi)</span>
+                                @elseif ($booking->days_until_trip === 0)
+                                    <span style="font-size: 0.78rem; color: #B45309; font-weight: 700; margin-left: 4px;">(Hari ini)</span>
+                                @endif
+                            </span>
+                        </div>
+
+                        @if ($booking->can_reschedule)
+                            <button type="button" class="btn btn-outline btn-sm" onclick="toggleRescheduleForm()" id="rescheduleToggleBtn">
+                                <i class="bi bi-arrow-repeat"></i> Ganti Jadwal (Min. H-2)
+                            </button>
+                        @elseif ($booking->payment_status !== 'Dibatalkan')
+                            <span style="font-size: 0.76rem; background: #FEF3C7; color: #92400E; padding: 6px 12px; border-radius: 99px; font-weight: 700;">
+                                <i class="bi bi-lock-fill"></i> Ganti Jadwal Mandiri Terkunci (&lt; H-2)
+                            </span>
+                        @endif
+                    </div>
+
+                    @if ($booking->can_reschedule)
+                        <!-- Collapsible Reschedule Form -->
+                        <div id="rescheduleFormBox" style="display: {{ $errors->has('new_trip_date') ? 'block' : 'none' }}; background: #FFFFFF; border: 1px solid #C1D1BE; border-radius: var(--radius-md); padding: 18px 20px; margin-top: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h5 style="color: var(--primary); font-size: 0.98rem; font-weight: 700; margin: 0;">
+                                    <i class="bi bi-calendar-plus" style="color: var(--accent);"></i> Pilih Tanggal Jelajah Baru
+                                </h5>
+                                <button type="button" onclick="toggleRescheduleForm()" style="background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer;" aria-label="Tutup Form">&times;</button>
+                            </div>
+                            
+                            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">
+                                Ketentuan: Penggantian jadwal mandiri bebas biaya berlaku minimal <strong>H-2</strong> sebelum hari keberangkatan. Tanggal baru yang dapat dipilih mulai dari <strong>{{ \Carbon\Carbon::today()->addDays(2)->translatedFormat('d F Y') }}</strong>.
+                            </p>
+
+                            <form method="POST" action="{{ route('booking.reschedule', $booking->booking_code) }}">
+                                @csrf
+                                <div class="resp-grid-2" style="gap: 12px; margin-bottom: 14px;">
+                                    <div>
+                                        <label class="form-label" style="font-size: 0.84rem; font-weight: 600;">Tanggal Jelajah Baru <span class="text-accent">*</span></label>
+                                        <input type="date" name="new_trip_date" class="form-control"
+                                               min="{{ \Carbon\Carbon::today()->addDays(2)->format('Y-m-d') }}"
+                                               value="{{ old('new_trip_date', \Carbon\Carbon::parse($booking->trip_date)->format('Y-m-d')) }}"
+                                               required style="background: #FFFFFF;">
+                                        @error('new_trip_date')
+                                            <small style="color: #DC2626; font-size: 0.78rem;">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label class="form-label" style="font-size: 0.84rem; font-weight: 600;">Alasan Perubahan (Opsional)</label>
+                                        <input type="text" name="reschedule_reason" class="form-control"
+                                               placeholder="Contoh: Perubahan cuti kerja, acara keluarga"
+                                               value="{{ old('reschedule_reason') }}"
+                                               style="background: #FFFFFF;">
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
+                                    <button type="button" class="btn btn-outline btn-sm" onclick="toggleRescheduleForm()">
+                                        Batal
+                                    </button>
+                                    <button type="submit" class="btn btn-forest btn-sm" onclick="return confirm('Apakah Anda yakin ingin memindahkan jadwal trip ke tanggal baru tersebut?');">
+                                        <i class="bi bi-check-circle"></i> Simpan Jadwal Baru
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    @elseif ($booking->payment_status !== 'Dibatalkan')
+                        <div style="background-color: #FFFBEB; border: 1px solid #FDE68A; border-radius: var(--radius-md); padding: 12px 16px; margin-top: 12px;">
+                            <p style="font-size: 0.82rem; color: #92400E; margin: 0; line-height: 1.5;">
+                                <i class="bi bi-info-circle-fill" style="margin-right: 4px;"></i>
+                                Sesuai kebijakan YKS, perubahan jadwal secara mandiri dibatasi maksimal <strong>H-2</strong> sebelum kegiatan. Mengingat trip Anda tersisa {{ $booking->days_until_trip <= 0 ? 'hari ini' : $booking->days_until_trip . ' hari lagi' }}, kendaraan dan pemandu telah dijadwalkan. Apabila ada keadaan darurat, silakan hubungi tim Admin melalui <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281210842032') }}?text=Halo%20Admin%20YKS,%20saya%20ingin%20mengajukan%20perubahan%20jadwal%20khusus%20untuk%20booking%20{{ urlencode($booking->booking_code) }}" target="_blank" style="color: #B45309; font-weight: 700; text-decoration: underline;">WhatsApp Admin</a>.
+                            </p>
+                        </div>
+                    @endif
+                </div>
+
                 <!-- Bukti Transfer Status & Direct Upload Form -->
                 <div style="margin-bottom: 24px;">
                     <span style="font-size: 0.85rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 8px;">Status Bukti Pembayaran:</span>
-                    @if ($booking->payment_proof)
+                    @if ($booking->has_active_rejection)
+                        <div style="background-color: #FEF2F2; border: 1px solid #FCA5A5; padding: 18px 20px; border-radius: var(--radius-md);">
+                            <div style="color: #991B1B; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px;">
+                                <i class="bi bi-x-circle-fill"></i> Bukti transfer sebelumnya ditolak: "{{ $booking->rejection_reason }}"
+                            </div>
+                            <p style="color: #6B7280; font-size: 0.82rem; margin-bottom: 12px;">
+                                Silakan pilih berkas bukti transfer baru lalu klik <strong>Unggah Ulang Bukti</strong>:
+                            </p>
+                            <form method="POST" action="{{ route('payment.upload', $booking->booking_code) }}" enctype="multipart/form-data" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                                @csrf
+                                <input type="file" name="payment_proof" class="form-control" accept="image/*" required style="flex: 1; min-width: 220px; background: #FFFFFF;">
+                                <button type="submit" class="btn btn-primary btn-sm" style="background: #DC2626; border-color: #DC2626; padding: 11px 18px;">
+                                    <i class="bi bi-upload"></i> Unggah Ulang Bukti &nbsp;↗
+                                </button>
+                            </form>
+                        </div>
+                    @elseif ($booking->payment_proof)
                         @php
                             $trackProofUrl = \App\Models\YksBooking::resolveProofUrl($booking->payment_proof);
                         @endphp
@@ -246,7 +390,7 @@
                         <i class="bi bi-whatsapp"></i> Hubungi Admin via WA &nbsp;↗
                     </a>
                     <a href="{{ route('payment.show', $booking->booking_code) }}" class="btn btn-outline" style="flex: 1;">
-                        <i class="bi bi-bank"></i> Lihat Nomor Rekening & Instruksi Bayar
+                        <i class="bi bi-bank"></i> Lihat Rekening & Instruksi Bayar
                     </a>
                 </div>
             </div>
@@ -291,6 +435,18 @@
             btn.innerHTML = '<i class="bi bi-check2"></i> Tersalin!';
             setTimeout(() => { btn.innerHTML = oldHtml; }, 2000);
         });
+    }
+
+    function toggleRescheduleForm() {
+        const box = document.getElementById('rescheduleFormBox');
+        if (box) {
+            if (box.style.display === 'none' || box.style.display === '') {
+                box.style.display = 'block';
+                box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                box.style.display = 'none';
+            }
+        }
     }
 </script>
 @endsection

@@ -38,6 +38,7 @@ Route::post('/booking', [BookingController::class, 'store'])->name('booking.stor
 Route::get('/pembayaran/{booking_code}', [BookingController::class, 'payment'])->name('payment.show');
 Route::post('/pembayaran/{booking_code}/bukti', [BookingController::class, 'uploadProof'])->name('payment.upload');
 Route::get('/lacak-pesanan', [BookingController::class, 'track'])->name('booking.track');
+Route::post('/lacak-pesanan/{booking_code}/ganti-jadwal', [BookingController::class, 'reschedule'])->name('booking.reschedule');
 
 // ==========================================
 // 2. BACK OFFICE / ROLE ADMIN (ADMINISTRASI YKS)

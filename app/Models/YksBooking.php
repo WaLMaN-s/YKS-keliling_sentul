@@ -26,6 +26,60 @@ class YksBooking extends Model
     }
 
     /**
+     * Dapatkan alasan penolakan bukti pembayaran terakhir (jika ada).
+     */
+    public function getRejectionReasonAttribute(): ?string
+    {
+        if (empty($this->notes)) {
+            return null;
+        }
+
+        if (preg_match_all('/\[Ditolak Admin:\s*(.*?)\]/s', $this->notes, $matches)) {
+            $lastIndex = count($matches[1]) - 1;
+            return trim($matches[1][$lastIndex]);
+        }
+
+        return null;
+    }
+
+    /**
+     * Cek apakah terdapat penolakan aktif yang perlu ditindaklanjuti pelanggan.
+     */
+    public function getHasActiveRejectionAttribute(): bool
+    {
+        return $this->payment_status === 'Menunggu Pembayaran' && !empty($this->rejection_reason);
+    }
+
+    /**
+     * Cek apakah user berhak mengubah jadwal (minimal H-2 dan status bukan Dibatalkan).
+     */
+    public function getCanRescheduleAttribute(): bool
+    {
+        if ($this->payment_status === 'Dibatalkan') {
+            return false;
+        }
+
+        if (empty($this->trip_date)) {
+            return false;
+        }
+
+        $tripCarbon = \Carbon\Carbon::parse($this->trip_date)->startOfDay();
+        $daysDiff = \Carbon\Carbon::today()->diffInDays($tripCarbon, false);
+
+        return $daysDiff >= 2;
+    }
+
+    public function getDaysUntilTripAttribute(): int
+    {
+        if (empty($this->trip_date)) {
+            return 0;
+        }
+
+        $tripCarbon = \Carbon\Carbon::parse($this->trip_date)->startOfDay();
+        return (int) \Carbon\Carbon::today()->diffInDays($tripCarbon, false);
+    }
+
+    /**
      * Resolusi URL Bukti Pembayaran yang fleksibel untuk segala format path.
      */
     public static function resolveProofUrl(?string $proof): ?string

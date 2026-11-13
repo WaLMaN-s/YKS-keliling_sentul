@@ -95,6 +95,30 @@
                 </div>
 
                 <!-- Upload Bukti Form -->
+                @if ($booking->has_active_rejection)
+                    <div style="background-color: #FEF2F2; border: 1.5px solid #F87171; border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.08);">
+                        <div style="display: flex; gap: 14px; align-items: flex-start;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+                                <i class="bi bi-x-octagon-fill"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <span style="display: inline-block; padding: 3px 8px; border-radius: 99px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 6px; background-color: #FEE2E2; color: #991B1B;">
+                                    BUKTI SEBELUMNYA DITOLAK
+                                </span>
+                                <h4 style="color: #991B1B; font-size: 1.05rem; font-weight: 800; margin-bottom: 6px;">
+                                    Mohon Unggah Ulang Bukti Transfer
+                                </h4>
+                                <div style="background: #FFFFFF; border: 1px solid #FECACA; border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 8px; color: #7F1D1D; font-size: 0.9rem;">
+                                    <strong>Alasan Admin:</strong> “{{ $booking->rejection_reason }}”
+                                </div>
+                                <p style="color: #4B5563; font-size: 0.82rem; margin: 0;">
+                                    Pastikan struk/mutasi memuat nominal transfer <strong>{{ $booking->formatted_total }}</strong> dan tujuan rekening resmi YKS secara jelas.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="resp-card-pad" style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg);">
                     <h3 style="font-size: 1.3rem; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
                         <i class="bi bi-upload" style="color: var(--accent);"></i> Unggah Bukti Transfer
