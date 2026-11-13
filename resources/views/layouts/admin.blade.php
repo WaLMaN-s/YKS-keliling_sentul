@@ -367,9 +367,13 @@
 <body>
 
     @php
-        $pendingVerifCount = \Illuminate\Support\Facades\DB::table('yks_bookings')
-            ->where('payment_status', 'Menunggu Verifikasi')
-            ->count();
+        try {
+            $pendingVerifCount = \Illuminate\Support\Facades\DB::table('yks_bookings')
+                ->where('payment_status', 'Menunggu Verifikasi')
+                ->count();
+        } catch (\Throwable $e) {
+            $pendingVerifCount = 0;
+        }
     @endphp
 
     <!-- Sidebar Backdrop (Mobile) -->

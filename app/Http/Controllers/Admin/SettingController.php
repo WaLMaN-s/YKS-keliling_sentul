@@ -55,6 +55,10 @@ class SettingController extends Controller
 
     private function saveSettings(array $settings): void
     {
+        $dir = dirname($this->getStoragePath());
+        if (!is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
         file_put_contents($this->getStoragePath(), json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 

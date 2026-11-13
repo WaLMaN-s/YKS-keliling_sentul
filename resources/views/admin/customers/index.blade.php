@@ -90,9 +90,10 @@
                 <tbody>
                     @forelse($customers as $idx => $c)
                         @php
-                            $plgCode = 'PLG-' . str_pad((string) ($customers->firstItem() + $idx), 3, '0', STR_PAD_LEFT);
+                            $firstItem = $customers->firstItem() ?? 1;
+                            $plgCode = 'PLG-' . str_pad((string) ($firstItem + $idx), 3, '0', STR_PAD_LEFT);
                             $isSelected = ($selectedCustomer && $selectedCustomer->customer_email === $c->customer_email);
-                            $waNumber = preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $c->customer_phone));
+                            $waNumber = preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $c->customer_phone ?? ''));
                         @endphp
                         <tr class="cust-row {{ $isSelected ? 'selected' : '' }}" style="border-bottom: 1px solid #ECECE6;">
                             <td style="padding: 12px 8px;">
@@ -143,9 +144,9 @@
     <div class="stat-card" id="profile-panel">
         @if($selectedCustomer)
             @php
-                $parts = explode(' ', trim($selectedCustomer->customer_name));
-                $initials = strtoupper(substr($parts[0], 0, 1) . (isset($parts[1]) ? substr($parts[1], 0, 1) : ''));
-                $waSelected = preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $selectedCustomer->customer_phone));
+                $parts = explode(' ', trim($selectedCustomer->customer_name ?? 'Pelanggan'));
+                $initials = strtoupper(substr($parts[0] ?? 'P', 0, 1) . (isset($parts[1]) ? substr($parts[1], 0, 1) : ''));
+                $waSelected = preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $selectedCustomer->customer_phone ?? ''));
             @endphp
             <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 14px; border-bottom: 1px solid #ECECE6; margin-bottom: 16px;">
                 <div>
@@ -164,9 +165,9 @@
                     {{ $initials }}
                 </div>
                 <div>
-                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #1F3D2B;">{{ $selectedCustomer->customer_name }}</h3>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #1F3D2B;">{{ $selectedCustomer->customer_name ?? '-' }}</h3>
                     <div style="font-size: 0.76rem; color: #6B756E;">
-                        Bergabung {{ date('d F Y', strtotime($selectedCustomer->first_joined)) }}
+                        Bergabung {{ !empty($selectedCustomer->first_joined) ? date('d F Y', strtotime($selectedCustomer->first_joined)) : '-' }}
                     </div>
                 </div>
             </div>

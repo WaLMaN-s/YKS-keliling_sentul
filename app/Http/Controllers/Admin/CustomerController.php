@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
@@ -19,14 +21,14 @@ class CustomerController extends Controller
 
         $allCustomers = DB::table('yks_bookings')
             ->select(
-                'customer_name',
+                DB::raw('MAX(customer_name) as customer_name'),
                 'customer_phone',
                 'customer_email',
                 DB::raw('count(*) as total_trip'),
                 DB::raw('sum(total_price) as total_spent'),
                 DB::raw('min(created_at) as first_joined')
             )
-            ->groupBy('customer_name', 'customer_phone', 'customer_email')
+            ->groupBy('customer_email', 'customer_phone')
             ->orderByDesc('total_spent')
             ->get();
 
@@ -36,30 +38,32 @@ class CustomerController extends Controller
         $newThisMonth = $allCustomers->count();
 
         // Filter & Pencarian
-        $query = DB::table('yks_bookings')
-            ->select(
-                'customer_name',
-                'customer_phone',
-                'customer_email',
-                DB::raw('count(*) as total_trip'),
-                DB::raw('sum(total_price) as total_spent'),
-                DB::raw('min(created_at) as first_joined')
-            )
-            ->groupBy('customer_name', 'customer_phone', 'customer_email');
+        $filtered = $allCustomers;
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('customer_name', 'like', "%{$search}%")
-                  ->orWhere('customer_email', 'like', "%{$search}%")
-                  ->orWhere('customer_phone', 'like', "%{$search}%");
+            $filtered = $filtered->filter(function ($c) use ($search) {
+                return stripos($c->customer_name ?? '', $search) !== false
+                    || stripos($c->customer_email ?? '', $search) !== false
+                    || stripos($c->customer_phone ?? '', $search) !== false;
             });
         }
 
         if ($filter === 'repeat') {
-            $query->havingRaw('count(*) > 1');
+            $filtered = $filtered->filter(fn ($c) => (int) $c->total_trip > 1);
         }
 
-        $customers = $query->orderByDesc('total_spent')->paginate(10)->withQueryString();
+        $perPage = 10;
+        $page = Paginator::resolveCurrentPage() ?: 1;
+        $total = $filtered->count();
+        $items = $filtered->slice(($page - 1) * $perPage, $perPage)->values();
+
+        $customers = new LengthAwarePaginator(
+            $items,
+            $total,
+            $perPage,
+            $page,
+            ['path' => Paginator::resolveCurrentPath(), 'query' => $request->query()]
+        );
 
         // Pilih pelanggan untuk Panel Profil Kanan
         $selectedCustomer = null;
@@ -71,7 +75,7 @@ class CustomerController extends Controller
         }
 
         $customerHistory = collect();
-        if ($selectedCustomer) {
+        if ($selectedCustomer && !empty($selectedCustomer->customer_email)) {
             $customerHistory = DB::table('yks_bookings')
                 ->join('yks_packages', 'yks_bookings.package_id', '=', 'yks_packages.id')
                 ->select('yks_bookings.*', 'yks_packages.name as package_name')
@@ -108,13 +112,13 @@ class CustomerController extends Controller
 
             $rows = DB::table('yks_bookings')
                 ->select(
-                    'customer_name',
+                    DB::raw('MAX(customer_name) as customer_name'),
                     'customer_phone',
                     'customer_email',
                     DB::raw('count(*) as total_trip'),
                     DB::raw('sum(total_price) as total_spent')
                 )
-                ->groupBy('customer_name', 'customer_phone', 'customer_email')
+                ->groupBy('customer_email', 'customer_phone')
                 ->orderByDesc('total_spent')
                 ->get();
 

@@ -62,29 +62,31 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 3. Jadwal & Slot
         Route::get('/jadwal-slot', [AdminScheduleSlotController::class, 'index'])->name('schedules.index');
-        Route::post('/jadwal-slot/sesi', [AdminScheduleSlotController::class, 'updateSessions'])->name('schedules.update_sessions');
+        Route::post('/jadwal-slot/sesi', [AdminScheduleSlotController::class, 'saveSession'])->name('schedules.save_session');
         Route::post('/jadwal-slot/blokir', [AdminScheduleSlotController::class, 'blockDate'])->name('schedules.block_date');
         Route::delete('/jadwal-slot/blokir/{date}', [AdminScheduleSlotController::class, 'unblockDate'])->name('schedules.unblock_date');
 
         // 4. Data Reservasi
         Route::get('/reservasi', [AdminReservationController::class, 'index'])->name('reservations.index');
-        Route::patch('/reservasi/{id}/status', [AdminReservationController::class, 'updateStatus'])->name('reservations.update_status');
+        Route::match(['post', 'patch'], '/reservasi/{id}/status', [AdminReservationController::class, 'updateStatus'])->name('reservations.update_status');
 
         // 5. Verifikasi Pembayaran
         Route::get('/verifikasi', [AdminVerificationController::class, 'index'])->name('verifications.index');
-        Route::patch('/verifikasi/{id}/approve', [AdminVerificationController::class, 'approve'])->name('verifications.approve');
-        Route::patch('/verifikasi/{id}/reject', [AdminVerificationController::class, 'reject'])->name('verifications.reject');
+        Route::match(['post', 'patch'], '/verifikasi/{id}/approve', [AdminVerificationController::class, 'approve'])->name('verifications.approve');
+        Route::match(['post', 'patch'], '/verifikasi/{id}/reject', [AdminVerificationController::class, 'reject'])->name('verifications.reject');
 
         // 6. Data Pelanggan
         Route::get('/pelanggan', [AdminCustomerController::class, 'index'])->name('customers.index');
+        Route::get('/pelanggan/export-csv', [AdminCustomerController::class, 'exportCsv'])->name('customers.export_csv');
 
         // 7. Laporan
         Route::get('/laporan', [AdminReportController::class, 'index'])->name('reports.index');
+        Route::get('/laporan/export-csv', [AdminReportController::class, 'exportCsv'])->name('reports.export_csv');
 
         // 8. Jam Operasional
         Route::get('/jam-operasional', [AdminSettingController::class, 'index'])->name('settings.index');
-        Route::post('/jam-operasional', [AdminSettingController::class, 'update'])->name('settings.update');
-        Route::post('/jam-operasional/pengecualian', [AdminSettingController::class, 'storeException'])->name('settings.store_exception');
-        Route::delete('/jam-operasional/pengecualian/{index}', [AdminSettingController::class, 'destroyException'])->name('settings.destroy_exception');
+        Route::post('/jam-operasional/mingguan', [AdminSettingController::class, 'saveWeekly'])->name('settings.save_weekly');
+        Route::post('/jam-operasional/pengecualian', [AdminSettingController::class, 'addException'])->name('settings.add_exception');
+        Route::delete('/jam-operasional/pengecualian/{id}', [AdminSettingController::class, 'removeException'])->name('settings.remove_exception');
     });
 });

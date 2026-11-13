@@ -53,6 +53,10 @@ class ScheduleSlotController extends Controller
 
     private function saveScheduleConfig(array $config): void
     {
+        $dir = dirname($this->getStoragePath());
+        if (!is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
         file_put_contents($this->getStoragePath(), json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 
@@ -85,6 +89,12 @@ class ScheduleSlotController extends Controller
             ->pluck('total', 'trip_date')
             ->toArray();
 
+        $normalizedBookings = [];
+        foreach ($bookingsByDate as $rawDate => $cnt) {
+            $key = substr((string)$rawDate, 0, 10);
+            $normalizedBookings[$key] = ($normalizedBookings[$key] ?? 0) + (int)$cnt;
+        }
+
         $dailyCapacity = $config['daily_capacity'] ?? 12;
         $blockedDates = $config['blocked_dates'] ?? [];
 
@@ -98,7 +108,7 @@ class ScheduleSlotController extends Controller
         for ($d = 1; $d <= $daysInMonth; $d++) {
             $dateStr = $monthCarbon->copy()->day($d)->format('Y-m-d');
             $isBlocked = isset($blockedDates[$dateStr]);
-            $bookedCount = $bookingsByDate[$dateStr] ?? ($sampleFillPattern[$d] ?? 2);
+            $bookedCount = $normalizedBookings[$dateStr] ?? ($sampleFillPattern[$d] ?? 2);
             $remaining = $isBlocked ? 0 : max(0, $dailyCapacity - $bookedCount);
 
             if ($isBlocked) {
