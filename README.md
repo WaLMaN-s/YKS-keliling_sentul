@@ -107,105 +107,147 @@ YKS-keliling_sentul/
 
 ---
 
-## Panduan Instalasi & Cara Menjalankan di Windows (XAMPP / Laragon)
+## 🚀 Panduan Setup & Cara Menjalankan Proyek (Untuk Teman / Tim Clone)
 
-### 1. Prasyarat di Windows
-Pastikan di komputer/laptop Windows Anda sudah terpasang:
-- **XAMPP** (minimal PHP 8.2) atau **Laragon**
-- **Composer** ([Download getcomposer.org](https://getcomposer.org/download/))
-- **Git for Windows** ([Download git-scm.com](https://git-scm.com/download/win))
+Panduan ini ditujukan bagi rekan tim/teman yang ingin meng-clone repositori ini ke komputer lokal mereka (Windows, Linux, atau macOS) hingga website dan panel admin siap dijalankan.
 
 ---
 
-### 2. Clone atau Pull Proyek dari GitHub
-Buka **Command Prompt (CMD)**, **PowerShell**, atau **Git Bash**, lalu jalankan:
-
-- **Jika baru pertama kali mengambil proyek (`git clone`):**
-  ```cmd
-  git clone https://github.com/WaLMaN-s/YKS-keliling_sentul.git
-  cd YKS-keliling_sentul
-  ```
-
-- **Jika folder proyek sudah ada dan ingin mengambil pembaruan terbaru (`git pull`):**
-  ```cmd
-  cd YKS-keliling_sentul
-  git pull origin main
-  ```
+### 1. Prasyarat Sistem
+Pastikan di komputer sudah terpasang:
+- **PHP** minimal versi `8.2` (PHP 8.2, 8.3, atau 8.4)
+- **Composer** ([Unduh di getcomposer.org](https://getcomposer.org/download/))
+- **Database MySQL / MariaDB** (melalui **XAMPP**, **Laragon**, atau MySQL native)
+- **Git** ([Unduh di git-scm.com](https://git-scm.com/))
 
 ---
 
-### 3. Install Dependensi Laravel
-Di dalam folder `YKS-keliling_sentul`, jalankan perintah berikut di CMD / PowerShell:
-```cmd
+### 2. Langkah-Langkah Clone & Instalasi
+
+#### Langkah 1: Clone Repositori dari GitHub
+Buka Terminal / Command Prompt / Git Bash, lalu jalankan:
+
+```bash
+git clone https://github.com/WaLMaN-s/YKS-keliling_sentul.git
+cd YKS-keliling_sentul
+```
+
+---
+
+#### Langkah 2: Install Dependensi Laravel (Composer)
+```bash
 composer install
 ```
 
 ---
 
-### 4. Salin File Konfigurasi `.env` & Buat App Key
-Di **CMD (Command Prompt)** atau **PowerShell** Windows, jalankan:
-```cmd
-copy .env.example .env
-php artisan key:generate
-```
+#### Langkah 3: Siapkan File Konfigurasi `.env` & Generate App Key
+Salin file template `.env.example` menjadi `.env`, lalu buat encryption key aplikasi:
+
+- **Di Windows (CMD):**
+  ```cmd
+  copy .env.example .env
+  php artisan key:generate
+  ```
+
+- **Di Linux / macOS / Git Bash:**
+  ```bash
+  cp .env.example .env
+  php artisan key:generate
+  ```
 
 ---
 
-### 5. Pengaturan Database (Pilih Salah Satu: MySQL XAMPP/Laragon atau SQLite)
+#### Langkah 4: Buat Database Baru
+Buat database bernama **`yks_sentul`**:
 
-#### Opsi A: Menggunakan MySQL (XAMPP / Laragon) — *Direkomendasikan*
-1. Nyalakan **Apache** dan **MySQL** di aplikasi **XAMPP Control Panel** (atau klik **Start All** di **Laragon**).
-2. Buka browser dan akses **phpMyAdmin** di `http://localhost/phpmyadmin`.
-3. Buat database baru dengan nama **`yks_sentul`**.
-4. Pastikan isi file `.env` pada bagian database seperti berikut:
-   ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=yks_sentul
-   DB_USERNAME=root
-   DB_PASSWORD=
-   ```
+- **Jika Menggunakan XAMPP / Laragon (Windows):**
+  1. Nyalakan service **Apache** dan **MySQL** di XAMPP / Laragon.
+  2. Buka browser ke [http://localhost/phpmyadmin](http://localhost/phpmyadmin).
+  3. Klik menu **Databases (Basis Data)** -> buat database baru bernama **`yks_sentul`** -> klik **Create**.
+  4. Buka file `.env`, sesuaikan pengaturan MySQL default (biasanya username `root` tanpa password):
+     ```env
+     DB_CONNECTION=mysql
+     DB_HOST=127.0.0.1
+     DB_PORT=3306
+     DB_DATABASE=yks_sentul
+     DB_USERNAME=root
+     DB_PASSWORD=
+     ```
 
-#### Opsi B: Menggunakan SQLite (Tanpa Perlu Buat Database di phpMyAdmin)
-1. Buka file `.env`, ubah `DB_CONNECTION=mysql` menjadi:
-   ```env
-   DB_CONNECTION=sqlite
-   ```
-   *(Hapus atau beri tanda `#` pada baris `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).*
-2. Buat file kosong `database/database.sqlite` melalui CMD:
-   ```cmd
-   type nul > database\database.sqlite
-   ```
+- **Jika Menggunakan Linux / MySQL Terminal:**
+  ```bash
+  sudo mysql -e "CREATE DATABASE IF NOT EXISTS yks_sentul CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+  ```
+  Lalu sesuaikan `DB_USERNAME` dan `DB_PASSWORD` di file `.env` dengan kredensial MySQL server Anda.
 
 ---
 
-### 6. Jalankan Migrasi Tabel & Seeder Data Awal
-Jalankan perintah ini untuk membuat seluruh tabel, akun Admin default, 5 paket resmi YKS, serta contoh data reservasi:
-```cmd
+#### Langkah 5: Jalankan Migrasi & Seeder Data Awal
+Jalankan perintah ini untuk membuat seluruh tabel, akun Admin default, 5 paket wisata resmi YKS, serta data reservasi contoh:
+
+```bash
 php artisan migrate:fresh --seed
 ```
 
+*(Opsional: hubungkan symlink storage)*
+```bash
+php artisan storage:link
+```
+
 ---
 
-### 7. Jalankan Server Aplikasi
-```cmd
+#### Langkah 6: Jalankan Server Lokal
+```bash
 php artisan serve
 ```
 
-Sekarang buka browser Anda dan akses:
-- **Website Pelanggan (User):** [http://127.0.0.1:8000](http://127.0.0.1:8000)
-- **Lacak Status Booking (Tanpa Login):** [http://127.0.0.1:8000/lacak-pesanan](http://127.0.0.1:8000/lacak-pesanan) *(Coba masukkan kode: `YKS-261114-018`)*
-- **Ruang Administrasi (Login Admin):** [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin) *(Login dengan `admin@yks.id` / `admin123`)*
+Server lokal akan aktif di port default `8000`.
 
 ---
 
-### Tips Mengatasi Kendala Umum di Windows (XAMPP)
-- **Error `could not find driver` saat `php artisan migrate`:**
-  Buka **XAMPP Control Panel** -> klik tombol **Config** pada baris Apache -> pilih **`PHP (php.ini)`** -> cari `;extension=pdo_mysql` dan `;extension=pdo_sqlite` serta `;extension=zip`, lalu hapus tanda titik koma (`;`) di depannya, simpan file, dan *restart* Apache.
-- **Setelah teman tim melakukan `git pull origin main`:**
-  Cukup jalankan perintah berikut di CMD agar tabel dan paket terbaru langsung sinkron:
-  ```cmd
-  php artisan migrate:fresh --seed
-  php artisan view:clear
-  ```
+### 3. URL Akses & Kredensial Login
+
+Buka browser dan akses URL berikut:
+
+| Halaman | URL Akses | Keterangan |
+| :--- | :--- | :--- |
+| **Website Utama (Publik)** | [http://127.0.0.1:8000](http://127.0.0.1:8000) | Beranda, katalog paket, booking, & galeri |
+| **Lacak Pesanan (User)** | [http://127.0.0.1:8000/lacak-pesanan](http://127.0.0.1:8000/lacak-pesanan) | Cek status pesanan tanpa login |
+| **Panel Login Admin** | [http://127.0.0.1:8000/admin/login](http://127.0.0.1:8000/admin/login) | Dashboard pengelolaan operasional YKS |
+
+#### Kredensial Login Administrator:
+- **Email**: `admin@yks.id` *(atau `admin@kelilingsentul.id`)*
+- **Password**: `admin123`
+
+---
+
+### 4. Panduan Jika Ingin Mengambil Pembaruan Terbaru (Update Kode)
+
+Jika di kemudian hari ada pembaruan kode di GitHub dan rekan tim ingin menyinkronkan kodenya, cukup jalankan:
+
+```bash
+git pull origin main
+php artisan migrate --force
+php artisan optimize:clear
+```
+
+---
+
+### 5. Troubleshooting & Solusi Kendala Umum
+
+1. **Error: `could not find driver` saat migrasi:**
+   - Masalah: Ekstensi PDO MySQL di PHP belum aktif.
+   - Solusi: Buka file `php.ini`, cari baris `;extension=pdo_mysql` dan `;extension=fileinfo`, hilangkan tanda titik koma (`;`) di depannya, lalu restart Apache/PHP.
+
+2. **Error: `Permission denied` pada folder `storage` (Khusus Linux):**
+   - Solusi: Berikan izin tulis ke folder storage:
+     ```bash
+     chmod -R 775 storage bootstrap/cache
+     ```
+
+3. **Tampilan CSS / Gambar terasa tertahan cache lama:**
+   - Solusi: Bersihkan cache view Laravel:
+     ```bash
+     php artisan optimize:clear
+     ```
