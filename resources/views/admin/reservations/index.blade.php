@@ -4,11 +4,11 @@
 <style>
     .res-grid {
         display: grid;
-        grid-template-columns: 1.3fr 1fr;
+        grid-template-columns: 1.35fr 1fr;
         gap: 24px;
         align-items: start;
     }
-    @media (max-width: 1100px) {
+    @media (max-width: 1200px) {
         .res-grid {
             grid-template-columns: 1fr;
         }
@@ -35,16 +35,173 @@
         color: #FFFFFF;
         border-color: #1F3D2B;
     }
+
+    /* Table Design */
+    .res-table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.83rem;
+    }
+    .res-table thead th {
+        background: #F8F5EF;
+        padding: 12px 10px;
+        font-size: 0.73rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6B756E;
+        border-bottom: 2px solid #DFE4DC;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+    .res-table thead th:first-child {
+        border-top-left-radius: 8px;
+    }
+    .res-table thead th:last-child {
+        border-top-right-radius: 8px;
+    }
+    .res-table tbody td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #ECECE6;
+        vertical-align: middle;
+        background: #FFFFFF;
+        transition: background 0.15s ease;
+    }
     .res-row {
         cursor: pointer;
-        transition: background 0.15s;
     }
-    .res-row:hover {
-        background: #FCFCFA;
+    .res-row:hover td {
+        background: #FAF8F5 !important;
     }
-    .res-row.selected {
+    .res-row.selected td {
+        background: #F4EFE6 !important;
+    }
+    .res-row.selected td:first-child {
+        border-left: 3px solid #1F3D2B;
+    }
+
+    /* Badges & Elements */
+    .res-code-badge {
+        font-family: var(--font-head);
+        font-weight: 800;
+        color: #1F3D2B;
+        font-size: 0.86rem;
+        display: block;
+        letter-spacing: 0.02em;
+    }
+    .res-cust-name {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #4B5563;
+        display: block;
+        margin-top: 2px;
+    }
+    .res-pkg-name {
+        font-weight: 600;
+        color: #1F3D2B;
+        display: block;
+        max-width: 140px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .res-pax-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 8px;
+        border-radius: 99px;
         background: #F8F5EF;
+        border: 1px solid #DFE4DC;
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: #1F3D2B;
+        white-space: nowrap;
     }
+    .res-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 99px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .res-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    /* Action Button Group */
+    .res-action-group {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+    .btn-act-item {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        height: 30px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.15s ease;
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+    .btn-act-wa {
+        width: 30px;
+        background: #EAF0E7;
+        border-color: #C1D1BE;
+        color: #065F46;
+        font-size: 0.85rem;
+    }
+    .btn-act-wa:hover {
+        background: #25D366;
+        border-color: #25D366;
+        color: #FFFFFF;
+        box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3);
+    }
+    .btn-act-track {
+        width: 30px;
+        background: #FFFFFF;
+        border-color: #DFE4DC;
+        color: #6B756E;
+        font-size: 0.78rem;
+    }
+    .btn-act-track:hover {
+        background: #F8F5EF;
+        color: #1F3D2B;
+        border-color: #1F3D2B;
+    }
+    .btn-act-detail {
+        padding: 0 10px;
+        background: #FFFFFF;
+        border-color: #DFE4DC;
+        color: #1F3D2B;
+    }
+    .btn-act-detail:hover {
+        background: #1F3D2B;
+        border-color: #1F3D2B;
+        color: #FFFFFF;
+    }
+    .btn-act-detail.selected {
+        background: #1F3D2B;
+        border-color: #1F3D2B;
+        color: #FFFFFF;
+        box-shadow: 0 2px 6px rgba(31, 61, 43, 0.25);
+    }
+
     .timeline-item {
         position: relative;
         padding-left: 20px;
@@ -63,6 +220,10 @@
         height: 10px;
         border-radius: 50%;
         background: #1F3D2B;
+    }
+    .res-detail-sticky {
+        position: sticky;
+        top: 20px;
     }
 </style>
 
@@ -116,56 +277,105 @@
             </div>
         </div>
 
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.83rem;">
+        <div style="overflow-x: auto; border-radius: 8px;">
+            <table class="res-table">
                 <thead>
-                    <tr style="border-bottom: 2px solid #DFE4DC; text-align: left; color: #6B756E;">
-                        <th style="padding: 10px 8px;">ID / Pelanggan</th>
-                        <th style="padding: 10px 8px;">Paket</th>
-                        <th style="padding: 10px 8px;">Keberangkatan</th>
-                        <th style="padding: 10px 8px;">Peserta</th>
-                        <th style="padding: 10px 8px;">Total</th>
-                        <th style="padding: 10px 8px;">Status</th>
-                        <th style="padding: 10px 8px; text-align: right;">Aksi</th>
+                    <tr>
+                        <th style="text-align: left; padding-left: 14px;">ID & Pelanggan</th>
+                        <th style="text-align: left;">Paket Wisata</th>
+                        <th style="text-align: left;">Keberangkatan</th>
+                        <th style="text-align: center;">Peserta</th>
+                        <th style="text-align: right;">Total Bayar</th>
+                        <th style="text-align: center;">Status</th>
+                        <th style="text-align: center; padding-right: 14px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($reservations as $r)
                         @php
                             $isSelected = ($selectedBooking && $selectedBooking->booking_code === $r->booking_code);
+                            $waNum = preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $r->customer_phone ?? ''));
+
+                            $st = $r->payment_status;
+                            $badgeBg = '#EDEEE9';
+                            $badgeColor = '#6B756E';
+                            $dotColor = '#8E9E8B';
+                            if ($st === 'Lunas') {
+                                $badgeBg = '#EAF0E7';
+                                $badgeColor = '#065F46';
+                                $dotColor = '#10B981';
+                            } elseif ($st === 'Menunggu Verifikasi') {
+                                $badgeBg = '#FEEFE6';
+                                $badgeColor = '#9A3412';
+                                $dotColor = '#F26B1D';
+                            } elseif ($st === 'Dibatalkan') {
+                                $badgeBg = '#FFEBEE';
+                                $badgeColor = '#991B1B';
+                                $dotColor = '#EF4444';
+                            }
                         @endphp
-                        <tr class="res-row {{ $isSelected ? 'selected' : '' }}" style="border-bottom: 1px solid #ECECE6;">
-                            <td style="padding: 11px 8px;">
-                                <div style="font-weight: 700; color: #1F3D2B;">{{ $r->booking_code }}</div>
-                                <div style="font-size: 0.75rem; color: #6B756E;">{{ $r->customer_name }}</div>
+                        <tr class="res-row {{ $isSelected ? 'selected' : '' }}" onclick="selectRes('{{ $r->booking_code }}', event)">
+                            <td style="padding-left: 14px;">
+                                <span class="res-code-badge">{{ $r->booking_code }}</span>
+                                <span class="res-cust-name">{{ $r->customer_name }}</span>
                             </td>
-                            <td style="padding: 11px 8px; font-weight: 500;">{{ $r->package_name }}</td>
-                            <td style="padding: 11px 8px;">
-                                {{ date('d M Y', strtotime($r->trip_date)) }}<br>
-                                <span style="font-size: 0.72rem; color: #6B756E;">08.00 WIB</span>
+                            <td>
+                                <span class="res-pkg-name" title="{{ $r->package_name }}">{{ $r->package_name }}</span>
                             </td>
-                            <td style="padding: 11px 8px;">{{ $r->participant_count }} orang</td>
-                            <td style="padding: 11px 8px; font-weight: 700;">Rp{{ number_format($r->total_price, 0, ',', '.') }}</td>
-                            <td style="padding: 11px 8px;">
-                                <span style="display: inline-block; padding: 3px 9px; border-radius: 99px; font-size: 0.72rem; font-weight: 600;
-                                    {{ $r->payment_status === 'Lunas' ? 'background: #EAF0E7; color: #1F3D2B;' : '' }}
-                                    {{ $r->payment_status === 'Menunggu Verifikasi' ? 'background: #FEEFE6; color: #F26B1D;' : '' }}
-                                    {{ $r->payment_status === 'Menunggu Pembayaran' ? 'background: #EDEEE9; color: #6B756E;' : '' }}
-                                    {{ $r->payment_status === 'Dibatalkan' ? 'background: #FFEBEE; color: #C62828;' : '' }}
-                                ">
-                                    {{ $r->payment_status }}
+                            <td style="white-space: nowrap;">
+                                <div style="font-weight: 600; color: #1F3D2B;">
+                                    <i class="bi bi-calendar3" style="color: #F26B1D; margin-right: 4px; font-size: 0.8rem;"></i>
+                                    {{ date('d M Y', strtotime($r->trip_date)) }}
+                                </div>
+                                <div style="font-size: 0.72rem; color: #6B756E; margin-left: 18px;">08.00 WIB</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="res-pax-badge">
+                                    <i class="bi bi-people-fill" style="color: #6B756E;"></i> {{ $r->participant_count }}
                                 </span>
                             </td>
-                            <td style="padding: 11px 8px; text-align: right;">
-                                <a href="{{ route('admin.reservations.index', ['select' => $r->booking_code, 'status' => $status, 'q' => $search, 'page' => request('page')]) }}#detail-panel"
-                                   style="padding: 5px 10px; border-radius: 6px; border: 1px solid #DFE4DC; background: {{ $isSelected ? '#1F3D2B' : '#FFFFFF' }}; color: {{ $isSelected ? '#FFFFFF' : '#1F3D2B' }}; font-size: 0.75rem; font-weight: 600; text-decoration: none;">
-                                    Detail ↗
-                                </a>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <strong style="font-weight: 800; color: #1F3D2B; font-size: 0.88rem;">
+                                    Rp{{ number_format($r->total_price, 0, ',', '.') }}
+                                </strong>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="res-status-badge" style="background: {{ $badgeBg }}; color: {{ $badgeColor }};">
+                                    <span class="res-status-dot" style="background: {{ $dotColor }};"></span>
+                                    {{ $st }}
+                                </span>
+                            </td>
+                            <td style="text-align: center; padding-right: 14px;">
+                                <div class="res-action-group">
+                                    @if($waNum)
+                                        <a href="https://wa.me/{{ $waNum }}?text=Halo%20Kak%20{{ urlencode($r->customer_name) }},%20kami%20dari%20Admin%20Yuk%20Keliling%20Sentul%20ingin%20mengonfirmasi%20reservasi%20dengan%20Kode:%20{{ $r->booking_code }}."
+                                           target="_blank"
+                                           class="btn-act-item btn-act-wa"
+                                           title="Chat WhatsApp ({{ $r->customer_phone }})">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
+                                    @endif
+                                    <a href="{{ route('booking.track', ['kode' => $r->booking_code]) }}"
+                                       target="_blank"
+                                       class="btn-act-item btn-act-track"
+                                       title="Lihat Lacak Pesanan (Tampilan Pelanggan)">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                    </a>
+                                    <a href="{{ route('admin.reservations.index', ['select' => $r->booking_code, 'status' => $status, 'q' => $search, 'page' => request('page')]) }}#detail-panel"
+                                       class="btn-act-item btn-act-detail {{ $isSelected ? 'selected' : '' }}"
+                                       title="Buka Detail Reservasi">
+                                        <i class="bi bi-card-text"></i>
+                                        <span>Detail</span>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" style="padding: 32px; text-align: center; color: #6B756E;">Tidak ada data reservasi yang ditemukan.</td>
+                            <td colspan="7" style="padding: 36px 14px; text-align: center; color: #6B756E;">
+                                <i class="bi bi-inbox" style="font-size: 1.8rem; display: block; margin-bottom: 6px; opacity: 0.5;"></i>
+                                Tidak ada data reservasi yang ditemukan.
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -179,7 +389,7 @@
     </div>
 
     <!-- KOLOM KANAN: Panel Detail Reservasi (Figma) -->
-    <div class="stat-card" id="detail-panel">
+    <div class="stat-card res-detail-sticky" id="detail-panel">
         @if($selectedBooking)
             <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 14px; border-bottom: 1px solid #ECECE6; margin-bottom: 16px;">
                 <div>
@@ -345,4 +555,14 @@
         @endif
     </div>
 </div>
+
+<script>
+    function selectRes(code, event) {
+        // Jangan picu pindah baris jika yang diklik adalah tombol/link di dalam kolom aksi
+        if (event.target.closest('a') || event.target.closest('button') || event.target.closest('form')) {
+            return;
+        }
+        window.location.href = "{{ route('admin.reservations.index') }}?select=" + encodeURIComponent(code) + "&status={{ $status }}&q={{ $search }}&page={{ request('page') }}#detail-panel";
+    }
+</script>
 @endsection
