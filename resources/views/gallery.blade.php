@@ -97,13 +97,20 @@
 <!-- Testimoni Lengkap Section -->
 <section class="section-wrapper section-sage-bg" style="margin-top: 64px;">
     <div class="container">
-        <div class="section-tag">
-            ━ &nbsp; ULASAN LENGKAP PENJELAJAH
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 40px;">
+            <div>
+                <div class="section-tag">
+                    ━ &nbsp; ULASAN LENGKAP PENJELAJAH
+                </div>
+                <h2 class="section-title" style="margin-bottom: 8px;">Apa kata mereka tentang pengalaman bersama YKS?</h2>
+                <p class="section-desc" style="margin-bottom: 0;">
+                    Ulasan jujur tanpa rekayasa dari wisatawan yang telah membuktikan profesionalisme pemandu dan keseruan rute kami.
+                </p>
+            </div>
+            <a href="{{ route('reviews.create') }}" class="btn btn-primary" style="white-space: nowrap;">
+                <i class="bi bi-pencil-square"></i> Tulis Ulasan &nbsp;↗
+            </a>
         </div>
-        <h2 class="section-title">Apa kata mereka tentang pengalaman bersama YKS?</h2>
-        <p class="section-desc" style="margin-bottom: 40px;">
-            Ulasan jujur tanpa rekayasa dari wisatawan yang telah membuktikan profesionalisme pemandu dan keseruan rute kami.
-        </p>
 
         <div class="testimonials-row">
             @forelse ($testimonials as $t)

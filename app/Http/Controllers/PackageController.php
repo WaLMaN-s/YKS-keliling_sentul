@@ -15,6 +15,7 @@ class PackageController extends Controller
     public function index(Request $request)
     {
         $categorySlug = $request->query('kategori');
+        $search = trim((string) $request->query('cari', ''));
         $categories = YksCategory::all();
 
         $query = YksPackage::with('category')->where('is_active', true);
@@ -22,6 +23,13 @@ class PackageController extends Controller
         if ($categorySlug && $categorySlug !== 'all') {
             $query->whereHas('category', function ($q) use ($categorySlug) {
                 $q->where('slug', $categorySlug);
+            });
+        }
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
             });
         }
 

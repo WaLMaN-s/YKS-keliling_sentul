@@ -28,6 +28,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tentang-yks', [HomeController::class, 'about'])->name('about');
 Route::get('/galeri-testimoni', [HomeController::class, 'gallery'])->name('gallery');
+Route::get('/ulasan', [HomeController::class, 'createReview'])->name('reviews.create');
+Route::post('/ulasan', [HomeController::class, 'storeReview'])->name('reviews.store');
 Route::get('/informasi', [HomeController::class, 'info'])->name('info');
 Route::get('/paket', [PackageController::class, 'index'])->name('packages.index');
 Route::get('/paket/{slug}', [PackageController::class, 'show'])->name('packages.show');
