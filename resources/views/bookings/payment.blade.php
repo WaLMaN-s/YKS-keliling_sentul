@@ -127,7 +127,7 @@
                         Foto struk ATM atau tangkapan layar (screenshot) mutasi rekening Anda.
                     </p>
 
-                    <form method="POST" action="{{ route('payment.upload', $booking->booking_code) }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('payment.upload', $booking->booking_code) }}" enctype="multipart/form-data" onsubmit="const btn = this.querySelector('button[type=submit]'); if(btn){ btn.disabled = true; btn.innerHTML = '<i class=\'bi bi-hourglass-split\'></i> Mengunggah Bukti...'; }">
                         @csrf
                         <div class="form-group">
                             <label class="form-label">Berkas Bukti Transfer <span class="text-accent">*</span></label>

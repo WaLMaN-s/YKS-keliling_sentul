@@ -305,6 +305,85 @@
                 Terakhir diperbarui: {{ $lastUpdated ? \Carbon\Carbon::parse($lastUpdated)->format('d M Y, H.i') . ' WIB' : date('d M Y, H.i') . ' WIB' }} · Admin YKS
             </div>
         </div>
+
+        <!-- Card 3: Kelola Layanan Tambahan / Add-On (SDD UI-14 & FR-05) -->
+        <div class="pkg-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div>
+                    <h3 style="font-size: 1rem; font-weight: 700;">Layanan Tambahan (Add-On)</h3>
+                    <span style="font-size: 0.78rem; color: #6B756E;">Sepatu safety, guide tambahan, body protector (FR-05)</span>
+                </div>
+            </div>
+
+            @if(isset($addons) && $addons->isNotEmpty())
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+                    @foreach($addons as $ad)
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border: 1px solid #DFE4DC; border-radius: 8px; background: #FCFCFA;">
+                            <div>
+                                <div style="font-weight: 700; font-size: 0.85rem; color: #1F3D2B;">{{ $ad->nama_addon }}</div>
+                                <div style="font-size: 0.78rem; color: #F26B1D; font-weight: 700;">Rp{{ number_format($ad->harga, 0, ',', '.') }}</div>
+                            </div>
+                            <form action="{{ route('admin.packages.toggle_addon', $ad->id) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="status-pill {{ $ad->is_aktif ? 'active' : 'inactive' }}">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: {{ $ad->is_aktif ? '#1F3D2B' : '#6B756E' }};"></span>
+                                    {{ $ad->is_aktif ? 'Aktif' : 'Nonaktif' }}
+                                </button>
+                            </form>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            <form action="{{ route('admin.packages.store_addon') }}" method="POST" style="display: grid; grid-template-columns: 1.4fr 1fr auto; gap: 8px; align-items: center;">
+                @csrf
+                <input type="text" name="nama_addon" class="form-control" placeholder="Nama Add-On (mis: Sepatu Boot)" required style="font-size: 0.8rem; padding: 7px 10px;">
+                <input type="number" name="harga" class="form-control" placeholder="Harga (Rp)" required min="0" step="5000" style="font-size: 0.8rem; padding: 7px 10px;">
+                <button type="submit" class="btn-primary-yks" style="padding: 7px 12px; font-size: 0.78rem;">+ Add-On</button>
+            </form>
+        </div>
+
+        <!-- Card 4: Kelola Unit Kendaraan Jeep & Trail (SDD UI-14 & FR-11) -->
+        <div class="pkg-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div>
+                    <h3 style="font-size: 1rem; font-weight: 700;">Armada Unit Kendaraan (Jeep & Trail)</h3>
+                    <span style="font-size: 0.78rem; color: #6B756E;">Status ketersediaan unit aktif & perawatan (FR-11)</span>
+                </div>
+            </div>
+
+            @if(isset($units) && $units->isNotEmpty())
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+                    @foreach($units as $u)
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 9px 11px; border: 1px solid #DFE4DC; border-radius: 8px; background: #FCFCFA;">
+                            <div>
+                                <div style="font-weight: 800; font-size: 0.82rem; color: #1F3D2B;">{{ $u->kode_unit }}</div>
+                                <div style="font-size: 0.72rem; color: #6B756E;">{{ strtoupper($u->jenis_unit) }} · Maks {{ $u->kapasitas }} org</div>
+                            </div>
+                            <form action="{{ route('admin.packages.toggle_unit', $u->id) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="status-pill {{ $u->status === 'aktif' ? 'active' : 'inactive' }}" title="Klik untuk ubah status Aktif / Perawatan">
+                                    {{ ucfirst($u->status) }}
+                                </button>
+                            </form>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            <form action="{{ route('admin.packages.store_unit') }}" method="POST" style="display: grid; grid-template-columns: 1fr 0.9fr 0.8fr auto; gap: 8px; align-items: center;">
+                @csrf
+                <input type="text" name="kode_unit" class="form-control" placeholder="Kode (JEEP-03)" required style="font-size: 0.8rem; padding: 7px 10px;">
+                <select name="jenis_unit" class="form-control" style="font-size: 0.8rem; padding: 7px 10px;">
+                    <option value="trail">Trail</option>
+                    <option value="jeep">Jeep 4x4</option>
+                </select>
+                <input type="number" name="kapasitas" class="form-control" placeholder="Kapasitas" value="1" min="1" max="20" required style="font-size: 0.8rem; padding: 7px 10px;">
+                <button type="submit" class="btn-primary-yks" style="padding: 7px 12px; font-size: 0.78rem;">+ Unit</button>
+            </form>
+        </div>
     </div>
 
     <!-- KOLOM KANAN: Form Ubah Paket / Tambah Paket Baru (Figma) -->

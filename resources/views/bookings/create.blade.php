@@ -38,39 +38,49 @@
 
 <section class="section-wrapper" style="padding-top: 0;">
     <div class="container">
-        <form method="POST" action="{{ route('booking.store') }}">
+        <form method="POST" action="{{ route('booking.store') }}" onsubmit="const btn = this.querySelector('button[type=submit]'); if(btn){ btn.disabled = true; btn.innerHTML = '<i class=\'bi bi-hourglass-split\'></i> Memproses Reservasi...'; }">
             @csrf
 
             <div class="booking-layout-grid">
                 <!-- Left: Form Fields -->
                 <div class="booking-form-card">
-                    <!-- Section 0: Pilihan Paket -->
-                    <div class="form-group" style="margin-bottom: 24px;">
-                        <label class="form-label">Pilihan Paket Jelajah <span class="text-accent">*</span></label>
-                        <select name="package_id" id="packageSelect" onchange="onPackageChange(this)" class="form-control" style="font-weight: 700; color: var(--primary);">
-                            @if(isset($allPackages))
-                                @foreach ($allPackages as $p)
-                                    <option value="{{ $p->id }}" data-price="{{ $p->price }}" data-name="{{ $p->name }}" data-duration="{{ $p->duration }}" {{ $package->id == $p->id ? 'selected' : '' }}>
-                                        {{ $p->name }} (Rp {{ number_format($p->price, 0, ',', '.') }})
+                    <!-- Section 0: Pilihan Paket & Jenis Perjalanan (SDD Proses 2) -->
+                    <div class="resp-grid-2" style="margin-bottom: 24px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Pilihan Paket Jelajah <span class="text-accent">*</span></label>
+                            <select name="package_id" id="packageSelect" onchange="onPackageChange(this)" class="form-control" style="font-weight: 700; color: var(--primary);">
+                                @if(isset($allPackages))
+                                    @foreach ($allPackages as $p)
+                                        <option value="{{ $p->id }}" data-price="{{ $p->price }}" data-name="{{ $p->name }}" data-duration="{{ $p->duration }}" {{ $package->id == $p->id ? 'selected' : '' }}>
+                                            {{ $p->name }} (Rp {{ number_format($p->price, 0, ',', '.') }})
+                                        </option>
+                                    @endforeach
+                                @else
+                                    <option value="{{ $package->id }}" data-price="{{ $package->price }}" data-name="{{ $package->name }}" data-duration="{{ $package->duration }}" selected>
+                                        {{ $package->name }} (Rp {{ number_format($package->price, 0, ',', '.') }})
                                     </option>
-                                @endforeach
-                            @else
-                                <option value="{{ $package->id }}" data-price="{{ $package->price }}" data-name="{{ $package->name }}" data-duration="{{ $package->duration }}" selected>
-                                    {{ $package->name }} (Rp {{ number_format($package->price, 0, ',', '.') }})
-                                </option>
-                            @endif
-                        </select>
+                                @endif
+                            </select>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Jenis Perjalanan (Trip) <span class="text-accent">*</span></label>
+                            <select name="jenis_trip" class="form-control" style="font-weight: 600; color: var(--primary);">
+                                <option value="private" {{ old('jenis_trip') === 'private' ? 'selected' : '' }}>Private Trip (Eksklusif Rombongan Sendiri)</option>
+                                <option value="open" {{ old('jenis_trip') === 'open' ? 'selected' : '' }}>Open Trip (Gabungan Jadwal Tersedia)</option>
+                            </select>
+                        </div>
                     </div>
 
                     <hr style="border: none; border-top: 1px solid var(--border-light); margin-bottom: 28px;">
 
-                    <!-- Section 1: Jadwal Jelajah -->
+                    <!-- Section 1: Jadwal Jelajah & Unit -->
                     <h3 style="font-size: 1.3rem; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px;">
                         <i class="bi bi-calendar-check" style="color: var(--accent);"></i>
-                        1. Pilih Tanggal & Sesi Keberangkatan
+                        1. Pilih Tanggal, Peserta & Armada Unit
                     </h3>
 
-                    <div class="resp-grid-2" style="margin-bottom: 28px;">
+                    <div class="resp-grid-2" style="margin-bottom: 18px;">
                         <div class="form-group" style="margin-bottom: 0;">
                             <label class="form-label">Tanggal Jelajah <span class="text-accent">*</span></label>
                             <input type="date" name="trip_date" class="form-control" required 
@@ -79,7 +89,7 @@
                         </div>
 
                         <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Jumlah Peserta / Jip <span class="text-accent">*</span></label>
+                            <label class="form-label">Jumlah Peserta / Unit <span class="text-accent">*</span></label>
                             <div style="display: flex; gap: 8px;">
                                 <button type="button" onclick="adjustCount(-1)" class="btn btn-outline" style="padding: 0 16px; font-weight: 800;">-</button>
                                 <input type="number" id="participantCount" name="participant_count" class="form-control" style="text-align: center; font-weight: 800;" min="1" max="100" 
@@ -88,6 +98,66 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Pilihan Unit Armada (SDD FR-07 & Tabel unit) -->
+                    @if(isset($units) && $units->isNotEmpty())
+                        <div class="form-group" style="margin-bottom: 18px;">
+                            <label class="form-label" style="font-size: 0.88rem;">Pilihan Unit Kendaraan Tersedia (Opsional — Sesuai Paket)</label>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; margin-top: 6px;">
+                                @foreach($units as $u)
+                                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-body); cursor: pointer; font-size: 0.84rem;">
+                                        <input type="checkbox" name="unit_ids[]" value="{{ $u->id }}" style="accent-color: var(--primary); width: 16px; height: 16px;">
+                                        <div>
+                                            <strong style="color: var(--primary); display: block;">{{ $u->kode_unit }}</strong>
+                                            <span style="color: var(--text-muted); font-size: 0.76rem;">{{ $u->nama_unit }} (Maks. {{ $u->kapasitas }} org)</span>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label style="display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; color: var(--primary); font-weight: 600;">
+                            <input type="checkbox" name="motor_pribadi" value="1" {{ old('motor_pribadi') ? 'checked' : '' }} style="accent-color: var(--primary); width: 17px; height: 17px;">
+                            <span>Saya membawa unit motor trail pribadi (Opsi Trabas Motor Pribadi)</span>
+                        </label>
+                    </div>
+
+                    <!-- Section 1B: Layanan Tambahan / Add-On (SDD FR-05 & Bab 6) -->
+                    @if(isset($addons) && $addons->isNotEmpty())
+                        <hr style="border: none; border-top: 1px solid var(--border-light); margin-bottom: 24px;">
+                        <h3 style="font-size: 1.25rem; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
+                            <i class="bi bi-plus-circle-fill" style="color: var(--accent);"></i>
+                            Layanan Tambahan (Add-On)
+                        </h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                            Pilih perlengkapan atau pemandu tambahan jika diperlukan (otomatis dihitung ke total pembayaran):
+                        </p>
+                        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px;">
+                            @foreach($addons as $addon)
+                                <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: #FFFFFF; flex-wrap: wrap;">
+                                    <div>
+                                        <strong style="color: var(--primary); font-size: 0.94rem; display: block;">{{ $addon->nama_addon }}</strong>
+                                        <span style="color: var(--accent); font-weight: 700; font-size: 0.85rem;">Rp {{ number_format($addon->harga, 0, ',', '.') }} / item</span>
+                                        @if($addon->keterangan)
+                                            <small style="color: var(--text-muted); display: block; font-size: 0.78rem;">{{ $addon->keterangan }}</small>
+                                        @endif
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 0.78rem; color: var(--text-muted);">Jumlah:</span>
+                                        <input type="number" name="addons[{{ $addon->id }}]"
+                                               class="form-control addon-qty-input"
+                                               data-addon-price="{{ $addon->harga }}"
+                                               data-addon-name="{{ $addon->nama_addon }}"
+                                               min="0" max="50" value="{{ old('addons.' . $addon->id, 0) }}"
+                                               onchange="updateSummary()" oninput="updateSummary()"
+                                               style="width: 76px; text-align: center; font-weight: 700; padding: 6px 8px;">
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
 
                     <hr style="border: none; border-top: 1px solid var(--border-light); margin-bottom: 28px;">
 
@@ -166,6 +236,14 @@
                                 <span style="color: var(--text-muted);">Jumlah Peserta</span>
                                 <strong id="summaryCount">1 orang</strong>
                             </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 8px;">
+                                <span style="color: var(--text-muted);">Subtotal Paket</span>
+                                <strong id="summarySubtotalPackage">Rp {{ number_format($package->price, 0, ',', '.') }}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 8px;">
+                                <span style="color: var(--text-muted);">Subtotal Add-On</span>
+                                <strong id="summarySubtotalAddons">Rp 0</strong>
+                            </div>
                             <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 14px;">
                                 <span style="color: var(--text-muted);">Pemandu & Retribusi</span>
                                 <span style="color: #10b981; font-weight: 700;">Termasuk</span>
@@ -223,7 +301,20 @@
         let val = parseInt(inputCount.value) || 1;
         if (val < 1) val = 1;
         summaryCount.textContent = val + ' orang';
-        let total = val * basePrice;
+        let subtotalPkg = val * basePrice;
+        let subtotalAddon = 0;
+        document.querySelectorAll('.addon-qty-input').forEach(function(inp) {
+            let q = parseInt(inp.value) || 0;
+            let p = parseInt(inp.getAttribute('data-addon-price')) || 0;
+            if (q > 0) {
+                subtotalAddon += (q * p);
+            }
+        });
+        let total = subtotalPkg + subtotalAddon;
+        const elSubPkg = document.getElementById('summarySubtotalPackage');
+        const elSubAdd = document.getElementById('summarySubtotalAddons');
+        if (elSubPkg) elSubPkg.textContent = 'Rp ' + subtotalPkg.toLocaleString('id-ID');
+        if (elSubAdd) elSubAdd.textContent = 'Rp ' + subtotalAddon.toLocaleString('id-ID');
         summaryTotal.textContent = 'Rp ' + total.toLocaleString('id-ID');
     }
 </script>

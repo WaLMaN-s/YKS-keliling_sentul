@@ -215,6 +215,23 @@
                         <span style="font-size: 0.78rem; color: var(--text-muted); display: block;">Metode Pembayaran:</span>
                         <strong style="color: var(--text-dark);">{{ $booking->payment_method }}</strong>
                     </div>
+                    @if(!empty($booking->jenis_trip))
+                    <div>
+                        <span style="font-size: 0.78rem; color: var(--text-muted); display: block;">Jenis Perjalanan & Armada:</span>
+                        <strong style="color: var(--text-dark);">
+                            {{ strtoupper($booking->jenis_trip) }} TRIP
+                            @if(!empty($booking->selected_units))
+                                · ({{ $booking->selected_units }})
+                            @endif
+                        </strong>
+                    </div>
+                    @endif
+                    @if(!empty($booking->selected_addons))
+                    <div>
+                        <span style="font-size: 0.78rem; color: var(--text-muted); display: block;">Layanan Tambahan (Add-On):</span>
+                        <strong style="color: var(--primary);">{{ $booking->selected_addons }} (Rp {{ number_format($booking->subtotal_addons ?? 0, 0, ',', '.') }})</strong>
+                    </div>
+                    @endif
                 </div>
 
                 <!-- Meeting Point Info -->

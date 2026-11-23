@@ -39,6 +39,17 @@ class YksSeeder extends Seeder
         DB::table('yks_categories')->truncate();
         DB::table('yks_packages')->truncate();
         DB::table('yks_testimonials')->truncate();
+        DB::table('yks_bookings')->truncate();
+        if (\Illuminate\Support\Facades\Schema::hasTable('yks_addons')) {
+            DB::table('yks_booking_addons')->truncate();
+            DB::table('yks_booking_units')->truncate();
+            DB::table('yks_payments')->truncate();
+            DB::table('yks_addons')->truncate();
+            DB::table('yks_units')->truncate();
+            DB::table('yks_bank_accounts')->truncate();
+            DB::table('yks_terms')->truncate();
+            DB::table('yks_site_contents')->truncate();
+        }
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         // 1. Categories (Sesuai Pricelist Resmi Yuk Keliling Sentul)
@@ -158,7 +169,6 @@ class YksSeeder extends Seeder
         DB::table('yks_testimonials')->insert($testimonials);
 
         // 4. Sample Bookings (Disesuaikan dengan 5 Paket Resmi YKS)
-        DB::table('yks_bookings')->truncate();
         $sampleBookings = [
             [
                 'booking_code' => 'YKS-261114-018',
@@ -258,5 +268,45 @@ class YksSeeder extends Seeder
             ],
         ];
         DB::table('yks_bookings')->insert($sampleBookings);
+
+        // 5. Data SDD: Add-On, Unit Armada, Rekening, Ketentuan, & Konten Situs
+        if (\Illuminate\Support\Facades\Schema::hasTable('yks_addons')) {
+            // Update satuan_harga & kapasitas_peserta pada paket Jeep
+            DB::table('yks_packages')->where('id', 5)->update([
+                'satuan_harga' => 'per_unit',
+                'kapasitas_peserta' => 4,
+            ]);
+
+            DB::table('yks_addons')->insert([
+                ['id' => 1, 'nama_addon' => 'Sepatu Safety / Boot Trail', 'harga' => 100000, 'keterangan' => 'Sewa sepatu boot safety khusus medan off-road & lumpur', 'is_aktif' => true, 'created_at' => now(), 'updated_at' => now()],
+                ['id' => 2, 'nama_addon' => 'Extra Guide / Leader Pendamping', 'harga' => 200000, 'keterangan' => 'Pendampingan 1 pemandu/sweeper tambahan khusus rombongan', 'is_aktif' => true, 'created_at' => now(), 'updated_at' => now()],
+                ['id' => 3, 'nama_addon' => 'Paket Body Protector & Knee Pad', 'harga' => 250000, 'keterangan' => 'Pelindung dada, siku, lutut, dan sarung tangan full-set', 'is_aktif' => true, 'created_at' => now(), 'updated_at' => now()],
+            ]);
+
+            DB::table('yks_units')->insert([
+                ['id' => 1, 'kode_unit' => 'JEEP-01', 'jenis_unit' => 'jeep', 'nama_unit' => 'Jeep 4x4 Jimny/Katana Offroad #01', 'kapasitas' => 4, 'status' => 'aktif', 'created_at' => now(), 'updated_at' => now()],
+                ['id' => 2, 'kode_unit' => 'JEEP-02', 'jenis_unit' => 'jeep', 'nama_unit' => 'Jeep 4x4 Taft/Rocky Offroad #02', 'kapasitas' => 4, 'status' => 'aktif', 'created_at' => now(), 'updated_at' => now()],
+                ['id' => 3, 'kode_unit' => 'TRAIL-01', 'jenis_unit' => 'trail', 'nama_unit' => 'Honda CRF 150L #01', 'kapasitas' => 1, 'status' => 'aktif', 'created_at' => now(), 'updated_at' => now()],
+                ['id' => 4, 'kode_unit' => 'TRAIL-02', 'jenis_unit' => 'trail', 'nama_unit' => 'Kawasaki KLX 140R #02', 'kapasitas' => 1, 'status' => 'aktif', 'created_at' => now(), 'updated_at' => now()],
+                ['id' => 5, 'kode_unit' => 'TRAIL-03', 'jenis_unit' => 'trail', 'nama_unit' => 'Husqvarna TE 300i Enduro #03', 'kapasitas' => 1, 'status' => 'aktif', 'created_at' => now(), 'updated_at' => now()],
+                ['id' => 6, 'kode_unit' => 'TRAIL-04', 'jenis_unit' => 'trail', 'nama_unit' => 'Yamaha WR 155R #04', 'kapasitas' => 1, 'status' => 'perawatan', 'created_at' => now(), 'updated_at' => now()],
+            ]);
+
+            DB::table('yks_bank_accounts')->insert([
+                ['id' => 1, 'nama_bank' => 'BANK BCA', 'no_rekening' => '8450-1234-5678', 'atas_nama' => 'PT YUK KELILING SENTUL', 'is_aktif' => true, 'created_at' => now(), 'updated_at' => now()],
+                ['id' => 2, 'nama_bank' => 'BANK MANDIRI', 'no_rekening' => '1330-0987-6543-2', 'atas_nama' => 'PT YUK KELILING SENTUL', 'is_aktif' => true, 'created_at' => now(), 'updated_at' => now()],
+            ]);
+
+            DB::table('yks_terms')->insert([
+                ['jenis' => 'perubahan_jadwal', 'judul' => 'Ketentuan Perubahan Jadwal (Maksimal H-2)', 'isi' => 'Pelanggan dapat melakukan perubahan jadwal (reschedule) secara mandiri maksimal H-2 sebelum tanggal keberangkatan selama kuota jadwal baru masih tersedia dan tidak sedang ditutup.', 'created_at' => now(), 'updated_at' => now()],
+                ['jenis' => 'pembatalan', 'judul' => 'Ketentuan Pembatalan & Pengembalian Dana', 'isi' => 'Pembatalan reservasi pada hari pelaksanaan (Hari-H) atau H-1 menyebabkan pembayaran hangus (tidak dapat dikembalikan) karena unit armada, BBM, dan pemandu telah dialokasikan.', 'created_at' => now(), 'updated_at' => now()],
+                ['jenis' => 'kerusakan_unit', 'judul' => 'Ketentuan Pemakaian & Kerusakan Unit Kendaraan', 'isi' => 'Peserta wajib mengikuti arahan keselamatan Guide/Leader. Kerusakan unit akibat kelalaian sengaja atau pelanggaran instruksi jalur di luar batas pemakaian normal menjadi tanggung jawab penyewa sesuai ketentuan basecamp.', 'created_at' => now(), 'updated_at' => now()],
+            ]);
+
+            DB::table('yks_site_contents')->insert([
+                ['jenis' => 'fasilitas_basecamp', 'judul' => 'Fasilitas Basecamp YKS Gunung Pancar & Sentul', 'isi' => "Area Parkir Luas & Aman (Mobil & Motor)\nKamar Mandi & Ruang Bilas Bersih\nMushola & Tempat Wudhu\nGazebo Istirahat & Warung Kopi\nRuang Fitting Gear (Jersey, Helm, Sepatu Boot)\nBengkel & Tim Mekanik Siaga", 'created_at' => now(), 'updated_at' => now()],
+                ['jenis' => 'lokasi', 'judul' => 'Lokasi Basecamp YKS', 'isi' => 'Pos Jelajah Yuk Keliling Sentul, Kawasan Gunung Pancar / Hambalang, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810.', 'created_at' => now(), 'updated_at' => now()],
+            ]);
+        }
     }
 }

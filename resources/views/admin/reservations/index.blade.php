@@ -434,7 +434,20 @@
                 <span>08.00–13.00 WIB · {{ $selectedBooking->package_duration ?? '4–6 jam' }}</span>
 
                 <span style="color: #6B756E;">Peserta</span>
-                <span>{{ $selectedBooking->participant_count }} orang</span>
+                <span>
+                    {{ $selectedBooking->participant_count }} orang
+                    @if(!empty($selectedBooking->jenis_trip))
+                        · <strong>{{ ucfirst($selectedBooking->jenis_trip) }} Trip</strong>
+                    @endif
+                    @if(!empty($selectedBooking->selected_units))
+                        · Unit: <strong>{{ $selectedBooking->selected_units }}</strong>
+                    @endif
+                </span>
+
+                @if(!empty($selectedBooking->selected_addons))
+                    <span style="color: #6B756E;">Add-On</span>
+                    <span style="color: #1F3D2B; font-weight: 600;">{{ $selectedBooking->selected_addons }} (+Rp{{ number_format($selectedBooking->subtotal_addons ?? 0, 0, ',', '.') }})</span>
+                @endif
 
                 <span style="color: #6B756E;">Titik kumpul</span>
                 <span>{{ $selectedBooking->meeting_point ?? 'Pos Jelajah YKS, Sentul' }}</span>

@@ -51,6 +51,13 @@ class PackageController extends Controller
             }
         }
 
+        $addons = \Illuminate\Support\Facades\Schema::hasTable('yks_addons')
+            ? \App\Models\YksAddon::orderBy('id', 'asc')->get()
+            : collect();
+        $units = \Illuminate\Support\Facades\Schema::hasTable('yks_units')
+            ? \App\Models\YksUnit::orderBy('id', 'asc')->get()
+            : collect();
+
         return view('admin.packages.index', compact(
             'packages',
             'allPackages',
@@ -63,7 +70,9 @@ class PackageController extends Controller
             'inactiveCount',
             'photoReadyCount',
             'priceReadyCount',
-            'lastUpdated'
+            'lastUpdated',
+            'addons',
+            'units'
         ));
     }
 
@@ -232,5 +241,67 @@ class PackageController extends Controller
         return redirect()
             ->route('admin.packages.index')
             ->with('warning', "Paket \"{$name}\" telah dihapus dari katalog.");
+    }
+
+    /**
+     * Tambah Layanan Tambahan / Add-On (SDD UI-14 & FR-05)
+     */
+    public function storeAddon(Request $request)
+    {
+        $validated = $request->validate([
+            'nama_addon' => 'required|string|max:100',
+            'harga' => 'required|numeric|min:0',
+            'keterangan' => 'nullable|string|max:255',
+        ]);
+
+        \App\Models\YksAddon::create([
+            'nama_addon' => $validated['nama_addon'],
+            'harga' => (int) $validated['harga'],
+            'keterangan' => $validated['keterangan'] ?? null,
+            'is_aktif' => true,
+        ]);
+
+        return redirect()->route('admin.packages.index')->with('success', "Add-On \"{$validated['nama_addon']}\" berhasil ditambahkan.");
+    }
+
+    public function toggleAddon($id)
+    {
+        $addon = \App\Models\YksAddon::findOrFail($id);
+        $addon->is_aktif = !$addon->is_aktif;
+        $addon->save();
+
+        return redirect()->route('admin.packages.index')->with('success', "Status Add-On \"{$addon->nama_addon}\" berhasil diperbarui.");
+    }
+
+    /**
+     * Tambah & Toggle Unit Kendaraan Jeep / Trail (SDD UI-14 & FR-11)
+     */
+    public function storeUnit(Request $request)
+    {
+        $validated = $request->validate([
+            'kode_unit' => 'required|string|max:30|unique:yks_units,kode_unit',
+            'jenis_unit' => 'required|in:jeep,trail',
+            'nama_unit' => 'nullable|string|max:100',
+            'kapasitas' => 'required|integer|min:1|max:20',
+        ]);
+
+        \App\Models\YksUnit::create([
+            'kode_unit' => strtoupper(trim($validated['kode_unit'])),
+            'jenis_unit' => $validated['jenis_unit'],
+            'nama_unit' => $validated['nama_unit'] ?? strtoupper($validated['kode_unit']),
+            'kapasitas' => (int) $validated['kapasitas'],
+            'status' => 'aktif',
+        ]);
+
+        return redirect()->route('admin.packages.index')->with('success', "Unit kendaraan \"{$validated['kode_unit']}\" berhasil ditambahkan.");
+    }
+
+    public function toggleUnit($id)
+    {
+        $unit = \App\Models\YksUnit::findOrFail($id);
+        $unit->status = $unit->status === 'aktif' ? 'perawatan' : 'aktif';
+        $unit->save();
+
+        return redirect()->route('admin.packages.index')->with('success', "Status unit \"{$unit->kode_unit}\" diubah menjadi {$unit->status}.");
     }
 }

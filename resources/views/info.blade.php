@@ -210,10 +210,10 @@
 
             <div class="faq-box active">
                 <div class="faq-box-header">
-                    <span class="faq-question">Apakah bisa membayar DP (Uang Muka) terlebih dahulu?</span>
+                    <span class="faq-question">Apakah pembayaran dilakukan secara lunas atau bisa bertahap (DP/Cicilan)?</span>
                 </div>
                 <div class="faq-answer" style="display: block;">
-                    Bisa! Khusus untuk rombongan kantor, komunitas, atau booking lebih dari 2 unit jip offroad, Anda dapat membayar DP minimal 50% dan melunasi sisanya di meeting point Sentul. Silakan konfirmasi ke WhatsApp admin setelah booking.
+                    Sesuai kebijakan resmi Yuk Keliling Sentul, pembayaran dilakukan secara <strong>lunas penuh (full payment)</strong> melalui transfer manual ke rekening resmi YKS sebelum keberangkatan (kami tidak melayani pembayaran bertahap/DP maupun payment gateway otomatis).
                 </div>
             </div>
 

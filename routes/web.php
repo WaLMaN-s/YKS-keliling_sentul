@@ -54,12 +54,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 1. Ringkasan / Dashboard
         Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        // 2. Kelola Paket (CRUD, Upload Foto & Toggle Status Aktif/Nonaktif)
+        // 2. Kelola Paket, Add-On & Unit Kendaraan (CRUD, Upload Foto & Toggle Status Aktif/Nonaktif - UI-14 SDD)
         Route::get('/paket', [AdminPackageController::class, 'index'])->name('packages.index');
         Route::post('/paket', [AdminPackageController::class, 'store'])->name('packages.store');
         Route::put('/paket/{id}', [AdminPackageController::class, 'update'])->name('packages.update');
         Route::patch('/paket/{id}/toggle-status', [AdminPackageController::class, 'toggleStatus'])->name('packages.toggle_status');
         Route::delete('/paket/{id}', [AdminPackageController::class, 'destroy'])->name('packages.destroy');
+        Route::post('/paket/addon', [AdminPackageController::class, 'storeAddon'])->name('packages.store_addon');
+        Route::patch('/paket/addon/{id}/toggle', [AdminPackageController::class, 'toggleAddon'])->name('packages.toggle_addon');
+        Route::post('/paket/unit', [AdminPackageController::class, 'storeUnit'])->name('packages.store_unit');
+        Route::patch('/paket/unit/{id}/toggle', [AdminPackageController::class, 'toggleUnit'])->name('packages.toggle_unit');
 
         // 3. Jadwal & Slot
         Route::get('/jadwal-slot', [AdminScheduleSlotController::class, 'index'])->name('schedules.index');

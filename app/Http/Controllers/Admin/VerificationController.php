@@ -59,10 +59,24 @@ class VerificationController extends Controller
      */
     public function approve($booking_code)
     {
+        $booking = DB::table('yks_bookings')->where('booking_code', $booking_code)->first();
+
         DB::table('yks_bookings')->where('booking_code', $booking_code)->update([
             'payment_status' => 'Lunas',
             'updated_at' => now(),
         ]);
+
+        if ($booking && \Illuminate\Support\Facades\Schema::hasTable('yks_payments')) {
+            DB::table('yks_payments')
+                ->where('booking_id', $booking->id)
+                ->where('status', 'menunggu_verifikasi')
+                ->update([
+                    'status' => 'diterima',
+                    'admin_id' => auth()->id(),
+                    'tgl_verifikasi' => now(),
+                    'updated_at' => now(),
+                ]);
+        }
 
         return redirect()
             ->route('admin.verifications.index')
@@ -86,6 +100,19 @@ class VerificationController extends Controller
             'notes' => $updatedNotes,
             'updated_at' => now(),
         ]);
+
+        if ($booking && \Illuminate\Support\Facades\Schema::hasTable('yks_payments')) {
+            DB::table('yks_payments')
+                ->where('booking_id', $booking->id)
+                ->where('status', 'menunggu_verifikasi')
+                ->update([
+                    'status' => 'ditolak',
+                    'catatan_admin' => $reason,
+                    'admin_id' => auth()->id(),
+                    'tgl_verifikasi' => now(),
+                    'updated_at' => now(),
+                ]);
+        }
 
         return redirect()
             ->route('admin.verifications.index')
