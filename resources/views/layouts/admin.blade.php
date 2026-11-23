@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Ringkasan' }} — Administrasi YKS Keliling Sentul</title>
 
-    <!-- Google Fonts: Inter & Montserrat (Non-blocking) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800&display=swap"></noscript>
+    <!-- Local Bundled Fonts: Inter & Montserrat -->
+    <link rel="stylesheet" href="/assets/vendor/fonts/fonts.css">
     
     <!-- Bootstrap Icons (Local Offline) -->
     <link rel="stylesheet" href="/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">

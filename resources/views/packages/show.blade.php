@@ -21,7 +21,7 @@
 
     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; margin-bottom: 24px;">
         <div>
-            <h1 class="section-title" style="font-size: 2.6rem; margin-bottom: 8px;">{{ $package->name }}</h1>
+            <h1 class="section-title" style="margin-bottom: 8px;">{{ $package->name }}</h1>
             <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: 0.9rem; color: var(--text-muted);">
                 <span class="package-badge-tag" style="position: static; display: inline-block;">
                     {{ $package->difficulty }}
@@ -34,7 +34,7 @@
 
         <div style="text-align: right;">
             <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">Harga Paket Resmi</span>
-            <span style="font-family: var(--font-heading); font-size: 2.2rem; font-weight: 900; color: var(--accent);">
+            <span style="font-family: var(--font-heading); font-size: 2.1rem; font-weight: 900; color: var(--accent);">
                 Rp {{ number_format($package->price, 0, ',', '.') }}
             </span>
             <span style="font-size: 0.85rem; color: var(--text-sub); display: block;">{{ str_contains(strtolower($package->name), 'jeep') ? '/ unit Jeep (3 s/d 4 Orang)' : '/ orang' }}</span>
@@ -44,14 +44,14 @@
     <!-- Gallery Image Preview -->
     <div class="pkg-hero-gallery">
         <div class="pkg-hero-main-img">
-            <img src="{{ $package->image ?: '/uploads/packages/pricelist-trabas-trail.jpg' }}" alt="{{ $package->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="{{ $package->image ?: '/galeri/Untitled.jpg' }}" alt="{{ $package->name }}">
         </div>
         <div class="pkg-hero-side-grid">
             <div class="pkg-hero-side-img">
-                <img src="/uploads/packages/pricelist-trabas-trail.jpg" alt="Pricelist Sewa Motor Trail Hambalang" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="/galeri/Untitled5.jpg" alt="Aksi Jalur Hutan Pinus Sentul">
             </div>
             <div class="pkg-hero-side-img">
-                <img src="/uploads/packages/wisata-jeep-4x4-sentul.jpg" alt="Edisi Wisata Jeep 4x4 Sentul" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="/galeri/Untitled3.jpg" alt="Wisata Jeep 4x4 Sentul">
             </div>
         </div>
     </div>

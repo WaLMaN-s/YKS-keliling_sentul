@@ -9,10 +9,10 @@
     <div class="section-tag">
         ━ &nbsp; PILIHAN JELAJAH SENTUL
     </div>
-    <h1 class="section-title" style="font-size: 2.8rem; max-width: 820px; margin-bottom: 16px;">
+    <h1 class="section-title" style="max-width: 820px; margin-bottom: 14px;">
         Pricelist Resmi Trabas Trail & Wisata Jeep Sentul.
     </h1>
-    <p class="section-desc" style="font-size: 1.15rem; max-width: 740px; margin-bottom: 36px;">
+    <p class="section-desc" style="max-width: 740px; margin-bottom: 32px;">
         Pilih paket sewa motor trail Hambalang (150cc, KLX 140cc, Enduro 300cc), paket bawa motor trail pribadi, atau edisi Wisata Jeep 4x4 + Trekking Curug Sentul.
     </p>
 

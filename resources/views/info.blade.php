@@ -9,10 +9,10 @@
     <div class="section-tag">
         ━ &nbsp; INFORMASI ADMIN & PEMBAYARAN
     </div>
-    <h1 class="section-title" style="font-size: 2.8rem; max-width: 850px; margin-bottom: 16px;">
+    <h1 class="section-title" style="max-width: 850px; margin-bottom: 14px;">
         Pusat Layanan & Rekening Resmi YKS.
     </h1>
-    <p class="section-desc" style="font-size: 1.15rem; max-width: 720px; margin-bottom: 32px;">
+    <p class="section-desc" style="max-width: 720px; margin-bottom: 32px;">
         Temukan jam layanan customer service, panduan titik kumpul, dan nomor rekening resmi yang terverifikasi aman untuk transaksi Anda.
     </p>
 

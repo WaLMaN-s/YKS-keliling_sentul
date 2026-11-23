@@ -9,18 +9,18 @@
         <div class="section-tag">
             ━ &nbsp; TENTANG YKS
         </div>
-        <h1 class="section-title" style="font-size: 2.8rem; max-width: 800px; margin-bottom: 16px;">
+        <h1 class="section-title" style="max-width: 800px; margin-bottom: 14px;">
             Sentul bukan sekadar tempat lewat.
         </h1>
-        <p class="section-desc" style="font-size: 1.15rem; max-width: 720px; margin-bottom: 36px;">
+        <p class="section-desc" style="max-width: 720px; margin-bottom: 32px;">
             Kami percaya petualangan terbaik bukan soal seberapa jauh melangkah, tapi seberapa dalam kita merasakan setiap
             lekuk jalan, dinginnya air sungai, dan kehangatan kebersamaan.
         </p>
 
         <!-- Hero Image Potret Tim -->
         <div class="about-hero-banner">
-            <img src="{{ asset('galeri/Untitled10.jpg') }}"
-                alt="Tim & Rombongan YKS di Jalur Sentul" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="{{ asset('galeri/Untitled5.jpg') }}"
+                alt="Tim & Rombongan YKS di Jalur Sentul">
         </div>
     </div>
 

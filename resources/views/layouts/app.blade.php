@@ -6,17 +6,14 @@
     <title>{{ isset($title) ? $title . ' — ' . config('app.name', 'YKS - Keliling Sentul') : config('app.name', 'YKS - Keliling Sentul') . ' · Petualangan Jelajah Alam & Wisata Sentul' }}</title>
     <meta name="description" content="Yuk Keliling Sentul (YKS) - Jelajahi rute perbukitan, jalur tanah offroad 4x4, curug tersembunyi, dan pesona alam Sentul bersama pemandu lokal berpengalaman.">
     
-    <!-- Google Fonts: Montserrat (Heading) & Inter (Body) from Figma (Non-blocking) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap"></noscript>
+    <!-- Local Bundled Fonts: Montserrat (Heading) & Inter (Body) -->
+    <link rel="stylesheet" href="/assets/vendor/fonts/fonts.css">
     
     <!-- Bootstrap Icons (Local Offline) -->
     <link rel="stylesheet" href="/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
     
     <!-- Custom Style (Root-relative with fast static cache) -->
-    <link rel="stylesheet" href="/assets/css/style.css?v=2.2">
+    <link rel="stylesheet" href="/assets/css/style.css?v=2.3">
 </head>
 <body>
 

@@ -9,10 +9,10 @@
     <div class="section-tag">
         ━ &nbsp; DOKUMENTASI & CERITA PENJELAJAH
     </div>
-    <h1 class="section-title" style="font-size: 2.8rem; max-width: 800px; margin-bottom: 16px;">
+    <h1 class="section-title" style="max-width: 800px; margin-bottom: 14px;">
         Setiap percikan lumpur punya cerita.
     </h1>
-    <p class="section-desc" style="font-size: 1.15rem; max-width: 720px; margin-bottom: 36px;">
+    <p class="section-desc" style="max-width: 720px; margin-bottom: 32px;">
         Kumpulan dokumentasi asli dari para penjelajah, komunitas motor trail, dan rombongan keluarga yang telah menembus jalur Hambalang serta sungai Sentul bersama Yuk Keliling Sentul.
     </p>
 
@@ -24,59 +24,59 @@
         <button class="btn btn-outline btn-sm" onclick="filterGallery('sungai', this)">Jalur Sungai & Curug</button>
     </div>
 
-    <!-- Gallery Grid (11 Foto Asli dari public/galeri) -->
-    <div class="gallery-mosaic" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
-        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail sungai" style="height: 340px; cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled.jpg') }}', 'Spot Curug & Unit Trail Yuk Keliling Sentul Hambalang')">
+    <!-- Gallery Grid (11 Foto Asli dari public/galeri - 10 Portrait + 1 Wide Landscape = 12 Slot Rapi) -->
+    <div class="gallery-mosaic">
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail sungai" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled.jpg') }}', 'Spot Curug & Unit Trail Yuk Keliling Sentul Hambalang')">
             <img src="{{ asset('galeri/Untitled.jpg') }}" alt="Spot Curug & Unit Trail Yuk Keliling Sentul" loading="lazy">
             <span class="gallery-mosaic-caption">Spot Curug & Unit Trail YKS Hambalang</span>
         </div>
 
-        <div class="gallery-mosaic-item gallery-item-filter" data-cat="jeep" style="height: 340px; cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled3.jpg') }}', 'Konvoi Wisata Jeep 4x4 Menembus Jalur Lumpur Sentul')">
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="jeep" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled3.jpg') }}', 'Konvoi Wisata Jeep 4x4 Menembus Jalur Lumpur Sentul')">
             <img src="{{ asset('galeri/Untitled3.jpg') }}" alt="Konvoi Wisata Jeep 4x4 Sentul" loading="lazy">
             <span class="gallery-mosaic-caption">Konvoi Wisata Jeep 4x4 Jalur Hutan Sentul</span>
         </div>
 
-        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail sungai" style="height: 340px; cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled9.jpg') }}', 'Aksi Trabas Motor Trail Menerobos Aliran Sungai Sentul')">
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail sungai" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled9.jpg') }}', 'Aksi Trabas Motor Trail Menerobos Aliran Sungai Sentul')">
             <img src="{{ asset('galeri/Untitled9.jpg') }}" alt="Trabas Motor Trail Sungai Sentul" loading="lazy">
             <span class="gallery-mosaic-caption">Aksi Trabas Menerobos Aliran Sungai Sentul</span>
         </div>
 
-        <div class="gallery-mosaic-item gallery-item-filter" data-cat="jeep sungai" style="height: 340px; cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled8.jpg') }}', 'Keseruan Rombongan Wisata Jeep 4x4 di Sungai Berbatu')">
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="jeep sungai" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled8.jpg') }}', 'Keseruan Rombongan Wisata Jeep 4x4 di Sungai Berbatu')">
             <img src="{{ asset('galeri/Untitled8.jpg') }}" alt="Wisata Jeep 4x4 di Sungai Sentul" loading="lazy">
             <span class="gallery-mosaic-caption">Keseruan Wisata Jeep 4x4 di Sungai Sentul</span>
         </div>
 
-        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="height: 340px; cursor: pointer;" onclick="openLightbox('{{ asset('galeri/7.jpg') }}', 'Rombongan Riders di Puncak Jalur Tanjakan Hambalang')">
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/7.jpg') }}', 'Rombongan Riders di Puncak Jalur Tanjakan Hambalang')">
             <img src="{{ asset('galeri/7.jpg') }}" alt="Rombongan Riders di Jalur Hambalang" loading="lazy">
             <span class="gallery-mosaic-caption">Rombongan Riders di Tanjakan Bukit Hambalang</span>
         </div>
 
-        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="height: 340px; cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled6.jpg') }}', 'Panorama Perbukitan Hambalang Bersama Unit KLX')">
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled6.jpg') }}', 'Panorama Perbukitan Hambalang Bersama Unit KLX')">
             <img src="{{ asset('galeri/Untitled6.jpg') }}" alt="Panorama Perbukitan Hambalang" loading="lazy">
             <span class="gallery-mosaic-caption">Panorama Perbukitan Hambalang dari Ketinggian</span>
         </div>
 
-        <div class="gallery-mosaic-item gallery-item-filter" data-cat="jeep" style="height: 340px; cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled4.jpg') }}', 'Serunya Wisata Jeep 4x4 Saat Cuaca Sejuk di Puncak Bukit')">
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="jeep" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled4.jpg') }}', 'Serunya Wisata Jeep 4x4 Saat Cuaca Sejuk di Puncak Bukit')">
             <img src="{{ asset('galeri/Untitled4.jpg') }}" alt="Wisata Jeep 4x4 Kuning Puncak Bukit" loading="lazy">
             <span class="gallery-mosaic-caption">Serunya Jeep 4x4 di Puncak Bukit Sentul</span>
         </div>
 
-        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="height: 340px; cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled5.jpg') }}', 'Perlengkapan Safety Lengkap di Jalur Hutan Pinus Sentul')">
-            <img src="{{ asset('galeri/Untitled5.jpg') }}" alt="Riders di Hutan Pinus Sentul" loading="lazy">
-            <span class="gallery-mosaic-caption">Jalur Hutan Pinus dengan Gear Safety Lengkap</span>
-        </div>
-
-        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="height: 340px; cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled10.jpg') }}', 'Komunitas & Rombongan Trabas Bersama Leader YKS')">
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled10.jpg') }}', 'Komunitas & Rombongan Trabas Bersama Leader YKS')">
             <img src="{{ asset('galeri/Untitled10.jpg') }}" alt="Rombongan Trabas Bersama Leader YKS" loading="lazy">
             <span class="gallery-mosaic-caption">Rombongan Trabas Bersama Leader YKS</span>
         </div>
 
-        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="height: 340px; cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled2.jpg') }}', 'Menikmati Lanskap Pegunungan Sentul dari Atas Motor Trail')">
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled2.jpg') }}', 'Menikmati Lanskap Pegunungan Sentul dari Atas Motor Trail')">
             <img src="{{ asset('galeri/Untitled2.jpg') }}" alt="Lanskap Pegunungan Sentul" loading="lazy">
             <span class="gallery-mosaic-caption">Lanskap Pegunungan Sentul & Hambalang</span>
         </div>
 
-        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="height: 340px; cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled1.jpg') }}', 'Lady Riders Siap Menaklukkan Rute Trabas Pemula')">
+        <div class="gallery-mosaic-item gallery-mosaic-wide gallery-item-filter" data-cat="trail" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled5.jpg') }}', 'Perlengkapan Safety Lengkap di Jalur Hutan Pinus Sentul')">
+            <img src="{{ asset('galeri/Untitled5.jpg') }}" alt="Riders di Hutan Pinus Sentul" loading="lazy">
+            <span class="gallery-mosaic-caption">Jalur Hutan Pinus dengan Gear Safety Lengkap</span>
+        </div>
+
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled1.jpg') }}', 'Lady Riders Siap Menaklukkan Rute Trabas Pemula')">
             <img src="{{ asset('galeri/Untitled1.jpg') }}" alt="Lady Riders Trabas Sentul" loading="lazy">
             <span class="gallery-mosaic-caption">Lady Riders di Jalur Trabas Pemula YKS</span>
         </div>
