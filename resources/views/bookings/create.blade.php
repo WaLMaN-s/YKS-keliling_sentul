@@ -129,24 +129,6 @@
                         </div>
                     </div>
 
-                    <!-- Pilihan Unit Armada (SDD FR-07 & Tabel unit) -->
-                    @if(isset($units) && $units->isNotEmpty())
-                        <div class="form-group" style="margin-bottom: 18px;">
-                            <label class="form-label" style="font-size: 0.88rem;">Pilihan Unit Kendaraan Tersedia (Opsional — Sesuai Paket)</label>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; margin-top: 6px;">
-                                @foreach($units as $u)
-                                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-body); cursor: pointer; font-size: 0.84rem;">
-                                        <input type="checkbox" name="unit_ids[]" value="{{ $u->id }}" style="accent-color: var(--primary); width: 16px; height: 16px;">
-                                        <div>
-                                            <strong style="color: var(--primary); display: block;">{{ $u->kode_unit }}</strong>
-                                            <span style="color: var(--text-muted); font-size: 0.76rem;">{{ $u->nama_unit }} (Maks. {{ $u->kapasitas }} org)</span>
-                                        </div>
-                                    </label>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-
                     <div class="form-group" style="margin-bottom: 24px;">
                         <label style="display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; color: var(--primary); font-weight: 600;">
                             <input type="checkbox" name="motor_pribadi" value="1" {{ old('motor_pribadi') ? 'checked' : '' }} style="accent-color: var(--primary); width: 17px; height: 17px;">
