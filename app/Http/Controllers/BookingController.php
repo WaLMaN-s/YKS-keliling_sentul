@@ -32,7 +32,58 @@ class BookingController extends Controller
             ? YksUnit::where('status', 'aktif')->get()
             : collect();
 
-        return view('bookings.create', compact('package', 'allPackages', 'addons', 'units'));
+        $scheduleData = $this->getCalendarScheduleData();
+        $defaultTripDate = $this->findNextAvailableWeekend(now()->startOfDay(), $scheduleData['blocked_dates'], $scheduleData['booked_counts'], $scheduleData['daily_capacity']);
+
+        return view('bookings.create', compact('package', 'allPackages', 'addons', 'units', 'scheduleData', 'defaultTripDate'));
+    }
+
+    /**
+     * Ambil data konfigurasi jadwal, tanggal blokir & jumlah booking per tanggal untuk kalender UI-08.
+     */
+    private function getCalendarScheduleData(): array
+    {
+        $schedulePath = storage_path('app/yks_schedules.json');
+        $dailyCapacity = 12;
+        $blockedDates = [];
+
+        if (file_exists($schedulePath)) {
+            $config = json_decode(file_get_contents($schedulePath), true);
+            $dailyCapacity = (int) ($config['daily_capacity'] ?? 12);
+            $blockedDates = $config['blocked_dates'] ?? [];
+        }
+
+        $rawCounts = YksBooking::whereDate('trip_date', '>=', today())
+            ->where('payment_status', '!=', 'Dibatalkan')
+            ->select('trip_date', DB::raw('count(*) as total'))
+            ->groupBy('trip_date')
+            ->pluck('total', 'trip_date')
+            ->toArray();
+
+        $bookedCounts = [];
+        foreach ($rawCounts as $rawDate => $cnt) {
+            $key = substr((string) $rawDate, 0, 10);
+            $bookedCounts[$key] = ($bookedCounts[$key] ?? 0) + (int) $cnt;
+        }
+
+        return [
+            'daily_capacity' => $dailyCapacity,
+            'blocked_dates' => $blockedDates,
+            'booked_counts' => $bookedCounts,
+        ];
+    }
+
+    private function findNextAvailableWeekend(\Carbon\Carbon $startDate, array $blockedDates, array $bookedCounts, int $dailyCapacity): string
+    {
+        $cursor = $startDate->copy();
+        for ($i = 0; $i < 90; $i++) {
+            $key = $cursor->format('Y-m-d');
+            if ($cursor->isWeekend() && !isset($blockedDates[$key]) && (($bookedCounts[$key] ?? 0) < $dailyCapacity)) {
+                return $key;
+            }
+            $cursor->addDay();
+        }
+        return $startDate->isWeekend() ? $startDate->format('Y-m-d') : $startDate->next(\Carbon\Carbon::SATURDAY)->format('Y-m-d');
     }
 
     /**
@@ -61,6 +112,14 @@ class BookingController extends Controller
         ]);
 
         $tripDateStr = substr($validated['trip_date'], 0, 10);
+
+        // 0. Validasi Aturan Bisnis: Reservasi hanya tersedia untuk hari Sabtu & Minggu
+        if (!\Carbon\Carbon::parse($tripDateStr)->isWeekend()) {
+            return back()
+                ->withInput()
+                ->withErrors(['trip_date' => 'Reservasi hanya tersedia untuk hari Sabtu dan Minggu.'])
+                ->with('error', 'Maaf, reservasi perjalanan hanya dapat dilakukan pada hari Sabtu dan Minggu (akhir pekan).');
+        }
 
         // 1. Pemeriksaan tanggal diblokir & kuota harian (Bab 6 SDD)
         $schedulePath = storage_path('app/yks_schedules.json');
@@ -276,7 +335,10 @@ class BookingController extends Controller
             session()->forget('recent_bookings');
         }
 
-        return view('bookings.track', compact('booking', 'matchedBookings', 'kode'));
+        $scheduleData = $this->getCalendarScheduleData();
+        $defaultRescheduleDate = $this->findNextAvailableWeekend(now()->addDays(2)->startOfDay(), $scheduleData['blocked_dates'], $scheduleData['booked_counts'], $scheduleData['daily_capacity']);
+
+        return view('bookings.track', compact('booking', 'matchedBookings', 'kode', 'scheduleData', 'defaultRescheduleDate'));
     }
 
     /**
@@ -303,6 +365,12 @@ class BookingController extends Controller
 
         $newDateStr = substr($validated['new_trip_date'], 0, 10);
         $currentDateStr = substr((string) $booking->trip_date, 0, 10);
+
+        if (!\Carbon\Carbon::parse($newDateStr)->isWeekend()) {
+            return redirect()->route('booking.track', ['kode' => $booking->booking_code])
+                ->withErrors(['new_trip_date' => 'Perubahan jadwal hanya tersedia untuk hari Sabtu dan Minggu.'])
+                ->with('error', 'Maaf, perubahan jadwal mandiri hanya dapat dipindahkan ke hari Sabtu atau Minggu.');
+        }
 
         if ($newDateStr === $currentDateStr) {
             return redirect()->route('booking.track', ['kode' => $booking->booking_code])

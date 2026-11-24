@@ -283,29 +283,45 @@
                             </div>
                             
                             <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">
-                                Ketentuan: Penggantian jadwal mandiri bebas biaya berlaku minimal <strong>H-2</strong> sebelum hari keberangkatan. Tanggal baru yang dapat dipilih mulai dari <strong>{{ \Carbon\Carbon::today()->addDays(2)->translatedFormat('d F Y') }}</strong>.
+                                Ketentuan: Penggantian jadwal mandiri bebas biaya berlaku minimal <strong>H-2</strong> sebelum hari keberangkatan dan <strong>khusus hari Sabtu & Minggu</strong>. Tanggal baru tersedia mulai <strong>{{ \Carbon\Carbon::today()->addDays(2)->translatedFormat('d F Y') }}</strong>.
                             </p>
 
                             <form method="POST" action="{{ route('booking.reschedule', $booking->booking_code) }}">
                                 @csrf
-                                <div class="resp-grid-2" style="gap: 12px; margin-bottom: 14px;">
-                                    <div>
-                                        <label class="form-label" style="font-size: 0.84rem; font-weight: 600;">Tanggal Jelajah Baru <span class="text-accent">*</span></label>
-                                        <input type="date" name="new_trip_date" class="form-control"
-                                               min="{{ \Carbon\Carbon::today()->addDays(2)->format('Y-m-d') }}"
-                                               value="{{ old('new_trip_date', \Carbon\Carbon::parse($booking->trip_date)->format('Y-m-d')) }}"
-                                               required style="background: #FFFFFF;">
-                                        @error('new_trip_date')
-                                            <small style="color: #DC2626; font-size: 0.78rem;">{{ $message }}</small>
-                                        @enderror
+                                <input type="hidden" name="new_trip_date" id="rescheduleDateInput" value="{{ old('new_trip_date', $defaultRescheduleDate ?? \Carbon\Carbon::parse($booking->trip_date)->format('Y-m-d')) }}" required>
+
+                                <div style="margin-bottom: 14px;">
+                                    <label class="form-label" style="font-size: 0.84rem; font-weight: 600;">Pilih Tanggal Baru (Sabtu / Minggu) <span class="text-accent">*</span></label>
+                                    <div class="yks-calendar-box" style="padding: 14px;">
+                                        <div class="yks-cal-header" style="margin-bottom: 10px;">
+                                            <button type="button" class="yks-cal-nav-btn" onclick="changeRescheduleMonth(-1)" aria-label="Bulan Sebelumnya">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </button>
+                                            <span class="yks-cal-month-label" id="rescheduleCalMonthLabel" style="font-size: 0.95rem;">November 2026</span>
+                                            <button type="button" class="yks-cal-nav-btn" onclick="changeRescheduleMonth(1)" aria-label="Bulan Berikutnya">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </button>
+                                        </div>
+                                        <div class="yks-cal-weekdays">
+                                            <div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div style="color: var(--primary);">Sab</div><div style="color: var(--primary);">Min</div>
+                                        </div>
+                                        <div class="yks-cal-grid" id="rescheduleCalGrid"></div>
+                                        <div class="yks-cal-selected-bar" style="margin-top: 10px; padding: 8px 12px; font-size: 0.8rem;">
+                                            <i class="bi bi-calendar2-check-fill" style="color: var(--accent);"></i>
+                                            <span id="rescheduleSelectedText">Dipilih: -</span>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="form-label" style="font-size: 0.84rem; font-weight: 600;">Alasan Perubahan (Opsional)</label>
-                                        <input type="text" name="reschedule_reason" class="form-control"
-                                               placeholder="Contoh: Perubahan cuti kerja, acara keluarga"
-                                               value="{{ old('reschedule_reason') }}"
-                                               style="background: #FFFFFF;">
-                                    </div>
+                                    @error('new_trip_date')
+                                        <small style="color: #DC2626; font-size: 0.78rem; display: block; margin-top: 4px;">{{ $message }}</small>
+                                    @enderror
+                                </div>
+
+                                <div style="margin-bottom: 14px;">
+                                    <label class="form-label" style="font-size: 0.84rem; font-weight: 600;">Alasan Perubahan (Opsional)</label>
+                                    <input type="text" name="reschedule_reason" class="form-control"
+                                           placeholder="Contoh: Perubahan cuti kerja, acara keluarga"
+                                           value="{{ old('reschedule_reason') }}"
+                                           style="background: #FFFFFF;">
                                 </div>
 
                                 <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
@@ -441,11 +457,111 @@
         if (box) {
             if (box.style.display === 'none' || box.style.display === '') {
                 box.style.display = 'block';
+                renderRescheduleCalendar();
                 box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             } else {
                 box.style.display = 'none';
             }
         }
     }
+
+    // === Weekend-Only Reschedule Calendar (H-2) ===
+    const resCalScheduleData = @json($scheduleData ?? ['daily_capacity' => 12, 'blocked_dates' => [], 'booked_counts' => []]);
+    const resMinDate = "{{ \Carbon\Carbon::today()->addDays(2)->format('Y-m-d') }}";
+    const resDateInput = document.getElementById('rescheduleDateInput');
+    const resCalGrid = document.getElementById('rescheduleCalGrid');
+    const resCalMonthLabel = document.getElementById('rescheduleCalMonthLabel');
+    const resSelectedText = document.getElementById('rescheduleSelectedText');
+
+    const resMonthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const resDayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+    let resSelectedStr = resDateInput ? resDateInput.value : resMinDate;
+    let resInitParts = (resSelectedStr || resMinDate).split('-');
+    let resYear = parseInt(resInitParts[0]) || {{ date('Y') }};
+    let resMonth = (parseInt(resInitParts[1]) || {{ date('n') }}) - 1;
+
+    function formatResDateIndo(dateStr) {
+        if (!dateStr) return '-';
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const dt = new Date(y, m - 1, d);
+        return `${resDayNames[dt.getDay()]}, ${d} ${resMonthNames[m - 1]} ${y}`;
+    }
+
+    function changeRescheduleMonth(delta) {
+        resMonth += delta;
+        if (resMonth < 0) { resMonth = 11; resYear--; }
+        else if (resMonth > 11) { resMonth = 0; resYear++; }
+        renderRescheduleCalendar();
+    }
+
+    function selectRescheduleDate(dateStr) {
+        resSelectedStr = dateStr;
+        if (resDateInput) resDateInput.value = dateStr;
+        if (resSelectedText) resSelectedText.textContent = 'Dipilih: ' + formatResDateIndo(dateStr);
+        renderRescheduleCalendar();
+    }
+
+    function renderRescheduleCalendar() {
+        if (!resCalGrid) return;
+        resCalMonthLabel.textContent = `${resMonthNames[resMonth]} ${resYear}`;
+        resCalGrid.innerHTML = '';
+
+        const firstDay = new Date(resYear, resMonth, 1);
+        const daysInMonth = new Date(resYear, resMonth + 1, 0).getDate();
+        const startOffset = (firstDay.getDay() + 6) % 7;
+
+        for (let i = 0; i < startOffset; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.className = 'yks-cal-day empty';
+            resCalGrid.appendChild(emptyCell);
+        }
+
+        const dailyCap = resCalScheduleData.daily_capacity || 12;
+        const blocked = resCalScheduleData.blocked_dates || {};
+        const booked = resCalScheduleData.booked_counts || {};
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const mStr = String(resMonth + 1).padStart(2, '0');
+            const dStr = String(day).padStart(2, '0');
+            const dateStr = `${resYear}-${mStr}-${dStr}`;
+            const dt = new Date(resYear, resMonth, day);
+            const jsDay = dt.getDay();
+            const isWeekend = (jsDay === 0 || jsDay === 6);
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+
+            if (!isWeekend) {
+                btn.className = 'yks-cal-day weekday-closed';
+                btn.disabled = true;
+                btn.title = 'Tutup (Hanya Sabtu & Minggu)';
+                btn.innerHTML = `<span>${day}</span><span class="yks-cal-dot">-</span>`;
+            } else if (dateStr < resMinDate) {
+                btn.className = 'yks-cal-day past-closed';
+                btn.disabled = true;
+                btn.title = 'Minimal H+2 dari hari ini';
+                btn.innerHTML = `<span>${day}</span><span class="yks-cal-dot"></span>`;
+            } else if (blocked[dateStr] || (booked[dateStr] || 0) >= dailyCap) {
+                btn.className = 'yks-cal-day full-closed';
+                btn.disabled = true;
+                btn.title = blocked[dateStr] ? `Ditutup: ${blocked[dateStr]}` : 'Kuota penuh';
+                btn.innerHTML = `<span>${day}</span><span class="yks-cal-dot">×</span>`;
+            } else {
+                btn.className = 'yks-cal-day available';
+                if (dateStr === resSelectedStr) btn.classList.add('selected');
+                btn.innerHTML = `<span>${day}</span><span class="yks-cal-dot">${dateStr === resSelectedStr ? '✓' : '•'}</span>`;
+                btn.onclick = () => selectRescheduleDate(dateStr);
+            }
+
+            resCalGrid.appendChild(btn);
+        }
+
+        if (resSelectedText) {
+            resSelectedText.textContent = 'Dipilih: ' + formatResDateIndo(resSelectedStr);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', renderRescheduleCalendar);
 </script>
 @endsection

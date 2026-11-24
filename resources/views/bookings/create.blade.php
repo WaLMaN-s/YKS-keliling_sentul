@@ -75,27 +75,57 @@
                     <hr style="border: none; border-top: 1px solid var(--border-light); margin-bottom: 28px;">
 
                     <!-- Section 1: Jadwal Jelajah & Unit -->
-                    <h3 style="font-size: 1.3rem; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px;">
+                    <h3 style="font-size: 1.3rem; color: var(--primary); margin-bottom: 14px; display: flex; align-items: center; gap: 10px;">
                         <i class="bi bi-calendar-check" style="color: var(--accent);"></i>
-                        1. Pilih Tanggal, Peserta & Armada Unit
+                        1. Pilih Tanggal (Khusus Sabtu & Minggu), Peserta & Armada Unit
                     </h3>
 
-                    <div class="resp-grid-2" style="margin-bottom: 18px;">
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Tanggal Jelajah <span class="text-accent">*</span></label>
-                            <input type="date" name="trip_date" class="form-control" required 
-                                   min="{{ date('Y-m-d') }}" 
-                                   value="{{ old('trip_date', date('Y-m-d', strtotime('+1 day'))) }}">
-                        </div>
+                    <!-- Kalender Visual Weekend-Only (SDD UI-08) -->
+                    <div class="form-group" style="margin-bottom: 22px;">
+                        <label class="form-label">Pilih Tanggal Keberangkatan <span class="text-accent">*</span> <small style="font-weight: 500; color: var(--text-muted);">(Operasional wisata hanya tersedia setiap hari Sabtu & Minggu)</small></label>
+                        <input type="hidden" name="trip_date" id="tripDateInput" value="{{ old('trip_date', $defaultTripDate) }}" required>
 
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Jumlah Peserta / Unit <span class="text-accent">*</span></label>
-                            <div style="display: flex; gap: 8px;">
-                                <button type="button" onclick="adjustCount(-1)" class="btn btn-outline" style="padding: 0 16px; font-weight: 800;">-</button>
-                                <input type="number" id="participantCount" name="participant_count" class="form-control" style="text-align: center; font-weight: 800;" min="1" max="100" 
-                                       value="{{ old('participant_count', 1) }}">
-                                <button type="button" onclick="adjustCount(1)" class="btn btn-outline" style="padding: 0 16px; font-weight: 800;">+</button>
+                        <div class="yks-calendar-box" id="bookingCalendarContainer">
+                            <div class="yks-cal-header">
+                                <button type="button" class="yks-cal-nav-btn" onclick="changeBookingMonth(-1)" aria-label="Bulan Sebelumnya">
+                                    <i class="bi bi-chevron-left"></i>
+                                </button>
+                                <span class="yks-cal-month-label" id="bookingCalMonthLabel">November 2026</span>
+                                <button type="button" class="yks-cal-nav-btn" onclick="changeBookingMonth(1)" aria-label="Bulan Berikutnya">
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
                             </div>
+
+                            <div class="yks-cal-legend">
+                                <span><strong style="color: #1F3D2B;">●</strong> Tersedia (Sab/Min)</span>
+                                <span><strong style="color: #D97706;">—</strong> Hampir penuh</span>
+                                <span><strong style="color: #DC2626;">×</strong> Penuh / Ditutup</span>
+                                <span style="color: #9CA3AF;">■ Sen–Jum tutup</span>
+                            </div>
+
+                            <div class="yks-cal-weekdays">
+                                <div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div style="color: var(--primary);">Sab</div><div style="color: var(--primary);">Min</div>
+                            </div>
+
+                            <div class="yks-cal-grid" id="bookingCalGrid"></div>
+
+                            <div class="yks-cal-selected-bar">
+                                <i class="bi bi-calendar2-check-fill" style="color: var(--accent);"></i>
+                                <span id="bookingSelectedText">Dipilih: -</span>
+                            </div>
+                        </div>
+                        @error('trip_date')
+                            <small style="color: #DC2626; font-size: 0.8rem; display: block; margin-top: 6px;">{{ $message }}</small>
+                        @enderror
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 22px; max-width: 300px;">
+                        <label class="form-label">Jumlah Peserta / Unit <span class="text-accent">*</span></label>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" onclick="adjustCount(-1)" class="btn btn-outline" style="padding: 0 16px; font-weight: 800;">-</button>
+                            <input type="number" id="participantCount" name="participant_count" class="form-control" style="text-align: center; font-weight: 800;" min="1" max="100" 
+                                   value="{{ old('participant_count', 1) }}">
+                            <button type="button" onclick="adjustCount(1)" class="btn btn-outline" style="padding: 0 16px; font-weight: 800;">+</button>
                         </div>
                     </div>
 
@@ -317,5 +347,116 @@
         if (elSubAdd) elSubAdd.textContent = 'Rp ' + subtotalAddon.toLocaleString('id-ID');
         summaryTotal.textContent = 'Rp ' + total.toLocaleString('id-ID');
     }
+
+    // === Weekend-Only Interactive Calendar (SDD UI-08) ===
+    const calScheduleData = @json($scheduleData ?? ['daily_capacity' => 12, 'blocked_dates' => [], 'booked_counts' => []]);
+    const calMinDate = "{{ date('Y-m-d') }}";
+    const tripDateInput = document.getElementById('tripDateInput');
+    const bookingCalGrid = document.getElementById('bookingCalGrid');
+    const bookingCalMonthLabel = document.getElementById('bookingCalMonthLabel');
+    const bookingSelectedText = document.getElementById('bookingSelectedText');
+
+    const monthNamesID = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const dayNamesID = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+    let selectedDateStr = tripDateInput ? tripDateInput.value : "{{ $defaultTripDate }}";
+    let initParts = selectedDateStr.split('-');
+    let calCurrentYear = parseInt(initParts[0]) || {{ date('Y') }};
+    let calCurrentMonth = (parseInt(initParts[1]) || {{ date('n') }}) - 1;
+
+    function formatDateIndo(dateStr) {
+        if (!dateStr) return '-';
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const dt = new Date(y, m - 1, d);
+        return `${dayNamesID[dt.getDay()]}, ${d} ${monthNamesID[m - 1]} ${y}`;
+    }
+
+    function changeBookingMonth(delta) {
+        calCurrentMonth += delta;
+        if (calCurrentMonth < 0) {
+            calCurrentMonth = 11;
+            calCurrentYear--;
+        } else if (calCurrentMonth > 11) {
+            calCurrentMonth = 0;
+            calCurrentYear++;
+        }
+        renderBookingCalendar();
+    }
+
+    function selectBookingDate(dateStr) {
+        selectedDateStr = dateStr;
+        if (tripDateInput) tripDateInput.value = dateStr;
+        if (bookingSelectedText) bookingSelectedText.textContent = 'Dipilih: ' + formatDateIndo(dateStr);
+        renderBookingCalendar();
+    }
+
+    function renderBookingCalendar() {
+        if (!bookingCalGrid) return;
+        bookingCalMonthLabel.textContent = `${monthNamesID[calCurrentMonth]} ${calCurrentYear}`;
+        bookingCalGrid.innerHTML = '';
+
+        const firstDay = new Date(calCurrentYear, calCurrentMonth, 1);
+        const daysInMonth = new Date(calCurrentYear, calCurrentMonth + 1, 0).getDate();
+        // Convert JS Sunday=0..Saturday=6 to Monday=0..Sunday=6
+        const startOffset = (firstDay.getDay() + 6) % 7;
+
+        for (let i = 0; i < startOffset; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.className = 'yks-cal-day empty';
+            bookingCalGrid.appendChild(emptyCell);
+        }
+
+        const dailyCap = calScheduleData.daily_capacity || 12;
+        const blocked = calScheduleData.blocked_dates || {};
+        const booked = calScheduleData.booked_counts || {};
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const mStr = String(calCurrentMonth + 1).padStart(2, '0');
+            const dStr = String(day).padStart(2, '0');
+            const dateStr = `${calCurrentYear}-${mStr}-${dStr}`;
+            const dt = new Date(calCurrentYear, calCurrentMonth, day);
+            const jsDay = dt.getDay(); // 0=Sun, 6=Sat
+            const isWeekend = (jsDay === 0 || jsDay === 6);
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+
+            if (!isWeekend) {
+                btn.className = 'yks-cal-day weekday-closed';
+                btn.disabled = true;
+                btn.title = 'Tutup (Reservasi hanya hari Sabtu & Minggu)';
+                btn.innerHTML = `<span>${day}</span><span class="yks-cal-dot">-</span>`;
+            } else if (dateStr < calMinDate) {
+                btn.className = 'yks-cal-day past-closed';
+                btn.disabled = true;
+                btn.title = 'Tanggal sudah lewat';
+                btn.innerHTML = `<span>${day}</span><span class="yks-cal-dot"></span>`;
+            } else if (blocked[dateStr] || (booked[dateStr] || 0) >= dailyCap) {
+                btn.className = 'yks-cal-day full-closed';
+                btn.disabled = true;
+                btn.title = blocked[dateStr] ? `Ditutup: ${blocked[dateStr]}` : 'Kuota jadwal penuh';
+                btn.innerHTML = `<span>${day}</span><span class="yks-cal-dot">×</span>`;
+            } else {
+                const used = booked[dateStr] || 0;
+                const isAlmostFull = (dailyCap - used) <= 3;
+                btn.className = 'yks-cal-day ' + (isAlmostFull ? 'almost-full' : 'available');
+                if (dateStr === selectedDateStr) {
+                    btn.classList.add('selected');
+                }
+                const dot = dateStr === selectedDateStr ? '✓' : (isAlmostFull ? '—' : '•');
+                btn.title = `Tersedia (${dailyCap - used} slot tersisa)`;
+                btn.innerHTML = `<span>${day}</span><span class="yks-cal-dot">${dot}</span>`;
+                btn.onclick = () => selectBookingDate(dateStr);
+            }
+
+            bookingCalGrid.appendChild(btn);
+        }
+
+        if (bookingSelectedText) {
+            bookingSelectedText.textContent = 'Dipilih: ' + formatDateIndo(selectedDateStr);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', renderBookingCalendar);
 </script>
 @endsection
