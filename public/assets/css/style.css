@@ -732,6 +732,133 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================================================
+   Beranda · Desktop (Figma ON GOING #73:6977) — Hero layar penuh
+   ========================================================================== */
+.home-hero {
+  position: relative;
+  color: #FFFFFF;
+  background-color: var(--primary-dark);
+  background-image: linear-gradient(90deg, rgba(14, 33, 24, 0.82) 0%, rgba(14, 33, 24, 0.45) 55%, rgba(14, 33, 24, 0.12) 100%),
+                    url('/galeri/Untitled9.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: calc(100vh - 88px - 76px);
+  min-height: max(520px, calc(100vh - 88px - 76px));
+  display: flex;
+  align-items: center;
+}
+
+.home-hero-inner {
+  padding-top: 56px;
+  padding-bottom: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.home-hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 18px;
+  color: #FFFFFF;
+}
+
+.home-hero-title {
+  font-family: var(--font-heading);
+  font-size: 3.4rem;
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.5px;
+  color: #FFFFFF;
+  margin-bottom: 18px;
+  max-width: 760px;
+}
+
+.home-hero-title span {
+  display: block;
+  color: #F26B1D;
+}
+
+.home-hero-lead {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #F1F4EE;
+  max-width: 480px;
+  margin-bottom: 28px;
+}
+
+.home-hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.home-hero-meta {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  color: #E3E9E0;
+}
+
+/* Sorotan yang menyatu dengan footer */
+.home-highlights {
+  background-color: var(--primary);
+  color: #FFFFFF;
+  padding: 26px 0 8px;
+}
+
+.home-highlights-inner {
+  display: flex;
+  justify-content: center;
+  gap: 120px;
+  flex-wrap: wrap;
+}
+
+.home-highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-highlight-item i {
+  font-size: 1.25rem;
+  color: #F7C9A5;
+}
+
+.home-highlight-item strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.home-highlight-item span {
+  display: block;
+  font-size: 0.7rem;
+  color: #BDCCBE;
+}
+
+/* Footer menempel langsung pada sorotan di Beranda */
+.home-highlights + .figma-footer,
+body:has(.home-highlights) .figma-footer {
+  margin-top: 0;
+  padding-top: 40px;
+}
+
+@media (max-width: 768px) {
+  .home-hero { min-height: 560px; }
+  .home-hero-title { font-size: 2.1rem; }
+  .home-highlights-inner { gap: 24px; }
+}
+
+/* ==========================================================================
    Section Layouts & Grids
    ========================================================================== */
 .section-wrapper {

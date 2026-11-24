@@ -227,6 +227,18 @@
                     </p>
                 </div>
 
+                @if (!empty($booking->admin_notes))
+                    <!-- Catatan Admin untuk Pelanggan -->
+                    <div style="background-color: #FFF0E4; border: 1px solid #F3C6A5; border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 24px;">
+                        <strong style="color: #A54B10; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.92rem;">
+                            <i class="bi bi-chat-left-text-fill"></i> Catatan dari Admin YKS:
+                        </strong>
+                        <p style="color: #24382D; font-size: 0.92rem; margin: 0; line-height: 1.55;">
+                            “{{ $booking->admin_notes }}”
+                        </p>
+                    </div>
+                @endif
+
                 <!-- Section Ganti Jadwal (Reschedule) Mandiri Min H-2 -->
                 <div style="background: #F9FAF8; border: 1.5px solid #C1D1BE; border-radius: var(--radius-md); padding: 18px 20px; margin-bottom: 24px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">

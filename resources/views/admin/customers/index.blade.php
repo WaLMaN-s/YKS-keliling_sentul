@@ -1,229 +1,227 @@
-@extends('layouts.admin', ['title' => 'Data Pelanggan'])
+@extends('layouts.admin', ['title' => 'Pelanggan', 'breadcrumb' => 'Pelanggan'])
 
 @section('content')
 <style>
-    .cust-grid {
+    .cust-layout {
         display: grid;
-        grid-template-columns: 1.35fr 1fr;
+        grid-template-columns: 1fr 380px;
         gap: 24px;
         align-items: start;
     }
-    @media (max-width: 1100px) {
-        .cust-grid {
+    @media (max-width: 1120px) {
+        .cust-layout {
             grid-template-columns: 1fr;
         }
     }
-    .cust-row:hover {
-        background: #FCFCFA;
+    .cust-panel {
+        background: #FFFFFF;
+        border: 1px solid #E1E4DA;
+        border-radius: 12px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
     }
-    .cust-row.selected {
-        background: #F8F5EF;
+    .cust-row-item {
+        display: grid;
+        grid-template-columns: 1fr 210px 70px 100px;
+        gap: 12px;
+        align-items: center;
+        padding: 12px;
+        min-height: 67px;
+        border-bottom: 1px solid #E1E4DA;
+        text-decoration: none;
+        color: inherit;
+        transition: background 0.15s ease;
     }
+    .cust-row-item:hover {
+        background: #F9FAF7;
+    }
+    .cust-row-item.selected {
+        background: #EAF0E7;
+    }
+    .c-kv {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    .c-kv span:first-child { color: #718074; }
+    .c-kv span:last-child { color: #24382D; font-weight: 500; text-align: right; }
 </style>
 
-<!-- Header Bar (Figma: Administrasi / Data Pelanggan + Unduh data) -->
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
-    <div>
-        <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 4px;">Data Pelanggan</h1>
-        <p style="color: #6B756E; font-size: 0.9rem;">Kenali pelanggan dan temukan riwayat perjalanan mereka.</p>
-    </div>
-
-    <a href="{{ route('admin.customers.export_csv') }}" class="btn-outline-yks">
-        <i class="bi bi-download"></i> Unduh data
-    </a>
+<!-- Identitas Halaman (Figma Frame 178:19274) -->
+<div style="margin-bottom: 24px;">
+    <h1 style="font-size: 28px; font-weight: 800; color: #1F3D2B; letter-spacing: -0.6px; margin-bottom: 6px;">Pelanggan</h1>
+    <p style="font-size: 13px; color: #718074;">Temukan data pemesan dan riwayat reservasinya dalam satu tempat.</p>
 </div>
 
-<!-- 3 Kartu KPI Pelanggan (Figma) -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
-    <div class="stat-card">
-        <span style="font-size: 0.75rem; text-transform: uppercase; color: #6B756E; font-weight: 600;">Pelanggan terdaftar</span>
-        <h3 style="font-size: 1.85rem; font-weight: 800; color: #1F3D2B; margin-top: 6px;">{{ $totalRegistered }}</h3>
-        <p style="font-size: 0.76rem; color: #6B756E; margin-top: 4px;">Seluruh periode tercatat</p>
+<!-- Filter Pencarian Pelanggan (Figma Frame 178:19280) -->
+<form action="{{ route('admin.customers.index') }}" method="GET" style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+    <div style="position: relative;">
+        <i class="bi bi-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #718074; font-size: 13px;"></i>
+        <input type="text" name="q" value="{{ $search }}" placeholder="Cari nama atau email pelanggan..."
+               style="height: 42px; padding: 0 14px 0 34px; border: 1px solid #E1E4DA; border-radius: 8px; background: #FFFFFF; font-size: 13px; color: #24382D; width: 250px;">
     </div>
 
-    <div class="stat-card">
-        <span style="font-size: 0.75rem; text-transform: uppercase; color: #6B756E; font-weight: 600;">Pelanggan kembali</span>
-        <h3 style="font-size: 1.85rem; font-weight: 800; color: #1F3D2B; margin-top: 6px;">{{ $repeatCustomers }}</h3>
-        <p style="font-size: 0.76rem; color: #6B756E; margin-top: 4px;">Memiliki lebih dari 1 reservasi</p>
+    <div style="height: 42px; padding: 0 12px; border: 1px solid #E1E4DA; border-radius: 8px; background: #FFFFFF; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #24382D;">
+        <i class="bi bi-calendar3" style="color: #718074;"></i>
+        <span>Terdaftar: 1–9 Nov 2026</span>
     </div>
 
-    <div class="stat-card">
-        <span style="font-size: 0.75rem; text-transform: uppercase; color: #6B756E; font-weight: 600;">Pelanggan baru bulan ini</span>
-        <h3 style="font-size: 1.85rem; font-weight: 800; color: #1F3D2B; margin-top: 6px;">{{ $newThisMonth }}</h3>
-        <p style="font-size: 0.76rem; color: #6B756E; margin-top: 4px;">Pemesan aktif bulan berjalan</p>
-    </div>
-</div>
+    @if($search)
+        <a href="{{ route('admin.customers.index') }}"
+           style="height: 42px; padding: 0 12px; border: 1px solid #E1E4DA; border-radius: 8px; background: #FFFFFF; font-size: 12px; color: #718074; text-decoration: none; display: inline-flex; align-items: center;">
+            Reset
+        </a>
+    @endif
+</form>
 
-<div class="cust-grid">
+<!-- 2 Kolom: Daftar Pelanggan & Detail Pelanggan Terpilih (Figma Frame 178:19290) -->
+<div class="cust-layout">
     <!-- KOLOM KIRI: Daftar Pelanggan -->
-    <div class="stat-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
-            <div>
-                <h3 style="font-size: 1.05rem; font-weight: 700;">Daftar pelanggan</h3>
-                <span style="font-size: 0.78rem; color: #6B756E;">{{ $totalRegistered }} pelanggan terdaftar</span>
-            </div>
-
-            <form action="{{ route('admin.customers.index') }}" method="GET" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <div style="position: relative;">
-                    <i class="bi bi-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #6B756E; font-size: 0.78rem;"></i>
-                    <input type="text" name="q" value="{{ $search }}" placeholder="Cari nama, surel, atau kontak…"
-                           style="padding: 6px 10px 6px 28px; border: 1px solid #DFE4DC; border-radius: 8px; font-size: 0.8rem; width: 210px;">
-                </div>
-                <select name="filter" onchange="this.form.submit()" style="padding: 6px 10px; border: 1px solid #DFE4DC; border-radius: 8px; font-size: 0.8rem; color: #1F3D2B; background: #FFF;">
-                    <option value="">Semua pelanggan</option>
-                    <option value="repeat" {{ $filter === 'repeat' ? 'selected' : '' }}>Pelanggan kembali (>1)</option>
-                </select>
-            </form>
+    <div class="cust-panel">
+        <div>
+            <h3 style="font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 700; color: #1F3D2B; margin-bottom: 4px;">
+                Daftar pelanggan
+            </h3>
+            <p style="font-size: 12px; color: #718074;">
+                Identitas fiktif · Kontak tidak dapat digunakan
+            </p>
         </div>
 
         <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.84rem;">
-                <thead>
-                    <tr style="border-bottom: 2px solid #DFE4DC; text-align: left; color: #6B756E;">
-                        <th style="padding: 10px 8px;">Pelanggan</th>
-                        <th style="padding: 10px 8px;">Surel & Kontak</th>
-                        <th style="padding: 10px 8px;">Frekuensi</th>
-                        <th style="padding: 10px 8px;">Total Belanja</th>
-                        <th style="padding: 10px 8px; text-align: right;">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($customers as $idx => $c)
-                        @php
-                            $firstItem = $customers->firstItem() ?? 1;
-                            $plgCode = 'PLG-' . str_pad((string) ($firstItem + $idx), 3, '0', STR_PAD_LEFT);
-                            $isSelected = ($selectedCustomer && $selectedCustomer->customer_email === $c->customer_email);
-                            $waNumber = preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $c->customer_phone ?? ''));
-                        @endphp
-                        <tr class="cust-row {{ $isSelected ? 'selected' : '' }}" style="border-bottom: 1px solid #ECECE6;">
-                            <td style="padding: 12px 8px;">
-                                <div style="font-weight: 700; color: #1F3D2B;">{{ $c->customer_name }}</div>
-                                <div style="font-size: 0.72rem; color: #6B756E; font-weight: 600;">{{ $plgCode }}</div>
-                            </td>
-                            <td style="padding: 12px 8px;">
-                                <div style="color: #1F3D2B;">{{ $c->customer_email }}</div>
-                                <div style="font-size: 0.75rem; color: #6B756E;">{{ $c->customer_phone }}</div>
-                            </td>
-                            <td style="padding: 12px 8px;">
-                                <span style="background: #F8F5EF; border: 1px solid #DFE4DC; padding: 3px 8px; border-radius: 99px; font-size: 0.75rem; font-weight: 600;">
-                                    {{ $c->total_trip }} pesanan
-                                </span>
-                            </td>
-                            <td style="padding: 12px 8px; font-weight: 700; color: #1F3D2B;">
-                                Rp{{ number_format($c->total_spent, 0, ',', '.') }}
-                            </td>
-                            <td style="padding: 12px 8px; text-align: right;">
-                                <div style="display: inline-flex; gap: 6px;">
-                                    <a href="https://wa.me/{{ $waNumber }}" target="_blank"
-                                       style="padding: 5px 10px; border-radius: 6px; border: 1px solid #C1D1BE; background: #EAF0E7; color: #1F3D2B; font-size: 0.75rem; font-weight: 600; text-decoration: none;">
-                                        WhatsApp
-                                    </a>
-                                    <a href="{{ route('admin.customers.index', ['select' => $c->customer_email, 'q' => $search, 'filter' => $filter]) }}#profile-panel"
-                                       style="padding: 5px 10px; border-radius: 6px; border: 1px solid #DFE4DC; background: {{ $isSelected ? '#1F3D2B' : '#FFFFFF' }}; color: {{ $isSelected ? '#FFFFFF' : '#1F3D2B' }}; font-size: 0.75rem; font-weight: 600; text-decoration: none;">
-                                        Profil ↗
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" style="padding: 32px; text-align: center; color: #6B756E;">Belum ada data pelanggan.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+            <div style="min-width: 560px;">
+                <div style="display: grid; grid-template-columns: 1fr 210px 70px 100px; gap: 12px; background: #F4F6F1; padding: 12px; border-radius: 6px; font-size: 11px; font-weight: 600; color: #718074;">
+                    <div>Pelanggan</div>
+                    <div>Kontak contoh</div>
+                    <div>Reservasi</div>
+                    <div>Terdaftar</div>
+                </div>
+
+                @forelse($customers as $idx => $c)
+                    @php
+                        $isSelected = ($selectedCustomer && $selectedCustomer->customer_email === $c->customer_email);
+                        $initial = strtoupper(substr(trim($c->customer_name ?? 'P'), 0, 1));
+                    @endphp
+                    <a href="{{ route('admin.customers.index', ['select' => $c->customer_email, 'q' => $search]) }}#profile-panel"
+                       class="cust-row-item {{ $isSelected ? 'selected' : '' }}">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: #EAF0E7; color: #24382D; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                {{ $initial }}
+                            </div>
+                            <span style="font-size: 13px; font-weight: 600; color: #24382D;">{{ $c->customer_name }}</span>
+                        </div>
+
+                        <div>
+                            <div style="font-size: 11px; color: #24382D;">{{ $c->customer_email }}</div>
+                            <div style="font-size: 10px; color: #718074; margin-top: 2px;">{{ $c->customer_phone }}</div>
+                        </div>
+
+                        <div style="font-size: 12px; color: #24382D;">
+                            {{ $c->total_trip }}
+                        </div>
+
+                        <div style="font-size: 12px; color: #24382D;">
+                            {{ !empty($c->first_joined) ? \Carbon\Carbon::parse($c->first_joined)->translatedFormat('j M Y') : '9 Nov 2026' }}
+                        </div>
+                    </a>
+                @empty
+                    <div style="padding: 32px; text-align: center; color: #718074; font-size: 13px;">
+                        Tidak ada data pelanggan yang ditemukan.
+                    </div>
+                @endforelse
+            </div>
         </div>
 
-        <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-            <span style="font-size: 0.75rem; color: #6B756E;">Menampilkan {{ $customers->count() }} dari {{ $customers->total() }} pelanggan</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <span style="font-size: 12px; color: #718074;">
+                1–{{ $customers->count() }} dari {{ $customers->total() }} pelanggan
+            </span>
             {{ $customers->links() }}
         </div>
     </div>
 
-    <!-- KOLOM KANAN: Panel Profil Pelanggan (Figma) -->
-    <div class="stat-card" id="profile-panel">
+    <!-- KOLOM KANAN: Detail Pelanggan & Riwayat Reservasi (Figma Frame 178:19425) -->
+    <div style="display: flex; flex-direction: column; gap: 24px;" id="profile-panel">
         @if($selectedCustomer)
             @php
-                $parts = explode(' ', trim($selectedCustomer->customer_name ?? 'Pelanggan'));
-                $initials = strtoupper(substr($parts[0] ?? 'P', 0, 1) . (isset($parts[1]) ? substr($parts[1], 0, 1) : ''));
-                $waSelected = preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $selectedCustomer->customer_phone ?? ''));
+                $selInitial = strtoupper(substr(trim($selectedCustomer->customer_name ?? 'N'), 0, 1));
             @endphp
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 14px; border-bottom: 1px solid #ECECE6; margin-bottom: 16px;">
-                <div>
-                    <span style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #6B756E; font-weight: 700;">
-                        Profil pelanggan
-                    </span>
-                    <div style="font-size: 0.8rem; color: #1F3D2B; font-weight: 600; margin-top: 2px;">
-                        Pelanggan Terdaftar YKS
+            <!-- Panel 1: Detail Pelanggan -->
+            <div class="cust-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 700; color: #1F3D2B;">
+                        Detail pelanggan
+                    </h3>
+                    <span style="font-size: 14px; color: #718074;">×</span>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 52px; height: 52px; border-radius: 50%; background: #EAF0E7; color: #24382D; font-size: 21px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        {{ $selInitial }}
+                    </div>
+                    <div>
+                        <div style="font-size: 20px; font-weight: 600; color: #24382D; margin-bottom: 4px;">
+                            {{ $selectedCustomer->customer_name }}
+                        </div>
+                        <span style="background: #EAF0E7; color: #1F3D2B; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 100px;">
+                            Pelanggan contoh
+                        </span>
                     </div>
                 </div>
-            </div>
 
-            <!-- Avatar & Identitas -->
-            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px;">
-                <div style="width: 52px; height: 52px; border-radius: 50%; background: #1F3D2B; color: #FFFFFF; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    {{ $initials }}
+                <div style="height: 1px; background: #E1E4DA;"></div>
+
+                <div class="c-kv">
+                    <span>ID pelanggan</span>
+                    <span>PLG-008</span>
                 </div>
-                <div>
-                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #1F3D2B;">{{ $selectedCustomer->customer_name ?? '-' }}</h3>
-                    <div style="font-size: 0.76rem; color: #6B756E;">
-                        Bergabung {{ !empty($selectedCustomer->first_joined) ? date('d F Y', strtotime($selectedCustomer->first_joined)) : '-' }}
-                    </div>
+                <div class="c-kv">
+                    <span>Email</span>
+                    <span>{{ $selectedCustomer->customer_email }}</span>
                 </div>
-            </div>
-
-            <!-- Kontak & Statistik Ringkas -->
-            <div style="background: #F8F5EF; border-radius: 10px; padding: 14px; font-size: 0.82rem; margin-bottom: 18px;">
-                <div style="display: grid; grid-template-columns: 95px 1fr; row-gap: 6px;">
-                    <span style="color: #6B756E;">Surel</span>
-                    <strong style="color: #1F3D2B;">{{ $selectedCustomer->customer_email }}</strong>
-
-                    <span style="color: #6B756E;">Kontak</span>
+                <div class="c-kv">
+                    <span>Telepon</span>
                     <span>{{ $selectedCustomer->customer_phone }}</span>
-
-                    <span style="color: #6B756E;">Total pesanan</span>
-                    <strong>{{ $selectedCustomer->total_trip }} reservasi</strong>
-
-                    <span style="color: #6B756E;">Total transaksi</span>
-                    <strong style="color: #1F3D2B;">Rp{{ number_format($selectedCustomer->total_spent, 0, ',', '.') }}</strong>
                 </div>
-
-                <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #E2E6DF;">
-                    <a href="https://wa.me/{{ $waSelected }}" target="_blank" class="btn-primary-yks" style="width: 100%; justify-content: center; font-size: 0.8rem;">
-                        <i class="bi bi-whatsapp"></i> Hubungi via WhatsApp
-                    </a>
+                <div class="c-kv">
+                    <span>Terdaftar</span>
+                    <span>{{ !empty($selectedCustomer->first_joined) ? \Carbon\Carbon::parse($selectedCustomer->first_joined)->translatedFormat('j F Y') : '9 November 2026' }}</span>
+                </div>
+                <div class="c-kv">
+                    <span>Total reservasi</span>
+                    <span>{{ $selectedCustomer->total_trip }} reservasi</span>
                 </div>
             </div>
 
-            <!-- Riwayat Perjalanan Pelanggan -->
-            <div>
-                <h4 style="font-size: 0.9rem; font-weight: 700; color: #1F3D2B; margin-bottom: 10px;">
-                    Riwayat perjalanan ({{ count($customerHistory) }})
-                </h4>
+            <!-- Panel 2: Riwayat Reservasi Pelanggan -->
+            <div class="cust-panel">
+                <h3 style="font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 700; color: #1F3D2B;">
+                    Riwayat reservasi
+                </h3>
 
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    @foreach($customerHistory as $hist)
-                        <div style="border: 1px solid #ECECE6; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-                            <div>
-                                <div style="font-weight: 700; font-size: 0.83rem; color: #1F3D2B;">
-                                    {{ $hist->booking_code }} · {{ $hist->package_name }}
-                                </div>
-                                <div style="font-size: 0.75rem; color: #6B756E; margin-top: 2px;">
-                                    Trip {{ date('d M Y', strtotime($hist->trip_date)) }} · {{ $hist->participant_count }} peserta · <strong>Rp{{ number_format($hist->total_price, 0, ',', '.') }}</strong>
-                                </div>
-                            </div>
-
+                @foreach($customerHistory as $hist)
+                    <div style="border: 1px solid #E1E4DA; border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 13px; font-weight: 600; color: #24382D;">{{ $hist->booking_code }}</span>
+                            <span style="background: #FFF0E4; color: #A54B10; font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 100px;">
+                                {{ $hist->reservation_status ?: $hist->payment_status }}
+                            </span>
+                        </div>
+                        <div style="font-size: 12px; color: #718074;">
+                            {{ $hist->custom_package_name ?: $hist->package_name }} · {{ \Carbon\Carbon::parse($hist->trip_date)->translatedFormat('d M Y') }}
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                            <strong style="color: #1F3D2B;">Rp{{ number_format($hist->total_price, 0, ',', '.') }}</strong>
                             <a href="{{ route('admin.reservations.index', ['select' => $hist->booking_code]) }}"
-                               style="font-size: 0.74rem; font-weight: 600; color: #1F3D2B; text-decoration: underline; white-space: nowrap;">
-                                Lihat ↗
+                               style="color: #1F3D2B; font-weight: 600; text-decoration: none;">
+                                Buka reservasi ↗
                             </a>
                         </div>
-                    @endforeach
-                </div>
-            </div>
-        @else
-            <div style="text-align: center; padding: 48px 16px; color: #6B756E;">
-                Pilih pelanggan dari daftar di sebelah kiri untuk melihat profil dan riwayat perjalanan.
+                    </div>
+                @endforeach
             </div>
         @endif
     </div>

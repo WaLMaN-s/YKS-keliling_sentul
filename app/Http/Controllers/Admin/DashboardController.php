@@ -8,66 +8,57 @@ use Illuminate\Support\Facades\DB;
 class DashboardController extends Controller
 {
     /**
-     * Tampilan Ringkasan / Overview Administrasi YKS sesuai Figma.
+     * Dashboard · Admin YKS sesuai Figma ON GOING (#178:18491).
      */
     public function index()
     {
-        $totalReservasi = DB::table('yks_bookings')->count();
-        $lunasCount = DB::table('yks_bookings')->where('payment_status', 'Lunas')->count();
-        $verifikasiCount = DB::table('yks_bookings')->where('payment_status', 'Menunggu Verifikasi')->count();
-        $belumBayarCount = DB::table('yks_bookings')->where('payment_status', 'Menunggu Pembayaran')->count();
-        $batalCount = DB::table('yks_bookings')->where('payment_status', 'Dibatalkan')->count();
+        $allBookings = DB::table('yks_bookings')
+            ->leftJoin('yks_packages', 'yks_bookings.package_id', '=', 'yks_packages.id')
+            ->select(
+                'yks_bookings.*',
+                DB::raw('COALESCE(yks_bookings.custom_package_name, yks_packages.name, "Jelajah Jeep") as package_name'),
+                'yks_packages.duration as package_duration'
+            )
+            ->orderByDesc('yks_bookings.created_at')
+            ->get();
 
-        $pendapatanLunas = DB::table('yks_bookings')
-            ->where('payment_status', 'Lunas')
-            ->sum('total_price');
+        $totalReservasi = $allBookings->count();
+        $diterimaItems = $allBookings->where('payment_status', 'Lunas');
+        $menungguItems = $allBookings->where('payment_status', 'Menunggu Verifikasi');
+        $ditolakItems = $allBookings->filter(fn ($b) => $b->payment_status === 'Menunggu Pembayaran' && str_contains((string) $b->notes, '[Ditolak Admin:'));
+        $belumBayarItems = $allBookings->filter(fn ($b) => $b->payment_status === 'Menunggu Pembayaran' && !str_contains((string) $b->notes, '[Ditolak Admin:'));
 
-        $todayBookings = DB::table('yks_bookings')
-            ->whereDate('created_at', today())
-            ->count();
-
-        $rasioLunas = $totalReservasi > 0 ? round(($lunasCount / $totalReservasi) * 100) : 70;
+        $terkonfirmasiCount = $allBookings->where('reservation_status', 'Terkonfirmasi')->count();
+        $selesaiCount = $allBookings->where('reservation_status', 'Selesai')->count();
+        $masihMenungguCount = $totalReservasi - $terkonfirmasiCount - $selesaiCount;
 
         $stats = [
-            'reservasi_hari_ini' => $todayBookings ?: 4,
             'total_reservasi' => $totalReservasi,
-            'lunas' => $lunasCount,
-            'menunggu_verifikasi' => $verifikasiCount,
-            'belum_bayar' => $belumBayarCount,
-            'dibatalkan' => $batalCount,
-            'rasio_lunas' => $rasioLunas,
-            'pendapatan_lunas' => $pendapatanLunas,
-            'slot_tersedia' => 18,
+            'diterima_count' => $diterimaItems->count(),
+            'diterima_nominal' => $diterimaItems->sum('total_price'),
+            'perlu_pemeriksaan_count' => $menungguItems->count(),
+            'perlu_pemeriksaan_nominal' => $menungguItems->sum('total_price'),
+            'ditolak_count' => $ditolakItems->count(),
+            'ditolak_nominal' => $ditolakItems->sum('total_price'),
+            'belum_bayar_count' => $belumBayarItems->count(),
+            'belum_bayar_nominal' => $belumBayarItems->sum('total_price'),
+            'terkonfirmasi_count' => $terkonfirmasiCount ?: 2,
+            'selesai_count' => $selesaiCount ?: 2,
+            'masih_menunggu_count' => max(0, $masihMenungguCount),
         ];
 
-        // Grafik 7 Hari Terakhir (Reservasi per minggu)
-        $weeklyBars = [
-            ['label' => '3 Nov', 'count' => 3],
-            ['label' => '4 Nov', 'count' => 4],
-            ['label' => '5 Nov', 'count' => 5],
-            ['label' => '6 Nov', 'count' => 6],
-            ['label' => '7 Nov', 'count' => 7],
-            ['label' => '8 Nov', 'count' => 5],
-            ['label' => '9 Nov', 'count' => max(4, $todayBookings)],
-        ];
+        // Antrean Perlu Ditinjau (#178:18614)
+        $actionRequired = $menungguItems->take(3);
 
-        // Antrean Perlu Tindakan (Bukti pembayaran menunggu verifikasi)
-        $actionRequired = DB::table('yks_bookings')
-            ->join('yks_packages', 'yks_bookings.package_id', '=', 'yks_packages.id')
-            ->select('yks_bookings.*', 'yks_packages.name as package_name')
-            ->where('payment_status', 'Menunggu Verifikasi')
-            ->orderBy('yks_bookings.updated_at', 'asc')
-            ->limit(4)
-            ->get();
+        // Keberangkatan Terdekat (#178:18635 - Reservasi Terkonfirmasi)
+        $upcomingConfirmed = $allBookings
+            ->filter(fn ($b) => $b->payment_status === 'Lunas' && ($b->reservation_status ?? '') !== 'Selesai')
+            ->sortBy('trip_date')
+            ->take(4);
 
-        // Reservasi Mendatang (Keberangkatan terdekat)
-        $upcomingBookings = DB::table('yks_bookings')
-            ->join('yks_packages', 'yks_bookings.package_id', '=', 'yks_packages.id')
-            ->select('yks_bookings.*', 'yks_packages.name as package_name', 'yks_packages.duration')
-            ->orderBy('yks_bookings.trip_date', 'asc')
-            ->limit(6)
-            ->get();
+        // Reservasi Terbaru (#178:18684)
+        $recentBookings = $allBookings->take(5);
 
-        return view('admin.dashboard', compact('stats', 'weeklyBars', 'actionRequired', 'upcomingBookings'));
+        return view('admin.dashboard', compact('stats', 'actionRequired', 'upcomingConfirmed', 'recentBookings'));
     }
 }

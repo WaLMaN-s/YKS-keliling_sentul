@@ -21,8 +21,25 @@ class YksPackage extends Model
         return $this->hasMany(YksBooking::class, 'package_id');
     }
 
+    public function getIsPrivateTripAttribute(): bool
+    {
+        return ($this->booking_mode ?? '') === 'whatsapp_only'
+            || stripos($this->name ?? '', 'private trip') !== false
+            || ($this->category && $this->category->slug === 'private-trip');
+    }
+
+    public function getIsMotorPribadiAttribute(): bool
+    {
+        return stripos($this->name ?? '', 'motor pribadi') !== false
+            || ($this->category && $this->category->slug === 'motor-pribadi');
+    }
+
     public function getFormattedPriceAttribute(): string
     {
-        return 'Rp ' . number_format($this->price, 0, ',', '.');
+        if ($this->is_private_trip || (int) $this->price === 0) {
+            return 'Harga & tanggal: konsultasi admin';
+        }
+
+        return 'Rp' . number_format($this->price, 0, ',', '.');
     }
 }
