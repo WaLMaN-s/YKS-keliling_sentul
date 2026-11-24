@@ -6,11 +6,8 @@
     <title>{{ isset($title) ? $title . ' — ' . config('app.name', 'YKS - Keliling Sentul') : config('app.name', 'YKS - Keliling Sentul') . ' · Petualangan Jelajah Alam & Wisata Sentul' }}</title>
     <meta name="description" content="Yuk Keliling Sentul (YKS) - Jelajahi rute perbukitan, jalur tanah offroad 4x4, curug tersembunyi, dan pesona alam Sentul bersama pemandu lokal berpengalaman.">
     
-    <!-- Google Fonts: Montserrat (Heading) & Inter (Body) from Figma (Non-blocking) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap"></noscript>
+    <!-- Local Bundled Fonts: Montserrat (Heading) & Inter (Body) -->
+    <link rel="stylesheet" href="/assets/vendor/fonts/fonts.css">
     
     <!-- Bootstrap Icons (Local Offline) -->
     <link rel="stylesheet" href="/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
@@ -209,38 +206,47 @@
         <div class="footer-top-grid">
             <!-- Brand & Tagline -->
             <div>
-                <h3 class="footer-brand-title">YKS.</h3>
-                <p class="footer-brand-bio" style="margin-top: 10px;">
-                    Jauh dari rutinitas. Dekat dengan alam. Jelajahi sisi lain Sentul bersama Yuk Keliling Sentul.
+                <h3 class="footer-brand-title">YKS</h3>
+                <span class="footer-brand-sub">Yuk Keliling Sentul</span>
+                <p class="footer-brand-bio">
+                    Jauh dari rutinitas. Dekat dengan alam. Jelajahi rute perbukitan, jalur tanah offroad 4x4, dan keindahan tersembunyi Sentul bersama tim kami.
                 </p>
-                <div style="font-size: 0.82rem; color: #BDCCBE; margin-top: 14px;">
-                    Instagram · @yuk_keliling_sentul
-                </div>
+                <a href="https://instagram.com/yuk_keliling_sentul" target="_blank" class="footer-social-pill">
+                    <i class="bi bi-instagram"></i> Instagram · @yuk_keliling_sentul
+                </a>
             </div>
 
             <!-- Navigation Links -->
             <div>
                 <h4 class="footer-heading">Jelajahi YKS</h4>
                 <ul class="footer-nav-list">
+                    <li><a href="{{ route('home') }}">Beranda</a></li>
                     <li><a href="{{ route('about') }}">Tentang YKS</a></li>
-                    <li><a href="{{ route('packages.index') }}">Katalog Paket</a></li>
-                    <li><a href="{{ route('gallery') }}">Galeri &amp; Testimoni</a></li>
-                    <li><a href="{{ route('info') }}">Informasi &amp; Pembayaran</a></li>
+                    <li><a href="{{ route('packages.index') }}">Katalog Paket Wisata</a></li>
+                    <li><a href="{{ route('gallery') }}">Galeri & Testimoni</a></li>
+                    <li><a href="{{ route('info') }}">Informasi Admin & Bank</a></li>
+                    <li><a href="{{ route('booking.track') }}">Lacak Status Booking</a></li>
                 </ul>
             </div>
 
             <!-- Meet Us & Contact -->
             <div class="footer-contact-info">
-                <h4 class="footer-heading">Temui kami</h4>
+                <h4 class="footer-heading">Temui Kami</h4>
                 <p>
-                    Pos Jelajah YKS, Kawasan Sentul, Babakan Madang, Bogor.
+                    <strong>Basecamp Yuk Keliling Sentul</strong><br>
+                    Kawasan Hambalang & Sentul, Babakan Madang, Kabupaten Bogor, Jawa Barat 16810
                 </p>
                 <p>
-                    Senin–Minggu, 08.00–19.00 WIB.
+                    <strong>Jam Layanan Admin:</strong><br>
+                    Senin – Minggu · 08.00 – 17.00 WIB
                 </p>
-                <p style="margin-top: 10px;">
-                    <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281210842032') }}" target="_blank" style="color: #FFFFFF; font-weight: 700; text-decoration: none;">
-                        Hubungi Admin &nbsp;↗
+                <p>
+                    <strong>WhatsApp Booking & Konsultasi:</strong><br>
+                    <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281210842032') }}" target="_blank" style="color: #6ee7b7; font-weight: 700; display: block;">
+                        <i class="bi bi-whatsapp"></i> 0812-1084-2032
+                    </a>
+                    <a href="https://wa.me/6285770715553" target="_blank" style="color: #6ee7b7; font-weight: 700; display: block; margin-top: 2px;">
+                        <i class="bi bi-whatsapp"></i> 0857-7071-5553
                     </a>
                 </p>
             </div>
@@ -248,7 +254,8 @@
 
         <!-- Footer Bottom Bar -->
         <div class="footer-bottom-bar">
-            <span>&copy; 2026 Yuk Keliling Sentul.</span>
+            <span>&copy; 2026 Yuk Keliling Sentul. Hak cipta dilindungi undang-undang.</span>
+            <span>Data operasional, ulasan & reservasi dikelola resmi oleh sistem YKS Sentul.</span>
         </div>
     </div>
 </footer>

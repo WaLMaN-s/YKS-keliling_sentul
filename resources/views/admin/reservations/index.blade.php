@@ -1,455 +1,581 @@
-@extends('layouts.admin', ['title' => 'Reservasi', 'breadcrumb' => 'Reservasi'])
+@extends('layouts.admin', ['title' => 'Data Reservasi'])
 
 @section('content')
 <style>
-    .res-bottom-grid {
+    .res-grid {
         display: grid;
-        grid-template-columns: 1fr 430px;
+        grid-template-columns: 1.35fr 1fr;
         gap: 24px;
         align-items: start;
     }
-    @media (max-width: 1150px) {
-        .res-bottom-grid {
+    @media (max-width: 1200px) {
+        .res-grid {
             grid-template-columns: 1fr;
         }
     }
-    .panel-box {
-        background: #FFFFFF;
-        border: 1px solid #E1E4DA;
-        border-radius: 12px;
-        padding: 24px;
-    }
-    .filter-ctrl {
-        height: 42px;
-        padding: 0 12px;
-        border: 1px solid #E1E4DA;
-        border-radius: 8px;
-        background: #FFFFFF;
-        font-family: inherit;
-        font-size: 13px;
-        color: #24382D;
+    .status-tab {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-    }
-    .res-table-row {
-        display: grid;
-        grid-template-columns: 175px 220px 110px 130px 190px 1fr;
-        gap: 12px;
-        align-items: center;
-        padding: 12px;
-        min-height: 67px;
-        border-bottom: 1px solid #E1E4DA;
+        gap: 6px;
+        padding: 7px 14px;
+        border-radius: 99px;
+        font-size: 0.8rem;
+        font-weight: 600;
         text-decoration: none;
-        color: inherit;
+        border: 1px solid #DFE4DC;
+        background: #FFFFFF;
+        color: #1F3D2B;
+        transition: all 0.15s;
+    }
+    .status-tab:hover {
+        background: #F8F5EF;
+    }
+    .status-tab.active {
+        background: #1F3D2B;
+        color: #FFFFFF;
+        border-color: #1F3D2B;
+    }
+
+    /* Table Design */
+    .res-table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.83rem;
+    }
+    .res-table thead th {
+        background: #F8F5EF;
+        padding: 12px 10px;
+        font-size: 0.73rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6B756E;
+        border-bottom: 2px solid #DFE4DC;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+    .res-table thead th:first-child {
+        border-top-left-radius: 8px;
+    }
+    .res-table thead th:last-child {
+        border-top-right-radius: 8px;
+    }
+    .res-table tbody td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #ECECE6;
+        vertical-align: middle;
+        background: #FFFFFF;
         transition: background 0.15s ease;
     }
-    .res-table-row:hover {
-        background: #F9FAF7;
+    .res-row {
+        cursor: pointer;
     }
-    .res-table-row.selected {
-        background: #EAF0E7;
+    .res-row:hover td {
+        background: #FAF8F5 !important;
     }
-    .kv-line {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 16px;
-        font-size: 13px;
-        line-height: 1.5;
+    .res-row.selected td {
+        background: #F4EFE6 !important;
     }
-    .kv-line span:first-child {
-        color: #718074;
+    .res-row.selected td:first-child {
+        border-left: 3px solid #1F3D2B;
     }
-    .kv-line span:last-child {
-        color: #24382D;
-        font-weight: 500;
-        text-align: right;
+
+    /* Badges & Elements */
+    .res-code-badge {
+        font-family: var(--font-head);
+        font-weight: 800;
+        color: #1F3D2B;
+        font-size: 0.86rem;
+        display: block;
+        letter-spacing: 0.02em;
     }
-    .pill-badge {
+    .res-cust-name {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #4B5563;
+        display: block;
+        margin-top: 2px;
+    }
+    .res-pkg-name {
+        font-weight: 600;
+        color: #1F3D2B;
+        display: block;
+        max-width: 140px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .res-pax-badge {
         display: inline-flex;
         align-items: center;
-        padding: 5px 10px;
-        border-radius: 100px;
-        font-size: 11px;
+        gap: 4px;
+        padding: 3px 8px;
+        border-radius: 99px;
+        background: #F8F5EF;
+        border: 1px solid #DFE4DC;
+        font-size: 0.74rem;
         font-weight: 600;
+        color: #1F3D2B;
         white-space: nowrap;
     }
-    .pill-orange { background: #FFF0E4; color: #A54B10; }
-    .pill-green { background: #EAF0E7; color: #1F3D2B; }
-    .pill-red { background: #FBEDEB; color: #AD4940; }
-    .pill-neutral { background: #F4F6F1; color: #1F3D2B; }
+    .res-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 99px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .res-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    /* Action Button Group */
+    .res-action-group {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+    .btn-act-item {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        height: 30px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.15s ease;
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+    .btn-act-wa {
+        width: 30px;
+        background: #EAF0E7;
+        border-color: #C1D1BE;
+        color: #065F46;
+        font-size: 0.85rem;
+    }
+    .btn-act-wa:hover {
+        background: #25D366;
+        border-color: #25D366;
+        color: #FFFFFF;
+        box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3);
+    }
+    .btn-act-track {
+        width: 30px;
+        background: #FFFFFF;
+        border-color: #DFE4DC;
+        color: #6B756E;
+        font-size: 0.78rem;
+    }
+    .btn-act-track:hover {
+        background: #F8F5EF;
+        color: #1F3D2B;
+        border-color: #1F3D2B;
+    }
+    .btn-act-detail {
+        padding: 0 10px;
+        background: #FFFFFF;
+        border-color: #DFE4DC;
+        color: #1F3D2B;
+    }
+    .btn-act-detail:hover {
+        background: #1F3D2B;
+        border-color: #1F3D2B;
+        color: #FFFFFF;
+    }
+    .btn-act-detail.selected {
+        background: #1F3D2B;
+        border-color: #1F3D2B;
+        color: #FFFFFF;
+        box-shadow: 0 2px 6px rgba(31, 61, 43, 0.25);
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 20px;
+        padding-bottom: 12px;
+        border-left: 2px solid #DFE4DC;
+    }
+    .timeline-item:last-child {
+        border-left-color: transparent;
+        padding-bottom: 0;
+    }
+    .timeline-dot {
+        position: absolute;
+        left: -6px;
+        top: 2px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #1F3D2B;
+    }
+    .res-detail-sticky {
+        position: sticky;
+        top: 20px;
+    }
 </style>
 
-<!-- Identitas Halaman (Figma Frame 178:19537) -->
-<div style="display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 24px; flex-wrap: wrap;">
+<!-- Header Bar (Figma: Administrasi / Data Reservasi) -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
     <div>
-        <h1 style="font-size: 28px; font-weight: 800; color: #1F3D2B; letter-spacing: -0.6px; margin-bottom: 6px;">Reservasi</h1>
-        <p style="font-size: 13px; color: #718074;">Kelola perjalanan pelanggan dengan status reservasi dan pembayaran yang terpisah.</p>
+        <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 4px;">Data Reservasi</h1>
+        <p style="color: #6B756E; font-size: 0.9rem;">Telusuri pesanan dan kelola status perjalanan pelanggan.</p>
     </div>
 
-    <a href="{{ route('admin.reservations.create') }}"
-       style="background: #F26B1D; color: #1F3D2B; height: 42px; padding: 0 18px; border-radius: 8px; font-size: 13px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
-        <span style="font-size: 16px; font-weight: 700;">+</span> Tambah Reservasi
+    <!-- Form Pencarian -->
+    <form action="{{ route('admin.reservations.index') }}" method="GET" style="display: flex; gap: 8px;">
+        @if($status)
+            <input type="hidden" name="status" value="{{ $status }}">
+        @endif
+        <div style="position: relative;">
+            <i class="bi bi-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #6B756E; font-size: 0.82rem;"></i>
+            <input type="text" name="q" value="{{ $search }}" placeholder="Cari ID pesanan atau nama pelanggan…"
+                   style="padding: 8px 14px 8px 34px; border: 1px solid #DFE4DC; border-radius: 8px; font-size: 0.84rem; width: 260px; background: #FFF;">
+        </div>
+        <button type="submit" class="btn-primary-yks">Cari</button>
+    </form>
+</div>
+
+<!-- Filter Tab Status dengan Jumlah (Figma: Semua, Lunas 28, Verifikasi 3, Belum bayar 7, Dibatalkan 2) -->
+<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+    <a href="{{ route('admin.reservations.index', ['q' => $search]) }}" class="status-tab {{ !$status ? 'active' : '' }}">
+        Semua status <span style="opacity: 0.75;">({{ $counts['all'] }})</span>
+    </a>
+    <a href="{{ route('admin.reservations.index', ['status' => 'Lunas', 'q' => $search]) }}" class="status-tab {{ $status === 'Lunas' ? 'active' : '' }}">
+        Lunas <span>{{ $counts['lunas'] }}</span>
+    </a>
+    <a href="{{ route('admin.reservations.index', ['status' => 'Menunggu Verifikasi', 'q' => $search]) }}" class="status-tab {{ $status === 'Menunggu Verifikasi' ? 'active' : '' }}">
+        Verifikasi <span>{{ $counts['verifikasi'] }}</span>
+    </a>
+    <a href="{{ route('admin.reservations.index', ['status' => 'Menunggu Pembayaran', 'q' => $search]) }}" class="status-tab {{ $status === 'Menunggu Pembayaran' ? 'active' : '' }}">
+        Belum bayar <span>{{ $counts['belum_bayar'] }}</span>
+    </a>
+    <a href="{{ route('admin.reservations.index', ['status' => 'Dibatalkan', 'q' => $search]) }}" class="status-tab {{ $status === 'Dibatalkan' ? 'active' : '' }}">
+        Dibatalkan <span>{{ $counts['dibatalkan'] }}</span>
     </a>
 </div>
 
-<!-- Filter Reservasi (Figma Frame 178:19544) -->
-<form action="{{ route('admin.reservations.index') }}" method="GET" style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
-    <div style="position: relative;">
-        <i class="bi bi-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #718074; font-size: 13px;"></i>
-        <input type="text" name="q" value="{{ $search }}" placeholder="Cari nomor / nama..."
-               class="filter-ctrl" style="padding-left: 34px; width: 210px;">
-    </div>
-
-    <div class="filter-ctrl" style="color: #24382D;">
-        <i class="bi bi-calendar3" style="color: #718074;"></i>
-        <span>Dibuat: 1–9 Nov 2026</span>
-    </div>
-
-    <select name="package_id" onchange="this.form.submit()" class="filter-ctrl" style="cursor: pointer;">
-        <option value="">Semua paket</option>
-        @foreach($packages as $pkg)
-            <option value="{{ $pkg->id }}" {{ (string) $packageFilter === (string) $pkg->id ? 'selected' : '' }}>
-                {{ $pkg->name }}
-            </option>
-        @endforeach
-    </select>
-
-    <select name="reservation_status" onchange="this.form.submit()" class="filter-ctrl" style="cursor: pointer;">
-        <option value="">Status reservasi</option>
-        @foreach(['Menunggu pembayaran', 'Menunggu verifikasi', 'Terkonfirmasi', 'Selesai', 'Dibatalkan'] as $rs)
-            <option value="{{ $rs }}" {{ $resStatusFilter === $rs ? 'selected' : '' }}>{{ $rs }}</option>
-        @endforeach
-    </select>
-
-    <select name="payment_status" onchange="this.form.submit()" class="filter-ctrl" style="cursor: pointer;">
-        <option value="">Status pembayaran</option>
-        @foreach(['Menunggu Verifikasi' => 'Menunggu pemeriksaan', 'Lunas' => 'Diterima', 'Ditolak' => 'Ditolak', 'Menunggu Pembayaran' => 'Belum bayar'] as $val => $lbl)
-            <option value="{{ $val }}" {{ $payStatusFilter === $val ? 'selected' : '' }}>{{ $lbl }}</option>
-        @endforeach
-    </select>
-
-    @if($search || $packageFilter || $resStatusFilter || $payStatusFilter)
-        <a href="{{ route('admin.reservations.index') }}" class="filter-ctrl" style="text-decoration: none; color: #718074;">
-            Reset
-        </a>
-    @endif
-</form>
-
-<!-- Panel Tabel Daftar Reservasi (Figma Frame 178:19560) -->
-<div class="panel-box" style="margin-bottom: 24px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;">
-        <div>
-            <h3 style="font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 700; color: #1F3D2B; margin-bottom: 4px;">
-                Daftar reservasi
-            </h3>
-            <p style="font-size: 12px; color: #718074;">
-                {{ $reservations->total() }} reservasi · Pilih baris untuk melihat detail
-            </p>
+<div class="res-grid">
+    <!-- KOLOM KIRI: Tabel Semua Reservasi -->
+    <div class="stat-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <div>
+                <h3 style="font-size: 1.05rem; font-weight: 700;">Semua reservasi</h3>
+                <span style="font-size: 0.78rem; color: #6B756E;">Menampilkan {{ $reservations->count() }} dari {{ $reservations->total() }} pesanan</span>
+            </div>
         </div>
 
-        <span style="background: #F4F6F1; color: #1F3D2B; font-size: 11px; font-weight: 600; padding: 5px 11px; border-radius: 100px;">
-            {{ $counts['terkonfirmasi'] }} terkonfirmasi · {{ $counts['selesai'] }} selesai · {{ $counts['menunggu'] }} menunggu
-        </span>
+        <div style="overflow-x: auto; border-radius: 8px;">
+            <table class="res-table">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding-left: 14px;">ID & Pelanggan</th>
+                        <th style="text-align: left;">Paket Wisata</th>
+                        <th style="text-align: left;">Keberangkatan</th>
+                        <th style="text-align: center;">Peserta</th>
+                        <th style="text-align: right;">Total Bayar</th>
+                        <th style="text-align: center;">Status</th>
+                        <th style="text-align: center; padding-right: 14px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($reservations as $r)
+                        @php
+                            $isSelected = ($selectedBooking && $selectedBooking->booking_code === $r->booking_code);
+                            $waNum = preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $r->customer_phone ?? ''));
+
+                            $st = $r->payment_status;
+                            $badgeBg = '#EDEEE9';
+                            $badgeColor = '#6B756E';
+                            $dotColor = '#8E9E8B';
+                            if ($st === 'Lunas') {
+                                $badgeBg = '#EAF0E7';
+                                $badgeColor = '#065F46';
+                                $dotColor = '#10B981';
+                            } elseif ($st === 'Menunggu Verifikasi') {
+                                $badgeBg = '#FEEFE6';
+                                $badgeColor = '#9A3412';
+                                $dotColor = '#F26B1D';
+                            } elseif ($st === 'Dibatalkan') {
+                                $badgeBg = '#FFEBEE';
+                                $badgeColor = '#991B1B';
+                                $dotColor = '#EF4444';
+                            }
+                        @endphp
+                        <tr class="res-row {{ $isSelected ? 'selected' : '' }}" onclick="selectRes('{{ $r->booking_code }}', event)">
+                            <td style="padding-left: 14px;">
+                                <span class="res-code-badge">{{ $r->booking_code }}</span>
+                                <span class="res-cust-name">{{ $r->customer_name }}</span>
+                            </td>
+                            <td>
+                                <span class="res-pkg-name" title="{{ $r->package_name }}">{{ $r->package_name }}</span>
+                            </td>
+                            <td style="white-space: nowrap;">
+                                <div style="font-weight: 600; color: #1F3D2B;">
+                                    <i class="bi bi-calendar3" style="color: #F26B1D; margin-right: 4px; font-size: 0.8rem;"></i>
+                                    {{ date('d M Y', strtotime($r->trip_date)) }}
+                                </div>
+                                <div style="font-size: 0.72rem; color: #6B756E; margin-left: 18px;">08.00 WIB</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="res-pax-badge">
+                                    <i class="bi bi-people-fill" style="color: #6B756E;"></i> {{ $r->participant_count }}
+                                </span>
+                            </td>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <strong style="font-weight: 800; color: #1F3D2B; font-size: 0.88rem;">
+                                    Rp{{ number_format($r->total_price, 0, ',', '.') }}
+                                </strong>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="res-status-badge" style="background: {{ $badgeBg }}; color: {{ $badgeColor }};">
+                                    <span class="res-status-dot" style="background: {{ $dotColor }};"></span>
+                                    {{ $st }}
+                                </span>
+                            </td>
+                            <td style="text-align: center; padding-right: 14px;">
+                                <div class="res-action-group">
+                                    @if($waNum)
+                                        <a href="https://wa.me/{{ $waNum }}?text=Halo%20Kak%20{{ urlencode($r->customer_name) }},%20kami%20dari%20Admin%20Yuk%20Keliling%20Sentul%20ingin%20mengonfirmasi%20reservasi%20dengan%20Kode:%20{{ $r->booking_code }}."
+                                           target="_blank"
+                                           class="btn-act-item btn-act-wa"
+                                           title="Chat WhatsApp ({{ $r->customer_phone }})">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
+                                    @endif
+                                    <a href="{{ route('booking.track', ['kode' => $r->booking_code]) }}"
+                                       target="_blank"
+                                       class="btn-act-item btn-act-track"
+                                       title="Lihat Lacak Pesanan (Tampilan Pelanggan)">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                    </a>
+                                    <a href="{{ route('admin.reservations.index', ['select' => $r->booking_code, 'status' => $status, 'q' => $search, 'page' => request('page')]) }}#detail-panel"
+                                       class="btn-act-item btn-act-detail {{ $isSelected ? 'selected' : '' }}"
+                                       title="Buka Detail Reservasi">
+                                        <i class="bi bi-card-text"></i>
+                                        <span>Detail</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" style="padding: 36px 14px; text-align: center; color: #6B756E;">
+                                <i class="bi bi-inbox" style="font-size: 1.8rem; display: block; margin-bottom: 6px; opacity: 0.5;"></i>
+                                Tidak ada data reservasi yang ditemukan.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <span style="font-size: 0.75rem; color: #6B756E;">Kolom tanggal menunjukkan jadwal keberangkatan wisata.</span>
+            {{ $reservations->links() }}
+        </div>
     </div>
 
-    <div style="overflow-x: auto;">
-        <div style="min-width: 920px;">
-            <!-- Kepala Tabel -->
-            <div style="display: grid; grid-template-columns: 175px 220px 110px 130px 190px 1fr; gap: 12px; background: #F4F6F1; padding: 12px; border-radius: 6px; font-size: 11px; font-weight: 600; color: #718074;">
-                <div>No. reservasi / pemesan</div>
-                <div>Paket &amp; jadwal WIB</div>
-                <div>Peserta / jeep</div>
-                <div>Total</div>
-                <div>Pembayaran</div>
-                <div>Reservasi</div>
+    <!-- KOLOM KANAN: Panel Detail Reservasi (Figma) -->
+    <div class="stat-card res-detail-sticky" id="detail-panel">
+        @if($selectedBooking)
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 14px; border-bottom: 1px solid #ECECE6; margin-bottom: 16px;">
+                <div>
+                    <span style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #6B756E; font-weight: 700;">
+                        Detail reservasi
+                    </span>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                        <h3 style="font-size: 1.2rem; font-weight: 800; color: #1F3D2B;">{{ $selectedBooking->booking_code }}</h3>
+                        <span style="display: inline-block; padding: 3px 9px; border-radius: 99px; font-size: 0.72rem; font-weight: 600;
+                            {{ $selectedBooking->payment_status === 'Lunas' ? 'background: #EAF0E7; color: #1F3D2B;' : '' }}
+                            {{ $selectedBooking->payment_status === 'Menunggu Verifikasi' ? 'background: #FEEFE6; color: #F26B1D;' : '' }}
+                            {{ $selectedBooking->payment_status === 'Menunggu Pembayaran' ? 'background: #EDEEE9; color: #6B756E;' : '' }}
+                            {{ $selectedBooking->payment_status === 'Dibatalkan' ? 'background: #FFEBEE; color: #C62828;' : '' }}
+                        ">
+                            {{ $selectedBooking->payment_status }}
+                        </span>
+                    </div>
+                </div>
+
+                <button type="button" onclick="window.print()" class="btn-outline-yks" style="font-size: 0.78rem; padding: 6px 12px;">
+                    <i class="bi bi-printer"></i> Cetak ↗
+                </button>
             </div>
 
-            <!-- Baris Data -->
-            @forelse($reservations as $r)
-                @php
-                    $isSelected = ($selectedBooking && $selectedBooking->booking_code === $r->booking_code);
-                    $pkgName = $r->custom_package_name ?: ($r->catalog_package_name ?? 'Jelajah Jeep');
-                    $timeSlot = $r->start_time ?: '08.00–12.00';
-                    $unitCount = $r->vehicle_count ?: 1;
-
-                    // Map Payment Status Label & Style sesuai Figma ON GOING
-                    $payLabel = $r->payment_status;
-                    $payClass = 'pill-neutral';
-                    if (in_array($r->payment_status, ['Menunggu Verifikasi', 'Menunggu pemeriksaan'])) {
-                        $payLabel = 'Menunggu pemeriksaan';
-                        $payClass = 'pill-orange';
-                    } elseif (in_array($r->payment_status, ['Lunas', 'Diterima'])) {
-                        $payLabel = 'Diterima';
-                        $payClass = 'pill-green';
-                    } elseif ($r->payment_status === 'Ditolak') {
-                        $payLabel = 'Ditolak';
-                        $payClass = 'pill-red';
-                    } elseif (in_array($r->payment_status, ['Menunggu Pembayaran', 'Belum bayar'])) {
-                        $payLabel = 'Belum bayar';
-                        $payClass = 'pill-neutral';
-                    }
-
-                    // Map Reservation Status Label & Style
-                    $resLabel = $r->reservation_status ?: 'Menunggu verifikasi';
-                    $resClass = 'pill-neutral';
-                    if (in_array($resLabel, ['Terkonfirmasi', 'Selesai'])) {
-                        $resClass = 'pill-green';
-                    } elseif ($resLabel === 'Dibatalkan') {
-                        $resClass = 'pill-red';
-                    }
-                @endphp
-                <a href="{{ route('admin.reservations.index', array_merge(request()->query(), ['select' => $r->booking_code])) }}#detail-panel"
-                   class="res-table-row {{ $isSelected ? 'selected' : '' }}">
-                    <div>
-                        <div style="font-size: 12px; font-weight: 600; color: #24382D;">{{ $r->booking_code }}</div>
-                        <div style="font-size: 11px; color: #718074; margin-top: 2px;">
-                            {{ $r->customer_name }}
-                            @if(($r->booking_source ?? 'Website') === 'Non-Website')
-                                <span style="font-size: 10px; color: #A54B10;">({{ $r->booking_channel ?? 'WA' }})</span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div>
-                        <div style="font-size: 12px; color: #24382D;">{{ $pkgName }}</div>
-                        <div style="font-size: 10px; color: #718074; margin-top: 2px;">
-                            {{ \Carbon\Carbon::parse($r->trip_date)->translatedFormat('d M Y') }} · {{ $timeSlot }}
-                        </div>
-                    </div>
-
-                    <div style="font-size: 12px; color: #24382D;">
-                        {{ $r->participant_count }} peserta / {{ $unitCount }}
-                    </div>
-
-                    <div style="font-size: 12px; color: #24382D; font-weight: 500;">
-                        Rp{{ number_format($r->total_price, 0, ',', '.') }}
-                    </div>
-
-                    <div>
-                        <span class="pill-badge {{ $payClass }}">{{ $payLabel }}</span>
-                    </div>
-
-                    <div>
-                        <span class="pill-badge {{ $resClass }}">{{ $resLabel }}</span>
-                    </div>
-                </a>
-            @empty
-                <div style="padding: 36px; text-align: center; color: #718074; font-size: 13px;">
-                    Tidak ada data reservasi yang cocok dengan filter.
+            <!-- Profil Pemesan -->
+            <div style="background: #F8F5EF; padding: 12px 14px; border-radius: 8px; margin-bottom: 16px;">
+                <div style="font-weight: 700; font-size: 0.95rem; color: #1F3D2B;">{{ $selectedBooking->customer_name }}</div>
+                <div style="font-size: 0.8rem; color: #6B756E; margin-top: 2px;">
+                    {{ $selectedBooking->customer_email }} · {{ $selectedBooking->customer_phone }}
                 </div>
-            @endforelse
-        </div>
-    </div>
+            </div>
 
-    <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-        <span style="font-size: 11px; color: #718074;">
-            {{ $reservations->total() }} reservasi · Nama paket dan tarif lama mengikuti saat reservasi dibuat.
-        </span>
-        {{ $reservations->links() }}
+            <!-- Rincian Perjalanan (Figma) -->
+            <div style="display: grid; grid-template-columns: 125px 1fr; row-gap: 8px; font-size: 0.83rem; margin-bottom: 16px;">
+                <span style="color: #6B756E;">Paket</span>
+                <strong style="color: #1F3D2B;">{{ $selectedBooking->package_name }}</strong>
+
+                <span style="color: #6B756E;">Keberangkatan</span>
+                <strong>{{ date('l, d F Y', strtotime($selectedBooking->trip_date)) }}</strong>
+
+                <span style="color: #6B756E;">Sesi</span>
+                <span>08.00–13.00 WIB · {{ $selectedBooking->package_duration ?? '4–6 jam' }}</span>
+
+                <span style="color: #6B756E;">Peserta</span>
+                <span>
+                    {{ $selectedBooking->participant_count }} orang
+                    @if(!empty($selectedBooking->jenis_trip))
+                        · <strong>{{ ucfirst($selectedBooking->jenis_trip) }} Trip</strong>
+                    @endif
+                    @if(!empty($selectedBooking->selected_units))
+                        · Unit: <strong>{{ $selectedBooking->selected_units }}</strong>
+                    @endif
+                </span>
+
+                @if(!empty($selectedBooking->selected_addons))
+                    <span style="color: #6B756E;">Add-On</span>
+                    <span style="color: #1F3D2B; font-weight: 600;">{{ $selectedBooking->selected_addons }} (+Rp{{ number_format($selectedBooking->subtotal_addons ?? 0, 0, ',', '.') }})</span>
+                @endif
+
+                <span style="color: #6B756E;">Titik kumpul</span>
+                <span>{{ $selectedBooking->meeting_point ?? 'Pos Jelajah YKS, Sentul' }}</span>
+
+                <span style="color: #6B756E;">Waktu kedatangan</span>
+                <span>07.30 WIB untuk pengarahan</span>
+            </div>
+
+            @if($selectedBooking->notes)
+                <div style="background: #FEEFE6; border-left: 3px solid #F26B1D; padding: 10px 12px; border-radius: 6px; font-size: 0.8rem; color: #1F3D2B; margin-bottom: 16px;">
+                    <strong>Catatan pemesan:</strong> {{ $selectedBooking->notes }}
+                </div>
+            @endif
+
+            <!-- Ringkasan Pembayaran (Figma) -->
+            <div style="border-top: 1px solid #ECECE6; padding-top: 14px; margin-bottom: 16px;">
+                <div style="font-weight: 700; font-size: 0.86rem; color: #1F3D2B; margin-bottom: 8px;">Ringkasan pembayaran</div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #6B756E; margin-bottom: 4px;">
+                    <span>{{ $selectedBooking->participant_count }} × Rp{{ number_format($selectedBooking->package_price, 0, ',', '.') }}</span>
+                    <span>Rp{{ number_format($selectedBooking->total_price, 0, ',', '.') }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #6B756E; margin-bottom: 8px;">
+                    <span>Biaya admin</span>
+                    <span>Rp0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 800; color: #1F3D2B; padding-top: 6px; border-top: 1px dashed #DFE4DC;">
+                    <span>Total</span>
+                    <span>Rp{{ number_format($selectedBooking->total_price, 0, ',', '.') }}</span>
+                </div>
+            </div>
+
+            <!-- Bukti Pembayaran -->
+            @php
+                $resProofUrl = \App\Models\YksBooking::resolveProofUrl($selectedBooking->payment_proof);
+            @endphp
+            <div style="border-top: 1px solid #ECECE6; padding-top: 14px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="font-weight: 700; font-size: 0.86rem; color: #1F3D2B;">
+                        <i class="bi bi-file-earmark-image"></i> Bukti Pembayaran
+                    </div>
+                    @if($resProofUrl)
+                        <a href="{{ $resProofUrl }}" target="_blank" style="font-size: 0.75rem; font-weight: 600; color: #F26B1D; text-decoration: none;">
+                            Buka Ukuran Penuh ↗
+                        </a>
+                    @endif
+                </div>
+
+                @if($resProofUrl)
+                    <div style="border: 1px solid #DFE4DC; border-radius: 8px; padding: 6px; background: #FFFFFF; text-align: center; margin-bottom: 10px;">
+                        <a href="{{ $resProofUrl }}" target="_blank" title="Klik untuk memperbesar di tab baru">
+                            <img src="{{ $resProofUrl }}" alt="Bukti Transfer" style="max-width: 100%; max-height: 220px; object-fit: contain; border-radius: 6px; cursor: zoom-in;">
+                        </a>
+                    </div>
+                @else
+                    <div style="background: #F8F5EF; border: 1px dashed #DFE4DC; border-radius: 8px; padding: 12px; font-size: 0.78rem; color: #6B756E; text-align: center; margin-bottom: 10px;">
+                        Belum ada berkas bukti transfer yang diunggah oleh pelanggan.
+                    </div>
+                @endif
+
+                <!-- Form Upload / Ganti Bukti dari Admin -->
+                <details style="font-size: 0.76rem; color: #6B756E;">
+                    <summary style="cursor: pointer; color: #1F3D2B; font-weight: 600; margin-bottom: 6px;">
+                        <i class="bi bi-upload"></i> {{ $resProofUrl ? 'Ganti / Unggah ulang bukti (dari WA)' : 'Unggah bukti transfer (dari WA)' }}
+                    </summary>
+                    <form action="{{ route('admin.reservations.upload_proof', $selectedBooking->booking_code) }}" method="POST" enctype="multipart/form-data" style="margin-top: 8px; display: flex; gap: 8px; flex-direction: column;">
+                        @csrf
+                        <input type="file" name="payment_proof" accept="image/*" required style="font-size: 0.75rem; padding: 6px; border: 1px solid #DFE4DC; border-radius: 6px; background: #FFF;">
+                        <button type="submit" class="btn-outline-yks" style="padding: 6px 12px; font-size: 0.75rem; justify-content: center;">
+                            Simpan Berkas Bukti
+                        </button>
+                    </form>
+                </details>
+            </div>
+
+            <!-- Form Ubah Status & Tombol Periksa Bukti -->
+            <div style="border-top: 1px solid #ECECE6; padding-top: 14px; margin-bottom: 16px;">
+                <form action="{{ route('admin.reservations.update_status', $selectedBooking->booking_code) }}" method="POST" style="display: flex; gap: 8px; align-items: center;">
+                    @csrf
+                    @method('PATCH')
+                    <select name="payment_status" style="flex: 1; padding: 8px 10px; border: 1px solid #DFE4DC; border-radius: 8px; font-size: 0.82rem; color: #1F3D2B;">
+                        @foreach(['Menunggu Pembayaran', 'Menunggu Verifikasi', 'Lunas', 'Dibatalkan'] as $st)
+                            <option value="{{ $st }}" {{ $selectedBooking->payment_status === $st ? 'selected' : '' }}>
+                                Status: {{ $st }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="btn-primary-yks" style="padding: 8px 14px;">Simpan Status</button>
+                </form>
+
+                @if($selectedBooking->payment_status === 'Menunggu Verifikasi')
+                    <a href="{{ route('admin.verifications.index', ['select' => $selectedBooking->booking_code]) }}"
+                       class="btn-primary-yks" style="width: 100%; justify-content: center; margin-top: 10px; background: #F26B1D;">
+                        <i class="bi bi-receipt-cutoff"></i> Periksa bukti pembayaran →
+                    </a>
+                @endif
+            </div>
+
+            <!-- Riwayat Status (Timeline Figma) -->
+            <div style="border-top: 1px solid #ECECE6; padding-top: 14px;">
+                <div style="font-weight: 700; font-size: 0.86rem; color: #1F3D2B; margin-bottom: 10px;">Riwayat status</div>
+                <div style="font-size: 0.78rem;">
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background: {{ $selectedBooking->payment_status === 'Lunas' ? '#1F3D2B' : '#F26B1D' }};"></div>
+                        <div style="font-weight: 700; color: #1F3D2B;">{{ $selectedBooking->payment_status }}</div>
+                        <div style="color: #6B756E;">Diperbarui {{ date('d M Y, H.i', strtotime($selectedBooking->updated_at)) }} WIB</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background: #C1D1BE;"></div>
+                        <div style="font-weight: 600; color: #1F3D2B;">Pesanan & Instruksi Pembayaran Dibuat</div>
+                        <div style="color: #6B756E;">{{ date('d M Y, H.i', strtotime($selectedBooking->created_at)) }} WIB</div>
+                    </div>
+                </div>
+            </div>
+        @else
+            <div style="text-align: center; padding: 48px 16px; color: #6B756E;">
+                Pilih salah satu reservasi di tabel kiri untuk melihat rincian lengkap.
+            </div>
+        @endif
     </div>
 </div>
 
-<!-- Bagian Bawah 2 Kolom: Detail Reservasi & Perbarui Status Reservasi (Figma Frame 178:19728) -->
-@if($selectedBooking)
-    @php
-        $selPkgName = $selectedBooking->custom_package_name ?: ($selectedBooking->catalog_package_name ?? 'Jelajah Jeep');
-        $selTimeSlot = $selectedBooking->start_time ?: '08.00–12.00';
-        $selUnitCount = $selectedBooking->vehicle_count ?: 1;
-        $selBasePrice = $selectedBooking->package_agreed_price ?: ($selectedBooking->catalog_package_price ?: $selectedBooking->total_price);
-        $selAddonPrice = $selectedBooking->addon_price ?? 0;
-        $selAddonText = $selectedBooking->addon_notes ?: ($selAddonPrice > 0 ? 'Add-on · Rp' . number_format($selAddonPrice, 0, ',', '.') : 'Tidak dipilih · Rp0');
-
-        $selPayLabel = $selectedBooking->payment_status;
-        $selPayClass = 'pill-neutral';
-        if (in_array($selectedBooking->payment_status, ['Menunggu Verifikasi', 'Menunggu pemeriksaan'])) {
-            $selPayLabel = 'Menunggu pemeriksaan';
-            $selPayClass = 'pill-orange';
-        } elseif (in_array($selectedBooking->payment_status, ['Lunas', 'Diterima'])) {
-            $selPayLabel = 'Diterima';
-            $selPayClass = 'pill-green';
-        } elseif ($selectedBooking->payment_status === 'Ditolak') {
-            $selPayLabel = 'Ditolak';
-            $selPayClass = 'pill-red';
-        } else {
-            $selPayLabel = 'Belum bayar';
-            $selPayClass = 'pill-neutral';
+<script>
+    function selectRes(code, event) {
+        // Jangan picu pindah baris jika yang diklik adalah tombol/link di dalam kolom aksi
+        if (event.target.closest('a') || event.target.closest('button') || event.target.closest('form')) {
+            return;
         }
-
-        $selResLabel = $selectedBooking->reservation_status ?: 'Menunggu verifikasi';
-        $selResClass = in_array($selResLabel, ['Terkonfirmasi', 'Selesai']) ? 'pill-green' : ($selResLabel === 'Dibatalkan' ? 'pill-red' : 'pill-orange');
-    @endphp
-
-    <div class="res-bottom-grid" id="detail-panel">
-        <!-- KOLOM KIRI: Detail YKS-XXXXX (Figma Frame 178:19729) -->
-        <div class="panel-box" style="display: flex; flex-direction: column; gap: 18px;">
-            <div>
-                <h3 style="font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 700; color: #1F3D2B; margin-bottom: 4px;">
-                    Detail {{ $selectedBooking->booking_code }}
-                </h3>
-                <p style="font-size: 12px; color: #718074;">
-                    Dibuat {{ \Carbon\Carbon::parse($selectedBooking->created_at)->translatedFormat('d F Y, H.i') }} WIB · {{ $selectedBooking->customer_name }}
-                    @if(($selectedBooking->booking_source ?? 'Website') === 'Non-Website')
-                        · Kanal {{ $selectedBooking->booking_channel ?? 'WhatsApp' }}
-                    @endif
-                </p>
-            </div>
-
-            <!-- Status Terpisah: RESERVASI & PEMBAYARAN -->
-            <div style="display: flex; gap: 24px; flex-wrap: wrap;">
-                <div>
-                    <div style="font-size: 11px; color: #718074; margin-bottom: 6px;">RESERVASI</div>
-                    <span class="pill-badge {{ $selResClass }}">{{ $selResLabel }}</span>
-                </div>
-                <div>
-                    <div style="font-size: 11px; color: #718074; margin-bottom: 6px;">PEMBAYARAN</div>
-                    <span class="pill-badge {{ $selPayClass }}">{{ $selPayLabel }}</span>
-                </div>
-            </div>
-
-            <div style="height: 1px; background: #E1E4DA;"></div>
-
-            <!-- Rincian Data -->
-            <div class="kv-line">
-                <span>Paket</span>
-                <span>{{ $selPkgName }}</span>
-            </div>
-            <div class="kv-line">
-                <span>Durasi / kapasitas</span>
-                <span>{{ $selectedBooking->package_duration ?? '4 jam' }} · Maks. 4 peserta/jeep</span>
-            </div>
-            <div class="kv-line">
-                <span>Jadwal perjalanan</span>
-                <span>{{ \Carbon\Carbon::parse($selectedBooking->trip_date)->translatedFormat('l, d F Y') }}</span>
-            </div>
-            <div class="kv-line">
-                <span>Waktu</span>
-                <span>{{ $selTimeSlot }} WIB</span>
-            </div>
-            <div class="kv-line">
-                <span>Peserta / jumlah jeep</span>
-                <span>{{ $selectedBooking->participant_count }} peserta / {{ $selUnitCount }} jeep</span>
-            </div>
-            <div class="kv-line">
-                <span>Pelanggan</span>
-                <span>{{ $selectedBooking->customer_name }} · {{ $selectedBooking->customer_email }}</span>
-            </div>
-            @if(!empty($selectedBooking->group_name))
-                <div class="kv-line">
-                    <span>Rombongan</span>
-                    <span>{{ $selectedBooking->group_name }}</span>
-                </div>
-            @endif
-            <div class="kv-line">
-                <span>Harga paket</span>
-                <span>1 × Rp{{ number_format($selBasePrice, 0, ',', '.') }}</span>
-            </div>
-            <div class="kv-line">
-                <span>Add-on</span>
-                <span>{{ $selAddonText }}</span>
-            </div>
-            <div class="kv-line">
-                <span>Biaya admin</span>
-                <span>Rp0</span>
-            </div>
-
-            <div style="height: 1px; background: #E1E4DA;"></div>
-
-            <div class="kv-line" style="font-weight: 700;">
-                <span style="color: #718074; font-weight: 400;">Total reservasi</span>
-                <span style="font-size: 14px; font-weight: 700; color: #24382D;">Rp{{ number_format($selectedBooking->total_price, 0, ',', '.') }}</span>
-            </div>
-
-            <!-- Aksi Pembayaran (Figma Frame 178:19772) -->
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 4px; flex-wrap: wrap;">
-                <span style="font-size: 12px; color: #718074;">
-                    Bukti diterima {{ \Carbon\Carbon::parse($selectedBooking->updated_at)->translatedFormat('d M, H.i') }} WIB
-                </span>
-
-                <a href="{{ route('admin.verifications.show', $selectedBooking->booking_code) }}"
-                   style="height: 42px; padding: 0 16px; border-radius: 8px; border: 1px solid #E1E4DA; background: #FFFFFF; color: #1F3D2B; font-size: 13px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
-                    <i class="bi bi-file-earmark-check"></i> Periksa bukti transfer
-                </a>
-            </div>
-        </div>
-
-        <!-- KOLOM KANAN: Perbarui Status Reservasi & Riwayat Status (Figma Frame 178:19777) -->
-        <div style="display: flex; flex-direction: column; gap: 24px;">
-            <!-- Panel 1: Perbarui Status Reservasi -->
-            <form action="{{ route('admin.reservations.update_status', $selectedBooking->booking_code) }}" method="POST" class="panel-box" style="display: flex; flex-direction: column; gap: 18px;">
-                @csrf
-                @method('PATCH')
-
-                <div>
-                    <h3 style="font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 700; color: #1F3D2B; margin-bottom: 4px;">
-                        Perbarui status reservasi
-                    </h3>
-                    <p style="font-size: 12px; color: #718074;">Perubahan dicatat dalam riwayat status</p>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 7px;">
-                    <label style="font-size: 12px; font-weight: 600; color: #24382D;">Status baru *</label>
-                    <select name="reservation_status" required
-                            style="height: 44px; padding: 0 12px; border: 1px solid #E1E4DA; border-radius: 8px; background: #FFFFFF; font-size: 13px; color: #24382D;">
-                        @foreach(['Menunggu pembayaran', 'Menunggu verifikasi', 'Terkonfirmasi', 'Selesai', 'Dibatalkan'] as $st)
-                            <option value="{{ $st }}" {{ $selResLabel === $st ? 'selected' : '' }}>{{ $st }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <p style="font-size: 11px; color: #718074; line-height: 1.5;">
-                    Alur: Menunggu pembayaran → Menunggu verifikasi → Terkonfirmasi → Selesai. Pembatalan memerlukan alasan.
-                </p>
-
-                <div style="display: flex; flex-direction: column; gap: 7px;">
-                    <label style="font-size: 12px; font-weight: 600; color: #24382D;">Catatan perubahan</label>
-                    <textarea name="admin_notes" rows="3" placeholder="Tulis alasan atau catatan operasional..."
-                              style="min-height: 90px; padding: 12px; border: 1px solid #E1E4DA; border-radius: 8px; font-family: inherit; font-size: 13px; color: #24382D;">{{ $selectedBooking->admin_notes }}</textarea>
-                </div>
-
-                <div style="background: #EAF0E7; border-radius: 8px; padding: 14px; display: flex; gap: 10px; align-items: flex-start;">
-                    <i class="bi bi-info-circle" style="color: #1F3D2B; font-size: 15px;"></i>
-                    <span style="font-size: 12px; color: #1F3D2B; line-height: 1.5;">
-                        Status Terkonfirmasi hanya tersedia setelah pembayaran diterima. Mengubah status reservasi tidak mengesahkan pembayaran.
-                    </span>
-                </div>
-
-                <div style="display: flex; justify-content: flex-end;">
-                    <button type="submit"
-                            style="height: 42px; padding: 0 16px; border-radius: 8px; border: none; background: #F26B1D; color: #1F3D2B; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="bi bi-floppy"></i> Simpan status
-                    </button>
-                </div>
-            </form>
-
-            <!-- Panel 2: Riwayat Status (Figma Frame 178:19800) -->
-            <div class="panel-box" style="display: flex; flex-direction: column; gap: 16px;">
-                <h3 style="font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 700; color: #1F3D2B;">
-                    Riwayat status
-                </h3>
-
-                <div style="display: flex; gap: 10px; align-items: flex-start;">
-                    <i class="bi bi-record-circle" style="color: #1F3D2B; font-size: 14px; margin-top: 2px;"></i>
-                    <div>
-                        <div style="font-size: 12px; font-weight: 600; color: #24382D;">{{ $selResLabel }} · Bukti diunggah</div>
-                        <div style="font-size: 11px; color: #718074; margin-top: 2px;">
-                            {{ \Carbon\Carbon::parse($selectedBooking->updated_at)->translatedFormat('d M Y, H.i') }} WIB · {{ $selectedBooking->customer_name }}
-                        </div>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 10px; align-items: flex-start;">
-                    <i class="bi bi-record-circle" style="color: #718074; font-size: 14px; margin-top: 2px;"></i>
-                    <div>
-                        <div style="font-size: 12px; font-weight: 600; color: #24382D;">Reservasi dibuat · Menunggu pembayaran</div>
-                        <div style="font-size: 11px; color: #718074; margin-top: 2px;">
-                            {{ \Carbon\Carbon::parse($selectedBooking->created_at)->translatedFormat('d M Y, H.i') }} WIB · Sistem
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-@endif
+        window.location.href = "{{ route('admin.reservations.index') }}?select=" + encodeURIComponent(code) + "&status={{ $status }}&q={{ $search }}&page={{ request('page') }}#detail-panel";
+    }
+</script>
 @endsection

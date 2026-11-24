@@ -22,46 +22,7 @@ class YksBooking extends Model
 
     public function getFormattedTotalAttribute(): string
     {
-        return 'Rp' . number_format($this->total_price, 0, ',', '.');
-    }
-
-    /**
-     * Label status pembayaran sesuai desain Figma ON GOING:
-     * Diterima, Menunggu pemeriksaan, Ditolak, Belum bayar.
-     */
-    public function getPaymentLabelOngoingAttribute(): string
-    {
-        if ($this->payment_status === 'Lunas' || $this->payment_status === 'Diterima') {
-            return 'Diterima';
-        }
-        if ($this->payment_status === 'Menunggu Verifikasi' || $this->payment_status === 'Menunggu pemeriksaan') {
-            return 'Menunggu pemeriksaan';
-        }
-        if ($this->payment_status === 'Ditolak' || $this->has_active_rejection) {
-            return 'Ditolak';
-        }
-        return 'Belum bayar';
-    }
-
-    /**
-     * Label status reservasi sesuai desain Figma ON GOING:
-     * Menunggu pembayaran, Menunggu verifikasi, Terkonfirmasi, Selesai, Dibatalkan.
-     */
-    public function getReservationLabelOngoingAttribute(): string
-    {
-        if (!empty($this->reservation_status)) {
-            return $this->reservation_status;
-        }
-        if ($this->payment_status === 'Lunas') {
-            return 'Terkonfirmasi';
-        }
-        if ($this->payment_status === 'Menunggu Verifikasi') {
-            return 'Menunggu verifikasi';
-        }
-        if ($this->payment_status === 'Dibatalkan') {
-            return 'Dibatalkan';
-        }
-        return 'Menunggu pembayaran';
+        return 'Rp ' . number_format($this->total_price, 0, ',', '.');
     }
 
     /**
@@ -69,17 +30,13 @@ class YksBooking extends Model
      */
     public function getRejectionReasonAttribute(): ?string
     {
-        if (!empty($this->notes) && preg_match_all('/\[Ditolak Admin:\s*(.*?)\]/s', $this->notes, $matches)) {
+        if (empty($this->notes)) {
+            return null;
+        }
+
+        if (preg_match_all('/\[Ditolak Admin:\s*(.*?)\]/s', $this->notes, $matches)) {
             $lastIndex = count($matches[1]) - 1;
             return trim($matches[1][$lastIndex]);
-        }
-
-        if ($this->payment_status === 'Ditolak' && !empty($this->admin_notes)) {
-            return trim($this->admin_notes);
-        }
-
-        if ($this->payment_status === 'Ditolak') {
-            return 'Bukti transfer tidak sesuai dengan mutasi rekening resmi YKS.';
         }
 
         return null;
@@ -90,8 +47,7 @@ class YksBooking extends Model
      */
     public function getHasActiveRejectionAttribute(): bool
     {
-        return $this->payment_status === 'Ditolak'
-            || ($this->payment_status === 'Menunggu Pembayaran' && !empty($this->rejection_reason));
+        return $this->payment_status === 'Menunggu Pembayaran' && !empty($this->rejection_reason);
     }
 
     /**

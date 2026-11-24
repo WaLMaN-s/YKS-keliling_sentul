@@ -1,220 +1,145 @@
-@extends('layouts.app', ['title' => 'Tulis Ulasan'])
+@extends('layouts.app', ['title' => 'Tulis Ulasan Perjalanan'])
 
 @section('content')
-<!-- Pembuka Ulasan (Figma ON GOING #165:303 - Tulis ulasan · Desktop) -->
-<div class="container" style="padding-top: 32px; padding-bottom: 28px;">
-    <h1 style="font-family: var(--font-heading); font-size: 2.4rem; font-weight: 800; color: #1F3D2B; line-height: 1.2; letter-spacing: -0.8px; margin-bottom: 10px;">
+<div class="container" style="padding-top: 36px; max-width: 820px;">
+    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+        <a href="{{ route('home') }}" style="color: var(--text-sub);">Beranda</a> &nbsp;/&nbsp;
+        <a href="{{ route('gallery') }}" style="color: var(--text-sub);">Galeri & Testimoni</a> &nbsp;/&nbsp;
+        <span>Tulis Ulasan</span>
+    </div>
+
+    <h1 class="section-title" style="font-size: 2.3rem; margin-bottom: 8px;">
         Bagaimana perjalananmu bersama YKS?
     </h1>
-    <p style="font-size: 0.96rem; color: #667066; line-height: 1.6; margin: 0;">
+    <p class="section-desc" style="margin-bottom: 28px;">
         Bagikan momen, kesan, dan masukanmu. Ceritamu membantu kami menghadirkan perjalanan yang lebih baik.
     </p>
 </div>
 
-<!-- Formulir Ulasan (#165:328) -->
-<section style="padding-bottom: 64px;">
-    <div class="container">
-        @if($errors->any())
-            <div style="background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; color: #991B1B; font-size: 0.88rem;">
-                <strong>Mohon lengkapi isian berikut:</strong>
-                <ul style="margin: 6px 0 0 18px;">
-                    @foreach($errors->all() as $err)
-                        <li>{{ $err }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('reviews.store') }}"
-              style="background: #FFFFFF; border: 1px solid #DEDED4; border-radius: 16px; padding: 32px; display: flex; flex-direction: column; gap: 28px;">
-            @csrf
-
-            <!-- Petunjuk Formulir (#165:330) -->
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                <span style="font-size: 1rem; font-weight: 700; color: #1F3D2B;">Tulis ulasanmu</span>
-                <span style="font-size: 0.78rem; color: #667066;">
-                    <span style="color: #F26B1D;">*</span> Wajib diisi
-                </span>
+<section class="section-wrapper" style="padding-top: 0;">
+    <div class="container" style="max-width: 820px;">
+        <div class="resp-card-pad" style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-light);">
+                <strong style="color: var(--primary); font-size: 1rem;">Tulis ulasanmu</strong>
+                <span style="font-size: 0.78rem; color: var(--accent); font-weight: 600;">* Wajib diisi</span>
             </div>
 
-            <!-- 1. Tentang Kamu (#165:333) -->
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-                <h2 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; color: #1F3D2B; margin: 0;">
-                    Tentang kamu
-                </h2>
-                <div>
-                    <label style="display: block; font-size: 0.88rem; font-weight: 600; color: #1F3D2B; margin-bottom: 8px;">
-                        Nama penulis <span style="color: #F26B1D;">*</span>
-                    </label>
-                    <input type="text" name="name" value="{{ old('name') }}" required
-                           placeholder="Nama yang ingin ditampilkan"
-                           style="width: 100%; height: 50px; padding: 0 14px; border: 1px solid #DEDED4; border-radius: 10px; font-size: 0.9rem; color: #1F3D2B;">
-                    <span style="display: block; font-size: 0.76rem; color: #667066; margin-top: 6px;">
-                        Nama ini akan tampil bersama ulasanmu.
-                    </span>
-                </div>
-            </div>
+            <form method="POST" action="{{ route('reviews.store') }}" onsubmit="const btn = this.querySelector('button[type=submit]'); if(btn){ btn.disabled = true; btn.innerHTML = '<i class=\'bi bi-hourglass-split\'></i> Mengirim Ulasan...'; }">
+                @csrf
 
-            <div style="height: 1px; background: #DEDED4;"></div>
-
-            <!-- 2. Perjalanan yang Kamu Ikuti (#165:348) -->
-            <div style="display: flex; flex-direction: column; gap: 18px;">
-                <h2 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; color: #1F3D2B; margin: 0;">
-                    Perjalanan yang kamu ikuti
-                </h2>
-
-                <div>
-                    <label style="display: block; font-size: 0.88rem; font-weight: 600; color: #1F3D2B; margin-bottom: 10px;">
-                        Paket perjalanan <span style="color: #F26B1D;">*</span>
-                    </label>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
-                        @php
-                            $reviewPackages = ['Jelajah Jeep', 'Trail', 'Bawa Motor Pribadi', 'Private Trip'];
-                            $oldPkg = old('package_name', 'Jelajah Jeep');
-                        @endphp
-                        @foreach($reviewPackages as $rPkg)
-                            <label class="pkg-radio-card" style="display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 14px; border: 1px solid {{ $oldPkg === $rPkg ? '#1F3D2B' : '#DEDED4' }}; background: {{ $oldPkg === $rPkg ? '#EAF0E7' : '#FFFFFF' }}; border-radius: 10px; cursor: pointer; font-size: 0.86rem; color: #1F3D2B; font-weight: 500;">
-                                <input type="radio" name="package_name" value="{{ $rPkg }}" {{ $oldPkg === $rPkg ? 'checked' : '' }}
-                                       onchange="highlightPkgRadio(this)" style="accent-color: #1F3D2B; width: 17px; height: 17px;">
-                                <span>{{ $rPkg }}</span>
-                            </label>
-                        @endforeach
+                <h4 style="color: var(--primary); font-size: 1.05rem; margin-bottom: 14px;">Tentang kamu</h4>
+                <div class="resp-grid-2" style="gap: 16px; margin-bottom: 24px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Nama penulis <span class="text-accent">*</span></label>
+                        <input type="text" name="name" class="form-control" required
+                               placeholder="Nama yang ingin ditampilkan"
+                               value="{{ old('name') }}">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Asal Kota (Opsional)</label>
+                        <input type="text" name="city" class="form-control"
+                               placeholder="Contoh: Jakarta Selatan, Bogor"
+                               value="{{ old('city') }}">
                     </div>
                 </div>
 
-                <div style="max-width: 382px;">
-                    <label style="display: block; font-size: 0.88rem; font-weight: 600; color: #1F3D2B; margin-bottom: 8px;">
-                        Tanggal perjalanan <span style="color: #F26B1D;">*</span>
-                    </label>
-                    <input type="date" name="trip_date" value="{{ old('trip_date', date('Y-m-d')) }}" required
-                           max="{{ date('Y-m-d') }}"
-                           style="width: 100%; height: 50px; padding: 0 14px; border: 1px solid #DEDED4; border-radius: 10px; font-size: 0.9rem; color: #1F3D2B;">
+                <hr style="border: none; border-top: 1px solid var(--border-light); margin-bottom: 24px;">
+
+                <h4 style="color: var(--primary); font-size: 1.05rem; margin-bottom: 14px;">Perjalanan yang kamu ikuti</h4>
+                <div class="resp-grid-2" style="gap: 16px; margin-bottom: 24px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Paket perjalanan <span class="text-accent">*</span></label>
+                        <select name="package_name" class="form-control" required>
+                            <option value="">-- Pilih Paket Wisata --</option>
+                            @foreach($packages as $pkg)
+                                <option value="{{ $pkg->name }}" {{ old('package_name') === $pkg->name ? 'selected' : '' }}>
+                                    {{ $pkg->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Tanggal perjalanan <span class="text-accent">*</span></label>
+                        <input type="date" name="trip_date" class="form-control" required
+                               value="{{ old('trip_date', date('Y-m-d')) }}">
+                    </div>
                 </div>
-            </div>
 
-            <div style="height: 1px; background: #DEDED4;"></div>
+                <hr style="border: none; border-top: 1px solid var(--border-light); margin-bottom: 24px;">
 
-            <!-- 3. Kesan dan Ceritamu (#165:372) -->
-            <div style="display: flex; flex-direction: column; gap: 20px;">
-                <h2 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; color: #1F3D2B; margin: 0;">
-                    Kesan dan ceritamu
-                </h2>
-
-                <!-- Penilaian Bintang Interaktif (#165:375) -->
-                <div>
-                    <label style="display: block; font-size: 0.88rem; font-weight: 600; color: #1F3D2B; margin-bottom: 10px;">
-                        Penilaian keseluruhan <span style="color: #F26B1D;">*</span>
-                    </label>
+                <h4 style="color: var(--primary); font-size: 1.05rem; margin-bottom: 14px;">Kesan dan ceritamu</h4>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label class="form-label">Penilaian keseluruhan <span class="text-accent">*</span></label>
                     <input type="hidden" name="rating" id="ratingInput" value="{{ old('rating', 5) }}">
-                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        @for($star = 1; $star <= 5; $star++)
-                            <button type="button" class="star-btn" data-val="{{ $star }}" onclick="setStarRating({{ $star }})"
-                                    style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid #DEDED4; background: #FCFBF8; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #F26B1D; cursor: pointer;">
-                                ★
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
+                        @for($i = 1; $i <= 5; $i++)
+                            <button type="button" onclick="setRating({{ $i }})" class="star-btn" data-star="{{ $i }}"
+                                    style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--border); background: #FFFFFF; font-size: 1.35rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s;">
+                                <i class="bi bi-star-fill" style="color: #F59E0B;"></i>
                             </button>
                         @endfor
-                        <span id="ratingTextLabel" style="font-size: 0.84rem; color: #667066; margin-left: 6px;">
-                            5 bintang · Sangat berkesan
-                        </span>
+                        <span id="ratingLabel" style="font-size: 0.85rem; color: var(--text-muted); margin-left: 8px; font-weight: 600;">5 / 5 (Sangat Berkesan)</span>
                     </div>
-                    <span style="display: block; font-size: 0.76rem; color: #667066; margin-top: 8px;">
-                        1 = kurang berkesan · 5 = sangat berkesan
-                    </span>
+                    <small style="color: var(--text-muted); font-size: 0.78rem; display: block; margin-top: 6px;">1 = kurang berkesan · 5 = sangat berkesan</small>
                 </div>
 
-                <!-- Ceritakan Pengalamanmu (#165:390) -->
-                <div>
-                    <label style="display: block; font-size: 0.88rem; font-weight: 600; color: #1F3D2B; margin-bottom: 8px;">
-                        Ceritakan pengalamanmu <span style="color: #F26B1D;">*</span>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label class="form-label">Ceritakan pengalamanmu <span class="text-accent">*</span></label>
+                    <textarea name="review" rows="4" class="form-control" required maxlength="2000"
+                              placeholder="Apa momen paling berkesan? Bagaimana jalur, pemandu, atau suasana perjalanannya? Kami juga senang mendengar saranmu.">{{ old('review') }}</textarea>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.86rem; color: var(--text-dark);">
+                        <input type="checkbox" name="agree" value="1" required {{ old('agree') ? 'checked' : '' }} style="margin-top: 3px; accent-color: var(--primary); width: 16px; height: 16px;">
+                        <span>Saya menyetujui nama dan ulasan yang saya kirim ditampilkan di situs Yuk Keliling Sentul. Saya menulis berdasarkan pengalaman perjalanan saya sendiri. <span class="text-accent">*</span></span>
                     </label>
-                    <textarea name="review" id="reviewTextarea" rows="5" maxlength="2000" required
-                              oninput="updateCharCount(this)"
-                              placeholder="Apa momen paling berkesan? Bagaimana jalur, pemandu, atau suasana perjalanannya? Kami juga senang mendengar saranmu."
-                              style="width: 100%; padding: 14px; border: 1px solid #DEDED4; border-radius: 10px; font-size: 0.9rem; color: #1F3D2B; line-height: 1.65;">{{ old('review') }}</textarea>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.76rem; color: #667066; margin-top: 6px;">
-                        <span id="charCounter">0 / 2.000</span>
-                    </div>
                 </div>
-            </div>
 
-            <div style="height: 1px; background: #DEDED4;"></div>
-
-            <!-- 4. Persetujuan dan Pengiriman (#165:408) -->
-            <div style="display: flex; flex-direction: column; gap: 20px;">
-                <label style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer; font-size: 0.84rem; color: #1A1A1A; line-height: 1.6;">
-                    <input type="checkbox" name="consent" value="1" required {{ old('consent') ? 'checked' : '' }}
-                           style="width: 20px; height: 20px; margin-top: 2px; accent-color: #1F3D2B;">
-                    <span>
-                        Saya menyetujui nama, ulasan, dan foto yang saya unggah ditampilkan di situs YKS. Saya menulis berdasarkan pengalaman perjalanan saya sendiri. <span style="color: #F26B1D;">*</span>
-                    </span>
-                </label>
-
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-                    <a href="{{ route('gallery') }}"
-                       style="display: inline-flex; align-items: center; gap: 10px; height: 50px; padding: 0 20px; background: #FFFFFF; border: 1px solid #DEDED4; border-radius: 12px; font-size: 0.9rem; font-weight: 700; color: #1F3D2B; text-decoration: none;">
-                        <span>Kembali</span>
-                        <i class="bi bi-arrow-left"></i>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    <a href="{{ route('gallery') }}" class="btn btn-outline">
+                        <i class="bi bi-arrow-left"></i> Kembali
                     </a>
-
-                    <button type="submit"
-                            style="display: inline-flex; align-items: center; gap: 10px; height: 50px; padding: 0 24px; background: #F26B1D; border: 1px solid #F26B1D; border-radius: 12px; font-size: 0.9rem; font-weight: 700; color: #1A1A1A; cursor: pointer;">
-                        <span>Kirim ulasan</span>
-                        <i class="bi bi-arrow-right"></i>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Kirim ulasan &nbsp;↗
                     </button>
                 </div>
-
-                <p style="font-size: 0.76rem; color: #667066; margin: 0;">
-                    Ulasan akan ditinjau oleh tim YKS sebelum ditampilkan. Emailmu tidak akan dipublikasikan.
-                </p>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </section>
 @endsection
 
 @section('scripts')
 <script>
-    function highlightPkgRadio(radio) {
-        document.querySelectorAll('.pkg-radio-card').forEach(lbl => {
-            lbl.style.borderColor = '#DEDED4';
-            lbl.style.background = '#FFFFFF';
-        });
-        if (radio.parentElement) {
-            radio.parentElement.style.borderColor = '#1F3D2B';
-            radio.parentElement.style.background = '#EAF0E7';
-        }
-    }
+    const ratingLabels = {
+        1: '1 / 5 (Kurang Berkesan)',
+        2: '2 / 5 (Cukup)',
+        3: '3 / 5 (Baik)',
+        4: '4 / 5 (Memuaskan)',
+        5: '5 / 5 (Sangat Berkesan)'
+    };
 
-    function setStarRating(val) {
+    function setRating(val) {
         document.getElementById('ratingInput').value = val;
-        const descriptions = {
-            1: '1 bintang · Kurang berkesan',
-            2: '2 bintang · Cukup',
-            3: '3 bintang · Baik',
-            4: '4 bintang · Berkesan',
-            5: '5 bintang · Sangat berkesan'
-        };
-        document.getElementById('ratingTextLabel').textContent = descriptions[val] || (val + ' bintang');
+        document.getElementById('ratingLabel').textContent = ratingLabels[val] || '';
         document.querySelectorAll('.star-btn').forEach(btn => {
-            const bVal = parseInt(btn.getAttribute('data-val'));
-            if (bVal <= val) {
-                btn.style.color = '#F26B1D';
-                btn.style.borderColor = '#F26B1D';
-                btn.style.background = '#FFF0E4';
+            const starVal = parseInt(btn.getAttribute('data-star'));
+            const icon = btn.querySelector('i');
+            if (starVal <= val) {
+                icon.style.color = '#F59E0B';
+                btn.style.borderColor = '#F59E0B';
+                btn.style.backgroundColor = '#FFFBEB';
             } else {
-                btn.style.color = '#C5CCC6';
-                btn.style.borderColor = '#DEDED4';
-                btn.style.background = '#FCFBF8';
+                icon.style.color = '#CBD5E1';
+                btn.style.borderColor = 'var(--border)';
+                btn.style.backgroundColor = '#FFFFFF';
             }
         });
     }
 
-    function updateCharCount(el) {
-        const len = el.value.length;
-        document.getElementById('charCounter').textContent = len.toLocaleString('id-ID') + ' / 2.000';
-    }
-
-    // Init default rating state
-    setStarRating(parseInt(document.getElementById('ratingInput').value) || 5);
+    document.addEventListener('DOMContentLoaded', function() {
+        setRating(parseInt(document.getElementById('ratingInput').value) || 5);
+    });
 </script>
 @endsection

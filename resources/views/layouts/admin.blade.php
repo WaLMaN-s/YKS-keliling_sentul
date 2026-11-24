@@ -3,26 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'Dashboard' }} — Ruang Kerja Admin YKS</title>
+    <title>{{ $title ?? 'Ringkasan' }} — Administrasi YKS Keliling Sentul</title>
 
-    <!-- Google Fonts: Inter & Montserrat -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap"></noscript>
-
+    <!-- Local Bundled Fonts: Inter & Montserrat -->
+    <link rel="stylesheet" href="/assets/vendor/fonts/fonts.css">
+    
     <!-- Bootstrap Icons (Local Offline) -->
     <link rel="stylesheet" href="/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
-
+    
     <style>
         :root {
             --admin-sidebar-bg: #1F3D2B;
-            --admin-sidebar-active: #35553F;
+            --admin-sidebar-active: #304F3B;
             --admin-accent: #F26B1D;
-            --admin-text-sub: #BDCCBE;
+            --admin-text-sub: #C1D1BE;
             --admin-bg-body: #F8F5EF;
             --admin-card-bg: #FFFFFF;
-            --admin-border: #E1E4DA;
+            --admin-border: #DFE4DC;
             --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             --font-head: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
@@ -41,76 +38,77 @@
             min-height: 100vh;
         }
 
-        /* Sidebar (Figma ON GOING 240px) */
+        /* Sidebar */
         .admin-sidebar {
-            width: 240px;
+            width: 256px;
             background-color: var(--admin-sidebar-bg);
             color: #FFFFFF;
             display: flex;
             flex-direction: column;
-            gap: 26px;
             flex-shrink: 0;
-            padding: 30px 16px 24px;
+            padding: 24px 14px;
             position: sticky;
             top: 0;
             height: 100vh;
             overflow-y: auto;
         }
 
-        .admin-brand-wrap {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            padding: 0 8px;
-        }
-
         .admin-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            padding: 0 8px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             text-decoration: none;
             color: #FFFFFF;
         }
 
         .brand-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            background-color: #35553F;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background-color: #304F3B;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #FFFFFF;
-            flex-shrink: 0;
+            color: var(--admin-accent);
+            font-size: 1.2rem;
+            font-weight: 800;
         }
 
         .brand-title {
             font-family: var(--font-head);
-            font-size: 1.55rem;
-            font-weight: 900;
-            line-height: 1.1;
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
             display: block;
-            color: #FFFFFF;
         }
 
         .brand-subtitle {
-            font-size: 0.65rem;
+            font-size: 0.68rem;
             color: var(--admin-text-sub);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
             display: block;
             margin-top: 2px;
         }
 
-        .workspace-label {
-            font-size: 0.64rem;
+        /* Nav List */
+        .nav-section-title {
+            font-size: 0.66rem;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.08em;
             color: var(--admin-text-sub);
+            margin-bottom: 8px;
+            margin-top: 18px;
+            padding-left: 12px;
+            font-weight: 600;
         }
 
         .admin-nav {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             list-style: none;
         }
 
@@ -118,14 +116,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            min-height: 46px;
-            padding: 12px;
-            color: var(--admin-text-sub);
+            padding: 10px 12px;
+            color: #FFFFFF;
             text-decoration: none;
-            font-size: 0.78rem;
-            font-weight: 400;
+            font-size: 0.85rem;
+            font-weight: 500;
             border-radius: 8px;
-            transition: all 0.16s ease;
+            transition: all 0.18s ease;
         }
 
         .admin-nav a .nav-left {
@@ -135,54 +132,34 @@
         }
 
         .admin-nav a:hover {
-            background-color: rgba(53, 85, 63, 0.65);
-            color: #FFFFFF;
+            background-color: var(--admin-sidebar-active);
         }
 
         .admin-nav a.active {
             background-color: var(--admin-sidebar-active);
-            color: #FFFFFF;
+            border-left: 3px solid var(--admin-accent);
             font-weight: 600;
         }
 
         .admin-nav a i {
-            font-size: 1rem;
+            font-size: 1.05rem;
             color: var(--admin-text-sub);
         }
 
         .admin-nav a.active i {
-            color: #FFFFFF;
-        }
-
-        .nav-count-orange {
             color: var(--admin-accent);
-            font-size: 0.72rem;
-            font-weight: 700;
         }
 
-        /* Service Info Card in Sidebar (Figma ON GOING #184:225) */
-        .sidebar-service-box {
-            background-color: var(--admin-sidebar-active);
-            border-radius: 10px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .sidebar-service-title {
-            font-size: 0.76rem;
-            font-weight: 600;
+        .nav-badge {
+            background: var(--admin-accent);
             color: #FFFFFF;
-        }
-
-        .sidebar-service-time {
             font-size: 0.7rem;
-            color: var(--admin-text-sub);
-            line-height: 1.5;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 99px;
         }
 
-        /* Main Area */
+        /* Main Content */
         .admin-main {
             flex-grow: 1;
             display: flex;
@@ -193,128 +170,89 @@
         .admin-header {
             background-color: #FFFFFF;
             border-bottom: 1px solid var(--admin-border);
-            height: 76px;
-            padding: 0 32px;
+            padding: 14px 32px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
+            flex-wrap: wrap;
         }
 
         .breadcrumb {
-            font-size: 0.78rem;
-            color: #718074;
+            font-size: 0.85rem;
+            color: #6B756E;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .breadcrumb span.current {
-            color: #24382D;
+            color: #1F3D2B;
             font-weight: 600;
         }
 
         .header-right-meta {
             display: flex;
             align-items: center;
-            gap: 18px;
-        }
-
-        .sample-badge {
-            background: #FFF0E4;
-            color: #A54B10;
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 5px 10px;
-            border-radius: 100px;
-        }
-
-        .header-date {
-            font-size: 0.76rem;
-            color: #718074;
-        }
-
-        .header-divider {
-            width: 1px;
-            height: 24px;
-            background: var(--admin-border);
+            gap: 14px;
         }
 
         .header-profile {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 9px;
+            padding-left: 14px;
+            border-left: 1px solid var(--admin-border);
         }
 
         .header-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: #EAF0E7;
-            color: #24382D;
-            font-size: 0.7rem;
-            font-weight: 600;
+            background: #1F3D2B;
+            color: #FFFFFF;
+            font-size: 0.75rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .admin-content {
-            padding: 32px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-            flex-grow: 1;
+            padding: 28px 32px;
         }
 
         .stat-card {
             background: #FFFFFF;
             border: 1px solid var(--admin-border);
             border-radius: 12px;
-            padding: 20px 24px;
+            padding: 18px 20px;
         }
 
         .btn-primary-yks {
             background-color: var(--admin-sidebar-bg);
             color: #FFFFFF;
             border: none;
-            padding: 9px 16px;
+            padding: 8px 16px;
             border-radius: 8px;
-            font-size: 0.82rem;
+            font-size: 0.84rem;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             transition: opacity 0.15s;
         }
         .btn-primary-yks:hover {
             opacity: 0.92;
         }
 
-        .btn-orange-yks {
-            background-color: var(--admin-accent);
-            color: #1F3D2B;
-            border: none;
-            height: 42px;
-            padding: 0 16px;
-            border-radius: 8px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         .btn-outline-yks {
             background-color: #FFFFFF;
             color: #1F3D2B;
             border: 1px solid var(--admin-border);
-            min-height: 42px;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 8px;
             font-size: 0.82rem;
             font-weight: 600;
@@ -322,22 +260,10 @@
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         .btn-outline-yks:hover {
             background-color: #F8F5EF;
-        }
-
-        .admin-footer-note {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding-top: 8px;
-            font-size: 0.68rem;
-            color: #718074;
-            margin-top: auto;
         }
 
         /* Pagination Styling */
@@ -346,6 +272,7 @@
             list-style: none;
             gap: 6px;
             align-items: center;
+            margin-top: 12px;
         }
         .page-item .page-link {
             display: inline-flex;
@@ -359,14 +286,13 @@
             background: #FFFFFF;
             color: #1F3D2B;
             text-decoration: none;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 500;
         }
         .page-item.active .page-link {
-            background: #EAF0E7;
-            color: #1F3D2B;
-            border-color: #EAF0E7;
-            font-weight: 700;
+            background: var(--admin-sidebar-bg);
+            color: #FFFFFF;
+            border-color: var(--admin-sidebar-bg);
         }
         .page-item.disabled .page-link {
             opacity: 0.5;
@@ -385,6 +311,7 @@
             }
         }
 
+        /* Mobile Responsive Admin Sidebar & Hamburger */
         .admin-mobile-toggle {
             display: none;
             width: 38px;
@@ -418,6 +345,7 @@
                 z-index: 2000;
                 transform: translateX(-100%);
                 transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+                box-shadow: 12px 0 32px rgba(14, 33, 24, 0.25);
             }
             .admin-sidebar.open {
                 transform: translateX(0);
@@ -427,7 +355,6 @@
             }
             .admin-header {
                 padding: 12px 16px;
-                height: auto;
             }
             .admin-content {
                 padding: 20px 16px;
@@ -447,32 +374,26 @@
         }
     @endphp
 
+    <!-- Sidebar Backdrop (Mobile) -->
     <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop" onclick="toggleAdminSidebar()"></div>
 
-    <!-- Navigasi Admin (Figma ON GOING #178:18492) -->
+    <!-- Sidebar Administrasi YKS (Figma Order) -->
     <aside class="admin-sidebar" id="adminSidebar">
-        <div class="admin-brand-wrap">
-            <a href="{{ route('admin.dashboard') }}" class="admin-brand">
-                <div class="brand-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
-                    </svg>
-                </div>
-                <div>
-                    <span class="brand-title">YKS</span>
-                    <span class="brand-subtitle">Yuk Keliling Sentul</span>
-                </div>
-            </a>
-            <span class="workspace-label">RUANG KERJA ADMIN</span>
-        </div>
+        <a href="{{ route('admin.dashboard') }}" class="admin-brand">
+            <div class="brand-icon">YKS.</div>
+            <div>
+                <span class="brand-title">Yuk Keliling Sentul</span>
+                <span class="brand-subtitle">Ruang Administrasi</span>
+            </div>
+        </a>
 
-        <!-- 7 Menu Operasional Sesuai Figma ON GOING -->
+        <div class="nav-section-title">Operasional Utama</div>
         <ul class="admin-nav">
             <li>
                 <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <span class="nav-left">
                         <i class="bi bi-grid-1x2"></i>
-                        <span>Dashboard</span>
+                        <span>Ringkasan</span>
                     </span>
                 </a>
             </li>
@@ -480,7 +401,7 @@
                 <a href="{{ route('admin.packages.index') }}" class="{{ request()->routeIs('admin.packages.*') ? 'active' : '' }}">
                     <span class="nav-left">
                         <i class="bi bi-compass"></i>
-                        <span>Paket & Layanan</span>
+                        <span>Kelola Paket</span>
                     </span>
                 </a>
             </li>
@@ -488,35 +409,35 @@
                 <a href="{{ route('admin.schedules.index') }}" class="{{ request()->routeIs('admin.schedules.*') ? 'active' : '' }}">
                     <span class="nav-left">
                         <i class="bi bi-calendar3"></i>
-                        <span>Jadwal & Kapasitas</span>
-                    </span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.customers.index') }}" class="{{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
-                    <span class="nav-left">
-                        <i class="bi bi-people"></i>
-                        <span>Pelanggan</span>
+                        <span>Jadwal & Slot</span>
                     </span>
                 </a>
             </li>
             <li>
                 <a href="{{ route('admin.reservations.index') }}" class="{{ request()->routeIs('admin.reservations.*') ? 'active' : '' }}">
                     <span class="nav-left">
-                        <i class="bi bi-ticket-perforated"></i>
-                        <span>Reservasi</span>
+                        <i class="bi bi-journal-check"></i>
+                        <span>Data Reservasi</span>
                     </span>
                 </a>
             </li>
             <li>
                 <a href="{{ route('admin.verifications.index') }}" class="{{ request()->routeIs('admin.verifications.*') ? 'active' : '' }}">
                     <span class="nav-left">
-                        <i class="bi bi-wallet2"></i>
-                        <span>Pembayaran</span>
+                        <i class="bi bi-receipt-cutoff"></i>
+                        <span>Verifikasi Pembayaran</span>
                     </span>
                     @if($pendingVerifCount > 0)
-                        <span class="nav-count-orange">{{ $pendingVerifCount }}</span>
+                        <span class="nav-badge">{{ $pendingVerifCount }}</span>
                     @endif
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.customers.index') }}" class="{{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
+                    <span class="nav-left">
+                        <i class="bi bi-people"></i>
+                        <span>Data Pelanggan</span>
+                    </span>
                 </a>
             </li>
             <li>
@@ -527,75 +448,75 @@
                     </span>
                 </a>
             </li>
+            <li>
+                <a href="{{ route('admin.settings.index') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                    <span class="nav-left">
+                        <i class="bi bi-clock"></i>
+                        <span>Jam Operasional</span>
+                    </span>
+                </a>
+            </li>
         </ul>
 
-        <!-- Informasi Layanan (Figma ON GOING #184:225) -->
-        <div class="sidebar-service-box">
-            <span class="sidebar-service-title">Admin siap melayani</span>
-            <div class="sidebar-service-time">
-                <div>08.00–19.00 WIB</div>
-                <div>Senin–Minggu</div>
-            </div>
-        </div>
-
-        <!-- Keluar Akun & Lihat Situs -->
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-            <a href="{{ route('home') }}" target="_blank" style="color: var(--admin-text-sub); text-decoration: none; font-size: 0.76rem; padding: 8px 12px; display: flex; align-items: center; gap: 10px;">
-                <i class="bi bi-box-arrow-up-right"></i>
-                <span>Lihat situs publik</span>
+        <!-- Footer Links (Figma: ↗ Lihat situs pelanggan, ↪ Keluar) -->
+        <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 8px;">
+            <a href="{{ route('home') }}" target="_blank" style="color: var(--admin-text-sub); text-decoration: none; font-size: 0.8rem; padding: 6px 10px; display: flex; align-items: center; gap: 8px;">
+                <span>↗</span> <span>Lihat situs pelanggan</span>
             </a>
             <form method="POST" action="{{ route('admin.logout') }}">
                 @csrf
-                <button type="submit" style="width: 100%; background: none; border: none; color: var(--admin-text-sub); text-align: left; font-family: inherit; font-size: 0.78rem; padding: 10px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Keluar</span>
+                <button type="submit" style="width: 100%; background: none; border: none; color: #FCA5A5; text-align: left; font-family: inherit; font-size: 0.8rem; font-weight: 600; padding: 6px 10px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <span>↪</span> <span>Keluar Sesi Admin</span>
                 </button>
             </form>
         </div>
     </aside>
 
-    <!-- Area Kerja -->
+    <!-- Main Content -->
     <main class="admin-main">
         <header class="admin-header">
             <div class="breadcrumb">
                 <button type="button" class="admin-mobile-toggle" onclick="toggleAdminSidebar()" aria-label="Buka Menu Admin">
-                    <i class="bi bi-list" style="font-size: 1.2rem;"></i>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
                 </button>
-                <span>Panel admin</span>
+                <span>Administrasi</span>
                 <span>/</span>
-                <span class="current">{{ $title ?? 'Dashboard' }}</span>
+                <span class="current">{{ $title ?? 'Ringkasan' }}</span>
             </div>
 
             <div class="header-right-meta">
-                <span class="sample-badge">Data contoh</span>
-                <span class="header-date">{{ \Carbon\Carbon::now()->translatedFormat('l, j M Y') }}</span>
-                <div class="header-divider"></div>
+                <span style="background: #F8F5EF; border: 1px solid #DFE4DC; padding: 4px 10px; border-radius: 99px; font-size: 0.74rem; color: #6B756E; font-weight: 500;">
+                    Waktu acuan: {{ date('d M Y, H.i') }} WIB
+                </span>
+
                 <div class="header-profile">
                     <div class="header-avatar">{{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 2)) }}</div>
-                    <span style="font-size: 0.78rem; font-weight: 600; color: #24382D;">{{ Auth::user()->name ?? 'Admin YKS' }}</span>
+                    <div>
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #1F3D2B; line-height: 1.1;">{{ Auth::user()->name ?? 'Admin YKS' }}</div>
+                        <div style="font-size: 0.7rem; color: #6B756E;">{{ Auth::user()->email ?? 'Pengelola utama' }}</div>
+                    </div>
                 </div>
             </div>
         </header>
 
         <section class="admin-content">
             @if(session('success'))
-                <div style="background: #EAF0E7; border-left: 4px solid #1F3D2B; padding: 12px 16px; border-radius: 8px; font-size: 0.84rem; color: #1F3D2B; font-weight: 500;">
+                <div style="background: #EAF0E7; border-left: 4px solid #1F3D2B; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 0.86rem; color: #1F3D2B; font-weight: 500;">
                     <i class="bi bi-check-circle-fill" style="margin-right: 6px;"></i> {{ session('success') }}
                 </div>
             @endif
 
             @if(session('warning'))
-                <div style="background: #FFF0E4; border-left: 4px solid #F26B1D; padding: 12px 16px; border-radius: 8px; font-size: 0.84rem; color: #A54B10; font-weight: 500;">
+                <div style="background: #FEEFE6; border-left: 4px solid #F26B1D; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 0.86rem; color: #B2450A; font-weight: 500;">
                     <i class="bi bi-exclamation-triangle-fill" style="margin-right: 6px;"></i> {{ session('warning') }}
                 </div>
             @endif
 
             @yield('content')
-
-            <div class="admin-footer-note no-print">
-                <span>© 2026 Yuk Keliling Sentul · Panel operasional</span>
-                <span>Seluruh identitas dan transaksi adalah data contoh.</span>
-            </div>
         </section>
     </main>
 

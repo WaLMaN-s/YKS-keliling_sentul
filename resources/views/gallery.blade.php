@@ -1,138 +1,85 @@
-@extends('layouts.app', ['title' => 'Galeri & Testimoni'])
+@extends('layouts.app')
 
 @section('content')
-<!-- Pembuka Halaman (Figma ON GOING #73:5137 - Galeri & Testimoni · Desktop) -->
-<div class="container" style="padding-top: 32px;">
-    <div style="font-size: 0.8rem; color: #667066; margin-bottom: 12px;">
-        <a href="{{ route('home') }}" style="color: #667066; text-decoration: none;">Beranda</a> &nbsp;/&nbsp; <span>Galeri & Testimoni</span>
+<!-- Page Breadcrumb & Header -->
+<div class="container" style="padding-top: 36px;">
+    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+        <a href="{{ route('home') }}" style="color: var(--text-sub);">Beranda</a> &nbsp;/&nbsp; <span>Galeri & Testimoni</span>
     </div>
-    <h1 style="font-size: 2rem; font-weight: 700; color: #6B4F3A; margin-bottom: 20px;">
-        GALERI & TESTIMONI
+    <div class="section-tag">
+        ━ &nbsp; DOKUMENTASI & CERITA PENJELAJAH
+    </div>
+    <h1 class="section-title" style="max-width: 800px; margin-bottom: 14px;">
+        Setiap percikan lumpur punya cerita.
     </h1>
+    <p class="section-desc" style="max-width: 720px; margin-bottom: 32px;">
+        Kumpulan dokumentasi asli dari para penjelajah, komunitas motor trail, dan rombongan keluarga yang telah menembus jalur Hambalang serta sungai Sentul bersama Yuk Keliling Sentul.
+    </p>
 
-    <div style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #667066; margin-bottom: 24px;">
-        <i class="bi bi-arrows-angle-expand"></i>
-        <span>Pilih ikon perbesar untuk melihat foto.</span>
+    <!-- Filter Buttons -->
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px;">
+        <button class="btn btn-forest btn-sm" onclick="filterGallery('all', this)">Semua Dokumentasi (11)</button>
+        <button class="btn btn-outline btn-sm" onclick="filterGallery('trail', this)">Trabas Motor Trail</button>
+        <button class="btn btn-outline btn-sm" onclick="filterGallery('jeep', this)">Wisata Jeep 4x4</button>
+        <button class="btn btn-outline btn-sm" onclick="filterGallery('sungai', this)">Jalur Sungai & Curug</button>
     </div>
 
-    <!-- Susunan Foto Bertingkat 3 Kolom (#73:5173) -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; align-items: start; margin-bottom: 36px;">
-        <!-- Kolom 1 -->
-        <div style="display: flex; flex-direction: column; gap: 28px;">
-            <div onclick="openLightbox('{{ asset('galeri/Untitled9.jpg') }}', 'Lintas Sungai · Percikan di lintasan sungai')" style="cursor: pointer;">
-                <div style="height: 300px; border-radius: 16px; overflow: hidden; position: relative;">
-                    <img src="{{ asset('galeri/Untitled9.jpg') }}" alt="Percikan di lintasan sungai" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div style="position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; border-radius: 10px; background: #F8F5EF; display: flex; align-items: center; justify-content: center; color: #1F3D2B;">
-                        <i class="bi bi-arrows-angle-expand"></i>
-                    </div>
-                </div>
-                <div style="margin-top: 10px;">
-                    <div style="font-size: 0.7rem; font-weight: 600; color: #6B4F3A;">Lintas Sungai</div>
-                    <div style="font-size: 1rem; font-weight: 600; color: #1F3D2B;">Percikan di lintasan sungai</div>
-                </div>
-            </div>
-
-            <div onclick="openLightbox('{{ asset('galeri/Untitled6.jpg') }}', 'Jelajah Senja · Menunggu senja di bukit')" style="cursor: pointer;">
-                <div style="height: 420px; border-radius: 16px; overflow: hidden; position: relative;">
-                    <img src="{{ asset('galeri/Untitled6.jpg') }}" alt="Menunggu senja di bukit" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div style="position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; border-radius: 10px; background: #F8F5EF; display: flex; align-items: center; justify-content: center; color: #1F3D2B;">
-                        <i class="bi bi-arrows-angle-expand"></i>
-                    </div>
-                </div>
-                <div style="margin-top: 10px;">
-                    <div style="font-size: 0.7rem; font-weight: 600; color: #6B4F3A;">Jelajah Senja</div>
-                    <div style="font-size: 1rem; font-weight: 600; color: #1F3D2B;">Menunggu senja di bukit</div>
-                </div>
-            </div>
+    <!-- Gallery Grid (11 Foto Asli dari public/galeri - 10 Portrait + 1 Wide Landscape = 12 Slot Rapi) -->
+    <div class="gallery-mosaic">
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail sungai" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled.jpg') }}', 'Spot Curug & Unit Trail Yuk Keliling Sentul Hambalang')">
+            <img src="{{ asset('galeri/Untitled.jpg') }}" alt="Spot Curug & Unit Trail Yuk Keliling Sentul" loading="lazy">
+            <span class="gallery-mosaic-caption">Spot Curug & Unit Trail YKS Hambalang</span>
         </div>
 
-        <!-- Kolom 2 -->
-        <div style="display: flex; flex-direction: column; gap: 28px;">
-            <div onclick="openLightbox('{{ asset('galeri/Untitled10.jpg') }}', 'Momen peserta · Jeda yang jadi cerita')" style="cursor: pointer;">
-                <div style="height: 420px; border-radius: 16px; overflow: hidden; position: relative;">
-                    <img src="{{ asset('galeri/Untitled10.jpg') }}" alt="Jeda yang jadi cerita" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div style="position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; border-radius: 10px; background: #F8F5EF; display: flex; align-items: center; justify-content: center; color: #1F3D2B;">
-                        <i class="bi bi-arrows-angle-expand"></i>
-                    </div>
-                </div>
-                <div style="margin-top: 10px;">
-                    <div style="font-size: 0.7rem; font-weight: 600; color: #6B4F3A;">Momen peserta</div>
-                    <div style="font-size: 1rem; font-weight: 600; color: #1F3D2B;">Jeda yang jadi cerita</div>
-                </div>
-            </div>
-
-            <div onclick="openLightbox('{{ asset('galeri/Untitled5.jpg') }}', 'Di balik perjalanan · Siap sebelum berangkat')" style="cursor: pointer;">
-                <div style="height: 300px; border-radius: 16px; overflow: hidden; position: relative;">
-                    <img src="{{ asset('galeri/Untitled5.jpg') }}" alt="Siap sebelum berangkat" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div style="position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; border-radius: 10px; background: #F8F5EF; display: flex; align-items: center; justify-content: center; color: #1F3D2B;">
-                        <i class="bi bi-arrows-angle-expand"></i>
-                    </div>
-                </div>
-                <div style="margin-top: 10px;">
-                    <div style="font-size: 0.7rem; font-weight: 600; color: #6B4F3A;">Di balik perjalanan</div>
-                    <div style="font-size: 1rem; font-weight: 600; color: #1F3D2B;">Siap sebelum berangkat</div>
-                </div>
-            </div>
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="jeep" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled3.jpg') }}', 'Konvoi Wisata Jeep 4x4 Menembus Jalur Lumpur Sentul')">
+            <img src="{{ asset('galeri/Untitled3.jpg') }}" alt="Konvoi Wisata Jeep 4x4 Sentul" loading="lazy">
+            <span class="gallery-mosaic-caption">Konvoi Wisata Jeep 4x4 Jalur Hutan Sentul</span>
         </div>
 
-        <!-- Kolom 3 -->
-        <div style="display: flex; flex-direction: column; gap: 28px;">
-            <div onclick="openLightbox('{{ asset('galeri/Untitled3.jpg') }}', 'Jelajah Rimba · Menembus hijau rimba')" style="cursor: pointer;">
-                <div style="height: 300px; border-radius: 16px; overflow: hidden; position: relative;">
-                    <img src="{{ asset('galeri/Untitled3.jpg') }}" alt="Menembus hijau rimba" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div style="position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; border-radius: 10px; background: #F8F5EF; display: flex; align-items: center; justify-content: center; color: #1F3D2B;">
-                        <i class="bi bi-arrows-angle-expand"></i>
-                    </div>
-                </div>
-                <div style="margin-top: 10px;">
-                    <div style="font-size: 0.7rem; font-weight: 600; color: #6B4F3A;">Jelajah Rimba</div>
-                    <div style="font-size: 1rem; font-weight: 600; color: #1F3D2B;">Menembus hijau rimba</div>
-                </div>
-            </div>
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail sungai" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled9.jpg') }}', 'Aksi Trabas Motor Trail Menerobos Aliran Sungai Sentul')">
+            <img src="{{ asset('galeri/Untitled9.jpg') }}" alt="Trabas Motor Trail Sungai Sentul" loading="lazy">
+            <span class="gallery-mosaic-caption">Aksi Trabas Menerobos Aliran Sungai Sentul</span>
+        </div>
 
-            <div onclick="openLightbox('{{ asset('galeri/Untitled8.jpg') }}', 'Jelajah Rimba · Jejak petualangan hari ini')" style="cursor: pointer;">
-                <div style="height: 420px; border-radius: 16px; overflow: hidden; position: relative;">
-                    <img src="{{ asset('galeri/Untitled8.jpg') }}" alt="Jejak petualangan hari ini" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div style="position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; border-radius: 10px; background: #F8F5EF; display: flex; align-items: center; justify-content: center; color: #1F3D2B;">
-                        <i class="bi bi-arrows-angle-expand"></i>
-                    </div>
-                </div>
-                <div style="margin-top: 10px;">
-                    <div style="font-size: 0.7rem; font-weight: 600; color: #6B4F3A;">Jelajah Rimba</div>
-                    <div style="font-size: 1rem; font-weight: 600; color: #1F3D2B;">Jejak petualangan hari ini</div>
-                </div>
-            </div>
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="jeep sungai" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled8.jpg') }}', 'Keseruan Rombongan Wisata Jeep 4x4 di Sungai Berbatu')">
+            <img src="{{ asset('galeri/Untitled8.jpg') }}" alt="Wisata Jeep 4x4 di Sungai Sentul" loading="lazy">
+            <span class="gallery-mosaic-caption">Keseruan Wisata Jeep 4x4 di Sungai Sentul</span>
         </div>
-    </div>
 
-    <!-- Foto Tambahan yang Dapat Dimuat -->
-    <div id="extraGalleryGrid" style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 36px;">
-        <div onclick="openLightbox('{{ asset('galeri/Untitled.jpg') }}', 'Trabas Trail · Spot Curug Sentul')" style="cursor: pointer;">
-            <div style="height: 280px; border-radius: 16px; overflow: hidden;">
-                <img src="{{ asset('galeri/Untitled.jpg') }}" alt="Spot Curug" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <div style="margin-top: 8px; font-weight: 600; color: #1F3D2B;">Spot Curug & Unit Trail</div>
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/7.jpg') }}', 'Rombongan Riders di Puncak Jalur Tanjakan Hambalang')">
+            <img src="{{ asset('galeri/7.jpg') }}" alt="Rombongan Riders di Jalur Hambalang" loading="lazy">
+            <span class="gallery-mosaic-caption">Rombongan Riders di Tanjakan Bukit Hambalang</span>
         </div>
-        <div onclick="openLightbox('{{ asset('galeri/7.jpg') }}', 'Tanjakan Bukit Hambalang')" style="cursor: pointer;">
-            <div style="height: 280px; border-radius: 16px; overflow: hidden;">
-                <img src="{{ asset('galeri/7.jpg') }}" alt="Tanjakan Bukit Hambalang" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <div style="margin-top: 8px; font-weight: 600; color: #1F3D2B;">Rombongan Riders di Bukit Hambalang</div>
-        </div>
-        <div onclick="openLightbox('{{ asset('galeri/Untitled4.jpg') }}', 'Jeep 4x4 di Puncak Bukit')" style="cursor: pointer;">
-            <div style="height: 280px; border-radius: 16px; overflow: hidden;">
-                <img src="{{ asset('galeri/Untitled4.jpg') }}" alt="Jeep 4x4 di Puncak Bukit" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <div style="margin-top: 8px; font-weight: 600; color: #1F3D2B;">Wisata Jeep 4x4 Puncak Bukit</div>
-        </div>
-    </div>
 
-    <!-- Tombol Muat Lebih Banyak (#73:5232) -->
-    <div style="display: flex; justify-content: center; margin-bottom: 64px;">
-        <button type="button" id="loadMoreBtn" onclick="toggleMorePhotos()"
-                style="background: #FFFFFF; border: 1px solid #DEDED4; border-radius: 12px; min-height: 50px; padding: 14px 24px; font-size: 0.9rem; font-weight: 700; color: #1F3D2B; cursor: pointer;">
-            Muat Lebih Banyak &nbsp;+
-        </button>
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled6.jpg') }}', 'Panorama Perbukitan Hambalang Bersama Unit KLX')">
+            <img src="{{ asset('galeri/Untitled6.jpg') }}" alt="Panorama Perbukitan Hambalang" loading="lazy">
+            <span class="gallery-mosaic-caption">Panorama Perbukitan Hambalang dari Ketinggian</span>
+        </div>
+
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="jeep" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled4.jpg') }}', 'Serunya Wisata Jeep 4x4 Saat Cuaca Sejuk di Puncak Bukit')">
+            <img src="{{ asset('galeri/Untitled4.jpg') }}" alt="Wisata Jeep 4x4 Kuning Puncak Bukit" loading="lazy">
+            <span class="gallery-mosaic-caption">Serunya Jeep 4x4 di Puncak Bukit Sentul</span>
+        </div>
+
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled10.jpg') }}', 'Komunitas & Rombongan Trabas Bersama Leader YKS')">
+            <img src="{{ asset('galeri/Untitled10.jpg') }}" alt="Rombongan Trabas Bersama Leader YKS" loading="lazy">
+            <span class="gallery-mosaic-caption">Rombongan Trabas Bersama Leader YKS</span>
+        </div>
+
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled2.jpg') }}', 'Menikmati Lanskap Pegunungan Sentul dari Atas Motor Trail')">
+            <img src="{{ asset('galeri/Untitled2.jpg') }}" alt="Lanskap Pegunungan Sentul" loading="lazy">
+            <span class="gallery-mosaic-caption">Lanskap Pegunungan Sentul & Hambalang</span>
+        </div>
+
+        <div class="gallery-mosaic-item gallery-mosaic-wide gallery-item-filter" data-cat="trail" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled5.jpg') }}', 'Perlengkapan Safety Lengkap di Jalur Hutan Pinus Sentul')">
+            <img src="{{ asset('galeri/Untitled5.jpg') }}" alt="Riders di Hutan Pinus Sentul" loading="lazy">
+            <span class="gallery-mosaic-caption">Jalur Hutan Pinus dengan Gear Safety Lengkap</span>
+        </div>
+
+        <div class="gallery-mosaic-item gallery-item-filter" data-cat="trail" style="cursor: pointer;" onclick="openLightbox('{{ asset('galeri/Untitled1.jpg') }}', 'Lady Riders Siap Menaklukkan Rute Trabas Pemula')">
+            <img src="{{ asset('galeri/Untitled1.jpg') }}" alt="Lady Riders Trabas Sentul" loading="lazy">
+            <span class="gallery-mosaic-caption">Lady Riders di Jalur Trabas Pemula YKS</span>
+        </div>
     </div>
 </div>
 
@@ -147,83 +94,60 @@
     </div>
 </div>
 
-<!-- Ulasan Perjalanan Section (Figma ON GOING #73:5235) -->
-<section style="background: #EAF0E7; padding: 80px 0;" id="testimoni">
+<!-- Testimoni Lengkap Section -->
+<section class="section-wrapper section-sage-bg" style="margin-top: 64px;">
     <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 32px;">
-            <div style="flex: 1; min-width: 280px;">
-                <h2 style="font-family: var(--font-heading); font-size: 2.75rem; font-weight: 800; color: #1F3D2B; line-height: 1.15; margin-bottom: 12px;">
-                    Yang tinggal setelah perjalanan.
-                </h2>
-                <p style="font-size: 1rem; color: #667066; margin: 0;">
-                    Ulasan berikut adalah cerita pengalaman peserta bersama Yuk Keliling Sentul.
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 40px;">
+            <div>
+                <div class="section-tag">
+                    ━ &nbsp; ULASAN LENGKAP PENJELAJAH
+                </div>
+                <h2 class="section-title" style="margin-bottom: 8px;">Apa kata mereka tentang pengalaman bersama YKS?</h2>
+                <p class="section-desc" style="margin-bottom: 0;">
+                    Ulasan jujur tanpa rekayasa dari wisatawan yang telah membuktikan profesionalisme pemandu dan keseruan rute kami.
                 </p>
             </div>
-
-            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                <!-- Filter Penilaian (#73:5241) -->
-                <form method="GET" action="{{ route('gallery') }}#testimoni">
-                    <div style="background: #FFFFFF; border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; gap: 8px;">
-                        <i class="bi bi-star-fill" style="color: #F26B1D;"></i>
-                        <select name="penilaian" onchange="this.form.submit()" style="border: none; background: transparent; font-size: 0.85rem; color: #1F3D2B; font-weight: 600; outline: none; cursor: pointer;">
-                            <option value="">Semua penilaian</option>
-                            <option value="5" {{ ($ratingFilter ?? '') == '5' ? 'selected' : '' }}>5 Bintang (★★★★★)</option>
-                            <option value="4" {{ ($ratingFilter ?? '') == '4' ? 'selected' : '' }}>4 Bintang (★★★★)</option>
-                            <option value="3" {{ ($ratingFilter ?? '') == '3' ? 'selected' : '' }}>3 Bintang (★★★)</option>
-                            <option value="2" {{ ($ratingFilter ?? '') == '2' ? 'selected' : '' }}>2 Bintang (★★)</option>
-                            <option value="1" {{ ($ratingFilter ?? '') == '1' ? 'selected' : '' }}>1 Bintang (★)</option>
-                            <option value="terendah" {{ ($ratingFilter ?? '') == 'terendah' ? 'selected' : '' }}>Urutkan: Bintang Terendah</option>
-                            <option value="tertinggi" {{ ($ratingFilter ?? '') == 'tertinggi' ? 'selected' : '' }}>Urutkan: Bintang Tertinggi</option>
-                        </select>
-                    </div>
-                </form>
-
-                <!-- Tombol ke Halaman Tulis Ulasan (#165:303) -->
-                <a href="{{ route('reviews.create') }}"
-                   style="display: inline-flex; align-items: center; gap: 8px; background: #F26B1D; color: #1A1A1A; font-weight: 700; font-size: 0.88rem; padding: 13px 20px; border-radius: 12px; text-decoration: none;">
-                    Tulis ulasanmu &nbsp;↗
-                </a>
-            </div>
+            <a href="{{ route('reviews.create') }}" class="btn btn-primary" style="white-space: nowrap;">
+                <i class="bi bi-pencil-square"></i> Tulis Ulasan &nbsp;↗
+            </a>
         </div>
 
-        <!-- Daftar Testimoni (#73:5247) -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 32px;">
+        <div class="testimonials-row">
             @forelse ($testimonials as $t)
-                <div style="background: #FFFFFF; border-radius: 16px; padding: 28px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px;">
+                <div class="testi-card">
                     <div>
-                        <div style="color: #F26B1D; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 14px;">
-                            @for ($i = 0; $i < $t->rating; $i++)★@endfor
+                        <div class="testi-stars">
+                            @for ($i = 0; $i < $t->rating; $i++)
+                                <i class="bi bi-star-fill"></i>
+                            @endfor
                         </div>
-                        <p style="font-size: 1rem; color: #1A1A1A; line-height: 1.65; margin: 0;">
-                            {{ $t->review }}
-                        </p>
+                        <p class="testi-text">"{{ $t->review }}"</p>
                     </div>
-
-                    <div>
-                        <div style="height: 1px; background: #DEDED4; margin-bottom: 14px;"></div>
-                        <div style="font-size: 0.85rem; font-weight: 700; color: #1F3D2B;">{{ $t->name }}</div>
-                        <div style="font-size: 0.74rem; color: #667066; margin-top: 2px;">
-                            {{ $t->package_name }} · {{ $t->city ?: 'November 2026' }}
-                        </div>
+                    <div class="testi-author-info">
+                        <span class="testi-author-name">{{ $t->name }}</span>
+                        <span class="testi-author-meta">{{ $t->city }} · {{ $t->package_name }}</span>
                     </div>
                 </div>
             @empty
-                <div style="grid-column: 1 / -1; background: #FFFFFF; border-radius: 16px; padding: 36px; text-align: center; color: #667066;">
-                    Belum ada ulasan pada kategori penilaian ini.
-                </div>
+                <p>Belum ada ulasan yang ditampilkan.</p>
             @endforelse
         </div>
+    </div>
+</section>
 
-        <!-- Navigasi Ulasan (#73:5263) -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-            <div style="display: flex; gap: 8px;">
-                <a href="#testimoni" style="background: #FFFFFF; border: 1px solid #DEDED4; border-radius: 12px; padding: 12px 20px; font-size: 0.88rem; font-weight: 700; color: #1F3D2B; text-decoration: none;">
-                    Sebelum &nbsp;←
-                </a>
-                <a href="#testimoni" style="background: #FFFFFF; border: 1px solid #DEDED4; border-radius: 12px; padding: 12px 20px; font-size: 0.88rem; font-weight: 700; color: #1F3D2B; text-decoration: none;">
-                    Berikut &nbsp;→
-                </a>
+<!-- Bottom CTA Banner -->
+<section class="section-wrapper">
+    <div class="container">
+        <div class="cta-adventure-banner">
+            <div>
+                <h2 class="cta-banner-title">Abadikan ceritamu di Sentul selanjutnya.</h2>
+                <p class="cta-banner-desc">
+                    Pilih paket trabas trail atau wisata jeep 4x4 favoritmu dan rasakan langsung keseruannya akhir pekan ini.
+                </p>
             </div>
+            <a href="{{ route('booking.create') }}" class="btn btn-forest btn-lg" style="background-color: #1F3D2B; color: #FFFFFF; border: 1px solid rgba(255,255,255,0.2);">
+                Reservasi Sekarang &nbsp;↗
+            </a>
         </div>
     </div>
 </section>
@@ -231,17 +155,23 @@
 
 @section('scripts')
 <script>
-    function toggleMorePhotos() {
-        const grid = document.getElementById('extraGalleryGrid');
-        const btn = document.getElementById('loadMoreBtn');
-        if (!grid) return;
-        if (grid.style.display === 'none' || grid.style.display === '') {
-            grid.style.display = 'grid';
-            if (btn) btn.textContent = 'Sembunyikan Foto Tambahan −';
-        } else {
-            grid.style.display = 'none';
-            if (btn) btn.textContent = 'Muat Lebih Banyak +';
-        }
+    function filterGallery(category, btnElement) {
+        document.querySelectorAll('.gallery-item-filter').forEach(item => {
+            const cats = (item.getAttribute('data-cat') || '').split(' ');
+            if (category === 'all' || cats.includes(category)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        const buttons = btnElement.parentElement.querySelectorAll('button');
+        buttons.forEach(b => {
+            b.classList.remove('btn-forest');
+            b.classList.add('btn-outline');
+        });
+        btnElement.classList.remove('btn-outline');
+        btnElement.classList.add('btn-forest');
     }
 
     function openLightbox(src, caption) {

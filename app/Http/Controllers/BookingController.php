@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\YksAddon;
 use App\Models\YksBooking;
 use App\Models\YksPackage;
+use App\Models\YksPayment;
+use App\Models\YksUnit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class BookingController extends Controller
 {
@@ -12,105 +17,189 @@ class BookingController extends Controller
     {
         $packageId = $request->query('paket_id');
         $package = $packageId
-            ? YksPackage::with('category')->where('id', $packageId)->where('is_active', true)->first()
-            : YksPackage::with('category')->where('is_active', true)->where('booking_mode', '!=', 'whatsapp_only')->first();
-
-        if (!$package) {
-            $package = YksPackage::with('category')->where('is_active', true)->first();
-        }
+            ? YksPackage::where('id', $packageId)->where('is_active', true)->first()
+            : YksPackage::where('is_active', true)->first();
 
         if (!$package) {
             return redirect()->route('packages.index')->with('info', 'Silakan pilih paket wisata terlebih dahulu.');
         }
 
-        // Private Trip tidak memiliki booking langsung di website (harus konsultasi WhatsApp)
-        if ($package->is_private_trip) {
-            return redirect()->route('packages.show', $package->slug)
-                ->with('info', 'Paket Private Trip dipesan melalui konsultasi WhatsApp bersama Admin YKS.');
-        }
+        $allPackages = YksPackage::where('is_active', true)->get();
+        $addons = Schema::hasTable('yks_addons')
+            ? YksAddon::where('is_aktif', true)->get()
+            : collect();
+        $units = Schema::hasTable('yks_units')
+            ? YksUnit::where('status', 'aktif')->get()
+            : collect();
 
-        $allPackages = YksPackage::with('category')
-            ->where('is_active', true)
-            ->where('booking_mode', '!=', 'whatsapp_only')
-            ->orderBy('id', 'asc')
-            ->get();
-
-        return view('bookings.create', compact('package', 'allPackages'));
+        return view('bookings.create', compact('package', 'allPackages', 'addons', 'units'));
     }
 
+    /**
+     * Proses Pembuatan Reservasi Sesuai SDD Bab 3 & Bab 6:
+     * - Pemeriksaan ketersediaan jadwal & tanggal blokir
+     * - Perhitungan Total = Subtotal Paket + Subtotal Add-on
+     * - Pembuatan Order ID format YKS-YYYYMMDD-NNNN dengan transaksi lockForUpdate()
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'package_id' => 'required|exists:yks_packages,id',
+            'jenis_trip' => 'nullable|in:open,private',
             'customer_name' => 'required|string|max:100',
             'customer_phone' => 'required|string|max:25',
             'customer_email' => 'required|email|max:120',
             'trip_date' => 'required|date|after_or_equal:today',
-            'start_time' => 'nullable|string|max:30',
             'participant_count' => 'required|integer|min:1|max:100',
+            'motor_pribadi' => 'nullable|boolean',
             'payment_method' => 'required|string',
-            'addons' => 'nullable|array',
             'notes' => 'nullable|string|max:500',
+            'addons' => 'nullable|array',
+            'addons.*' => 'nullable|integer|min:0|max:50',
+            'unit_ids' => 'nullable|array',
+            'unit_ids.*' => 'nullable|exists:yks_units,id',
         ]);
 
-        $package = YksPackage::findOrFail($validated['package_id']);
+        $tripDateStr = substr($validated['trip_date'], 0, 10);
 
-        // Hitung Add-on khusus Bawa Motor Pribadi (Sepatu Rp100k, Guide Rp200k, Paket protector Rp250k)
-        $addonCatalog = [
-            'sepatu' => ['label' => 'Sepatu', 'price' => 100000],
-            'guide' => ['label' => 'Guide', 'price' => 200000],
-            'protector' => ['label' => 'Paket protector', 'price' => 250000],
-        ];
-        $addonPricePerPerson = 0;
-        $selectedAddonLabels = [];
-        if ($package->is_motor_pribadi && !empty($validated['addons'])) {
-            foreach ($validated['addons'] as $addonKey) {
-                if (isset($addonCatalog[$addonKey])) {
-                    $addonPricePerPerson += $addonCatalog[$addonKey]['price'];
-                    $selectedAddonLabels[] = $addonCatalog[$addonKey]['label'] . ' (Rp' . number_format($addonCatalog[$addonKey]['price'], 0, ',', '.') . ')';
-                }
+        // 1. Pemeriksaan tanggal diblokir & kuota harian (Bab 6 SDD)
+        $schedulePath = storage_path('app/yks_schedules.json');
+        $dailyCapacity = 12;
+        if (file_exists($schedulePath)) {
+            $scheduleConfig = json_decode(file_get_contents($schedulePath), true);
+            $blockedDates = $scheduleConfig['blocked_dates'] ?? [];
+            $dailyCapacity = (int) ($scheduleConfig['daily_capacity'] ?? 12);
+            if (isset($blockedDates[$tripDateStr])) {
+                return back()
+                    ->withInput()
+                    ->with('error', "Mohon maaf, tanggal {$tripDateStr} sedang ditutup ({$blockedDates[$tripDateStr]}). Silakan pilih tanggal lain.");
             }
         }
 
-        $count = (int) $validated['participant_count'];
-        $packageBaseTotal = $package->price * $count;
-        $addonTotal = $addonPricePerPerson * $count;
-        $totalPrice = $packageBaseTotal + $addonTotal;
+        $package = YksPackage::findOrFail($validated['package_id']);
 
-        $nextNumber = YksBooking::count() + 26082;
-        $bookingCode = 'YKS-' . $nextNumber;
-        while (YksBooking::where('booking_code', $bookingCode)->exists()) {
-            $nextNumber++;
-            $bookingCode = 'YKS-' . $nextNumber;
-        }
+        // 2. Transaksi database dengan penguncian baris (SELECT ... FOR UPDATE) untuk mencegah overbooking (Bab 6 SDD)
+        return DB::transaction(function () use ($request, $validated, $package, $tripDateStr, $dailyCapacity) {
+            $existingBookingsOnDate = YksBooking::whereDate('trip_date', $tripDateStr)
+                ->where('payment_status', '!=', 'Dibatalkan')
+                ->lockForUpdate()
+                ->count();
 
-        $booking = YksBooking::create([
-            'booking_code' => $bookingCode,
-            'user_id' => null,
-            'package_id' => $package->id,
-            'booking_source' => 'Website',
-            'booking_channel' => 'Website',
-            'customer_name' => $validated['customer_name'],
-            'customer_phone' => $validated['customer_phone'],
-            'customer_email' => $validated['customer_email'],
-            'trip_date' => $validated['trip_date'],
-            'start_time' => $validated['start_time'] ?: '08.00–12.00',
-            'participant_count' => $count,
-            'vehicle_count' => str_contains(strtolower($package->name), 'jeep') ? $count : $count,
-            'meeting_point' => $package->meeting_point,
-            'package_agreed_price' => $packageBaseTotal,
-            'addon_price' => $addonTotal,
-            'addon_notes' => !empty($selectedAddonLabels) ? implode(', ', $selectedAddonLabels) : 'Tidak dipilih · Rp0',
-            'total_price' => $totalPrice,
-            'paid_amount' => 0,
-            'payment_method' => $validated['payment_method'],
-            'notes' => $validated['notes'],
-            'payment_status' => 'Menunggu Pembayaran',
-            'reservation_status' => 'Menunggu pembayaran',
-        ]);
+            if ($existingBookingsOnDate >= $dailyCapacity) {
+                return back()
+                    ->withInput()
+                    ->with('error', "Kuota jadwal pada tanggal {$tripDateStr} telah penuh ({$dailyCapacity} slot). Silakan pilih tanggal keberangkatan lain.");
+            }
 
-        return redirect()->route('payment.show', $booking->booking_code)
-            ->with('success', "Reservasi berhasil dibuat dengan Nomor Referensi {$booking->booking_code}! Silakan simpan kode ini untuk melacak status pesanan.");
+            // 3. Perhitungan Matematis SDD Bab 6:
+            // Total = Subtotal Paket + Subtotal Add-on
+            $subtotalPackage = (int) $package->price * (int) $validated['participant_count'];
+            $subtotalAddons = 0;
+            $addonSummaryList = [];
+            $addonPivotRows = [];
+
+            if (!empty($validated['addons']) && Schema::hasTable('yks_addons')) {
+                $addonIds = array_keys(array_filter($validated['addons'], fn ($qty) => (int) $qty > 0));
+                if (!empty($addonIds)) {
+                    $dbAddons = YksAddon::whereIn('id', $addonIds)->where('is_aktif', true)->get();
+                    foreach ($dbAddons as $addon) {
+                        $qty = (int) ($validated['addons'][$addon->id] ?? 0);
+                        if ($qty > 0) {
+                            $itemSub = $qty * (int) $addon->harga;
+                            $subtotalAddons += $itemSub;
+                            $addonSummaryList[] = "{$addon->nama_addon} ({$qty}x)";
+                            $addonPivotRows[] = [
+                                'addon_id' => $addon->id,
+                                'jumlah' => $qty,
+                                'harga_satuan' => (int) $addon->harga,
+                                'subtotal' => $itemSub,
+                            ];
+                        }
+                    }
+                }
+            }
+
+            $totalPrice = $subtotalPackage + $subtotalAddons;
+
+            // 4. Pembuatan Order ID Sesuai Bab 6 SDD: YKS-YYYYMMDD-NNNN (Nomor urut harian 4 digit)
+            $datePrefix = 'YKS-' . date('Ymd') . '-';
+            $todaySeq = YksBooking::where('booking_code', 'like', $datePrefix . '%')
+                ->lockForUpdate()
+                ->count() + 1;
+            $bookingCode = $datePrefix . str_pad((string) $todaySeq, 4, '0', STR_PAD_LEFT);
+            while (YksBooking::where('booking_code', $bookingCode)->exists()) {
+                $todaySeq++;
+                $bookingCode = $datePrefix . str_pad((string) $todaySeq, 4, '0', STR_PAD_LEFT);
+            }
+
+            // 5. Cek Pilihan Unit Kendaraan
+            $selectedUnitCodes = [];
+            $unitIdsToAttach = [];
+            if (!empty($validated['unit_ids']) && Schema::hasTable('yks_units')) {
+                $units = YksUnit::whereIn('id', $validated['unit_ids'])->where('status', 'aktif')->get();
+                foreach ($units as $u) {
+                    $selectedUnitCodes[] = $u->kode_unit;
+                    $unitIdsToAttach[] = $u->id;
+                }
+            }
+
+            $bookingData = [
+                'booking_code' => $bookingCode,
+                'user_id' => null,
+                'package_id' => $package->id,
+                'customer_name' => $validated['customer_name'],
+                'customer_phone' => $validated['customer_phone'],
+                'customer_email' => $validated['customer_email'],
+                'trip_date' => $validated['trip_date'],
+                'participant_count' => $validated['participant_count'],
+                'total_price' => $totalPrice,
+                'payment_method' => $validated['payment_method'],
+                'notes' => $validated['notes'],
+                'payment_status' => 'Menunggu Pembayaran',
+            ];
+
+            if (Schema::hasColumn('yks_bookings', 'jenis_trip')) {
+                $bookingData['jenis_trip'] = $validated['jenis_trip'] ?? 'private';
+                $bookingData['motor_pribadi'] = $request->boolean('motor_pribadi') || str_contains(strtolower($package->name), 'pribadi');
+                $bookingData['subtotal_package'] = $subtotalPackage;
+                $bookingData['subtotal_addons'] = $subtotalAddons;
+                $bookingData['selected_addons'] = !empty($addonSummaryList) ? implode(', ', $addonSummaryList) : null;
+                $bookingData['selected_units'] = !empty($selectedUnitCodes) ? implode(', ', $selectedUnitCodes) : null;
+            }
+
+            $booking = YksBooking::create($bookingData);
+
+            // Simpan ke tabel pivot reservasi_addon (yks_booking_addons)
+            if (!empty($addonPivotRows) && Schema::hasTable('yks_booking_addons')) {
+                foreach ($addonPivotRows as $row) {
+                    DB::table('yks_booking_addons')->insert([
+                        'booking_id' => $booking->id,
+                        'addon_id' => $row['addon_id'],
+                        'jumlah' => $row['jumlah'],
+                        'harga_satuan' => $row['harga_satuan'],
+                        'subtotal' => $row['subtotal'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
+            // Simpan ke tabel pivot reservasi_unit (yks_booking_units)
+            if (!empty($unitIdsToAttach) && Schema::hasTable('yks_booking_units')) {
+                foreach ($unitIdsToAttach as $uid) {
+                    DB::table('yks_booking_units')->insert([
+                        'booking_id' => $booking->id,
+                        'unit_id' => $uid,
+                        'trip_date' => $validated['trip_date'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
+            return redirect()->route('payment.show', $booking->booking_code)
+                ->with('success', "Reservasi berhasil dibuat dengan Order ID {$booking->booking_code}! Silakan simpan kode ini untuk melacak status pesanan.");
+        });
     }
 
     public function payment($booking_code)
@@ -131,31 +220,34 @@ class BookingController extends Controller
         $filename = 'BUKTI_' . $booking->booking_code . '_' . time() . '.' . $file->getClientOriginalExtension();
         $uploadDir = public_path('uploads/bukti');
         if (!is_dir($uploadDir)) {
-            @mkdir($uploadDir, 0777, true);
+            mkdir($uploadDir, 0775, true);
         }
-        @chmod($uploadDir, 0777);
-        file_put_contents($uploadDir . DIRECTORY_SEPARATOR . $filename, file_get_contents($file->getRealPath()));
+        $file->move($uploadDir, $filename);
 
-        // Hapus catatan penolakan sebelumnya setelah pelanggan mengunggah bukti baru
-        $cleanedNotes = $booking->notes
-            ? trim(preg_replace('/\[Ditolak Admin:\s*.*?\]/s', '', $booking->notes))
-            : null;
+        $proofPath = 'uploads/bukti/' . $filename;
 
         $booking->update([
-            'payment_proof' => 'uploads/bukti/' . $filename,
+            'payment_proof' => $proofPath,
             'payment_status' => 'Menunggu Verifikasi',
-            'reservation_status' => 'Menunggu verifikasi',
-            'paid_amount' => $booking->total_price,
-            'notes' => $cleanedNotes ?: null,
-            'admin_notes' => 'Pelanggan mengunggah bukti transfer baru.',
         ]);
 
+        // Catat riwayat ke tabel pembayaran (1:N sesuai SDD Bab 4.1)
+        if (Schema::hasTable('yks_payments')) {
+            YksPayment::create([
+                'booking_id' => $booking->id,
+                'nominal' => $booking->total_price,
+                'bukti_path' => $proofPath,
+                'status' => 'menunggu_verifikasi',
+                'tgl_upload' => now(),
+            ]);
+        }
+
         return redirect()->route('booking.track', ['kode' => $booking->booking_code])
-            ->with('success', 'Bukti transfer berhasil diunggah! Admin sedang memeriksa bukti pembayaran Anda.');
+            ->with('success', 'Bukti transfer berhasil diunggah! Admin sedang memverifikasi pesanan Anda.');
     }
 
     /**
-     * Lacak Status Booking Tanpa Login (Berdasarkan Kode Booking, Nomor WhatsApp, atau Email)
+     * Lacak Status Booking Tanpa Login (Berdasarkan Order ID / Kode Booking, Nomor WhatsApp, atau Email)
      */
     public function track(Request $request)
     {

@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\YksAddon;
 use App\Models\YksCategory;
 use App\Models\YksPackage;
+use App\Models\YksTerm;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class PackageController extends Controller
 {
@@ -12,9 +16,9 @@ class PackageController extends Controller
     {
         $categorySlug = $request->query('kategori');
         $search = trim((string) $request->query('cari', ''));
-        $categories = YksCategory::orderBy('id', 'asc')->get();
+        $categories = YksCategory::all();
 
-        $query = YksPackage::with('category')->where('is_active', true)->orderBy('id', 'asc');
+        $query = YksPackage::with('category')->where('is_active', true);
 
         if ($categorySlug && $categorySlug !== 'all') {
             $query->whereHas('category', function ($q) use ($categorySlug) {
@@ -25,14 +29,16 @@ class PackageController extends Controller
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhere('includes', 'like', "%{$search}%");
+                  ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
         $packages = $query->get();
+        $addons = Schema::hasTable('yks_addons')
+            ? YksAddon::where('is_aktif', true)->get()
+            : collect();
 
-        return view('packages.index', compact('packages', 'categories', 'categorySlug', 'search'));
+        return view('packages.index', compact('packages', 'categories', 'categorySlug', 'addons'));
     }
 
     public function show($slug)
@@ -42,6 +48,22 @@ class PackageController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        return view('packages.show', compact('package'));
+        $addons = Schema::hasTable('yks_addons')
+            ? YksAddon::where('is_aktif', true)->get()
+            : collect();
+
+        $terms = Schema::hasTable('yks_terms')
+            ? YksTerm::all()
+            : collect();
+
+        $basecampFacilities = [];
+        if (Schema::hasTable('yks_site_contents')) {
+            $row = DB::table('yks_site_contents')->where('jenis', 'fasilitas_basecamp')->first();
+            if ($row && !empty($row->isi)) {
+                $basecampFacilities = array_filter(explode("\n", str_replace("\r", "", $row->isi)));
+            }
+        }
+
+        return view('packages.show', compact('package', 'addons', 'terms', 'basecampFacilities'));
     }
 }

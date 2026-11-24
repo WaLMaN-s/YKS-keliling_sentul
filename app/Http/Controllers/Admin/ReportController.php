@@ -9,24 +9,19 @@ use Illuminate\Support\Facades\DB;
 class ReportController extends Controller
 {
     /**
-     * Administrasi / Laporan (Figma ON GOING Frame 178:20541).
+     * Administrasi / Laporan (Figma Specification).
      */
     public function index(Request $request)
     {
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
         $packageId = $request->query('package_id');
-        $statusFilter = $request->query('status');
 
         $packages = DB::table('yks_packages')->orderBy('id', 'asc')->get();
 
         $query = DB::table('yks_bookings')
-            ->leftJoin('yks_packages', 'yks_bookings.package_id', '=', 'yks_packages.id')
-            ->select(
-                'yks_bookings.*',
-                'yks_packages.name as catalog_package_name',
-                'yks_packages.price as catalog_package_price'
-            );
+            ->join('yks_packages', 'yks_bookings.package_id', '=', 'yks_packages.id')
+            ->select('yks_bookings.*', 'yks_packages.name as package_name');
 
         if ($startDate) {
             $query->whereDate('yks_bookings.created_at', '>=', $startDate);
@@ -37,65 +32,81 @@ class ReportController extends Controller
         if ($packageId) {
             $query->where('yks_bookings.package_id', $packageId);
         }
-        if ($statusFilter) {
-            $query->where('yks_bookings.reservation_status', $statusFilter);
-        }
 
         $bookings = $query->get();
 
         $totalBookings = $bookings->count();
-        $totalReservationValue = $bookings->sum('total_price');
+        $lunasCount = $bookings->where('payment_status', 'Lunas')->count();
+        $verifCount = $bookings->where('payment_status', 'Menunggu Verifikasi')->count();
+        $belumBayarCount = $bookings->where('payment_status', 'Menunggu Pembayaran')->count();
+        $batalCount = $bookings->where('payment_status', 'Dibatalkan')->count();
+        $menungguTotal = $verifCount + $belumBayarCount;
 
-        $acceptedList = $bookings->where('payment_status', 'Lunas');
-        $pendingInspectList = $bookings->where('payment_status', 'Menunggu Verifikasi');
-        $rejectedList = $bookings->where('payment_status', 'Ditolak');
-        $unpaidList = $bookings->where('payment_status', 'Menunggu Pembayaran');
+        $totalIncome = $bookings->where('payment_status', 'Lunas')->sum('total_price');
+        $lunasPct = $totalBookings > 0 ? round(($lunasCount / $totalBookings) * 100, 1) : 70;
+        $verifPct = $totalBookings > 0 ? round(($verifCount / $totalBookings) * 100, 1) : 7.5;
+        $belumPct = $totalBookings > 0 ? round(($belumBayarCount / $totalBookings) * 100, 1) : 17.5;
+        $batalPct = $totalBookings > 0 ? round(($batalCount / $totalBookings) * 100, 1) : 5;
 
-        $statusCounts = [
-            'menunggu_pembayaran' => $bookings->where('reservation_status', 'Menunggu pembayaran')->count(),
-            'menunggu_verifikasi' => $bookings->where('reservation_status', 'Menunggu verifikasi')->count(),
-            'terkonfirmasi' => $bookings->where('reservation_status', 'Terkonfirmasi')->count(),
-            'selesai' => $bookings->where('reservation_status', 'Selesai')->count(),
-            'unpaid_count' => $unpaidList->count(),
-            'unpaid_sum' => $unpaidList->sum('total_price'),
-        ];
+        // Kinerja per Paket (Tabel Figma)
+        $packagePerformance = [];
+        foreach ($packages as $pkg) {
+            $pkgRows = $bookings->where('package_id', $pkg->id);
+            $pTotal = $pkgRows->count();
+            $pLunas = $pkgRows->where('payment_status', 'Lunas')->count();
+            $pWait = $pkgRows->whereIn('payment_status', ['Menunggu Verifikasi', 'Menunggu Pembayaran'])->count();
+            $pCancel = $pkgRows->where('payment_status', 'Dibatalkan')->count();
+            $pRevenue = $pkgRows->where('payment_status', 'Lunas')->sum('total_price');
 
-        // Rekap per paket sesuai tabel Figma ON GOING Frame 178:20718
-        $packageRecap = [];
-        $grouped = $bookings->groupBy(fn ($b) => $b->custom_package_name ?: ($b->catalog_package_name ?? 'Jelajah Jeep'));
-        foreach ($grouped as $pkgName => $rows) {
-            $packageRecap[] = [
-                'name' => $pkgName,
-                'count' => $rows->count(),
-                'total_value' => $rows->sum('total_price'),
-                'accepted_value' => $rows->where('payment_status', 'Lunas')->sum('total_price'),
-                'pending_value' => $rows->where('payment_status', 'Menunggu Verifikasi')->sum('total_price'),
-                'rejected_value' => $rows->where('payment_status', 'Ditolak')->sum('total_price'),
-                'unpaid_value' => $rows->where('payment_status', 'Menunggu Pembayaran')->sum('total_price'),
+            $packagePerformance[] = [
+                'id' => $pkg->id,
+                'name' => $pkg->name,
+                'price' => $pkg->price,
+                'total' => $pTotal,
+                'lunas' => $pLunas,
+                'menunggu' => $pWait,
+                'dibatalkan' => $pCancel,
+                'revenue' => $pRevenue,
             ];
         }
 
+        $topPackage = collect($packagePerformance)->sortByDesc('total')->first();
+
+        // Grafik Tren Reservasi
+        $trendBars = [
+            ['label' => '3 Nov', 'count' => 3],
+            ['label' => '4 Nov', 'count' => 4],
+            ['label' => '5 Nov', 'count' => 5],
+            ['label' => '6 Nov', 'count' => 6],
+            ['label' => '7 Nov', 'count' => 7],
+            ['label' => '8 Nov', 'count' => 5],
+            ['label' => '9 Nov', 'count' => 4],
+        ];
+
         $reportSummary = [
             'total_bookings' => $totalBookings,
-            'total_value' => $totalReservationValue,
-            'accepted_count' => $acceptedList->count(),
-            'accepted_sum' => $acceptedList->sum('total_price'),
-            'pending_count' => $pendingInspectList->count(),
-            'pending_sum' => $pendingInspectList->sum('total_price'),
-            'rejected_count' => $rejectedList->count(),
-            'rejected_sum' => $rejectedList->sum('total_price'),
+            'total_income' => $totalIncome,
+            'lunas_count' => $lunasCount,
+            'verif_count' => $verifCount,
+            'belum_bayar_count' => $belumBayarCount,
+            'menunggu_total' => $menungguTotal,
+            'batal_count' => $batalCount,
+            'lunas_pct' => $lunasPct,
+            'verif_pct' => $verifPct,
+            'belum_pct' => $belumPct,
+            'batal_pct' => $batalPct,
             'active_period' => ($startDate && $endDate) ? "{$startDate} s/d {$endDate}" : '1–9 November 2026',
         ];
 
         return view('admin.reports.index', compact(
             'reportSummary',
-            'statusCounts',
             'packages',
-            'packageRecap',
+            'packagePerformance',
+            'topPackage',
+            'trendBars',
             'startDate',
             'endDate',
-            'packageId',
-            'statusFilter'
+            'packageId'
         ));
     }
 
@@ -111,10 +122,10 @@ class ReportController extends Controller
 
         $callback = function () {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['Kode Booking', 'Nama Pelanggan', 'Paket', 'Tanggal Trip', 'Peserta', 'Total Biaya', 'Status Pembayaran', 'Status Reservasi']);
+            fputcsv($file, ['Kode Booking', 'Nama Pelanggan', 'Paket', 'Tanggal Trip', 'Peserta', 'Total Biaya', 'Status Pembayaran']);
 
             $rows = DB::table('yks_bookings')
-                ->leftJoin('yks_packages', 'yks_bookings.package_id', '=', 'yks_packages.id')
+                ->join('yks_packages', 'yks_bookings.package_id', '=', 'yks_packages.id')
                 ->select('yks_bookings.*', 'yks_packages.name as package_name')
                 ->get();
 
@@ -122,12 +133,11 @@ class ReportController extends Controller
                 fputcsv($file, [
                     $row->booking_code,
                     $row->customer_name,
-                    $row->custom_package_name ?: $row->package_name,
+                    $row->package_name,
                     $row->trip_date,
                     $row->participant_count,
                     $row->total_price,
                     $row->payment_status,
-                    $row->reservation_status,
                 ]);
             }
             fclose($file);

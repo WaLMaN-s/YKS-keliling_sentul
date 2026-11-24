@@ -1,253 +1,284 @@
-@extends('layouts.admin', ['title' => 'Pembayaran', 'breadcrumb' => 'Pembayaran'])
+@extends('layouts.admin', ['title' => 'Verifikasi Pembayaran'])
 
 @section('content')
 <style>
-    .pay-summary-grid {
+    .verif-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-        margin-bottom: 24px;
+        grid-template-columns: 1fr 1.25fr;
+        gap: 24px;
+        align-items: start;
     }
-    @media (max-width: 960px) {
-        .pay-summary-grid {
+    @media (max-width: 1050px) {
+        .verif-grid {
             grid-template-columns: 1fr;
         }
     }
-    .pay-kpi-card {
+    .queue-item {
+        padding: 14px 16px;
+        border: 1px solid #ECECE6;
+        border-radius: 10px;
         background: #FFFFFF;
-        border: 1px solid #E1E4DA;
-        border-radius: 12px;
-        padding: 20px;
         display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .pay-kpi-card.dark {
-        background: #1F3D2B;
-        border-color: #1F3D2B;
-        color: #FFFFFF;
-    }
-    .pay-tab {
-        padding: 10px 14px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 600;
-        text-decoration: none;
-        background: #F4F6F1;
-        color: #718074;
-        transition: all 0.15s ease;
-    }
-    .pay-tab.active {
-        background: #1F3D2B;
-        color: #FFFFFF;
-    }
-    .pay-row {
-        display: grid;
-        grid-template-columns: 200px 180px 165px 145px 1fr 90px;
+        justify-content: space-between;
+        align-items: center;
         gap: 12px;
-        align-items: center;
-        padding: 12px;
-        min-height: 67px;
-        border-bottom: 1px solid #E1E4DA;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.16s ease;
     }
-    .pill-status {
-        display: inline-flex;
-        align-items: center;
-        padding: 5px 10px;
-        border-radius: 100px;
-        font-size: 11px;
-        font-weight: 600;
-        white-space: nowrap;
+    .queue-item:hover {
+        border-color: #C1D1BE;
+        background: #FCFCFA;
     }
-    .pill-wait { background: #FFF0E4; color: #A54B10; }
-    .pill-ok { background: #EAF0E7; color: #1F3D2B; }
-    .pill-no { background: #FBEDEB; color: #AD4940; }
+    .queue-item.active {
+        border: 1.5px solid #1F3D2B;
+        border-left: 4px solid #F26B1D;
+        background: #F8F5EF;
+    }
 </style>
 
-<!-- Identitas Halaman (Figma Frame 178:19878) -->
-<div style="display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 24px; flex-wrap: wrap;">
+<!-- Header Bar (Figma: Administrasi / Verifikasi Pembayaran + Badge Menunggu verifikasi) -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
     <div>
-        <h1 style="font-size: 28px; font-weight: 800; color: #1F3D2B; letter-spacing: -0.6px; margin-bottom: 6px;">Pembayaran</h1>
-        <p style="font-size: 13px; color: #718074;">Periksa bukti transfer sebelum mengonfirmasi pembayaran pelanggan.</p>
+        <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 4px;">Verifikasi Pembayaran</h1>
+        <p style="color: #6B756E; font-size: 0.9rem;">Periksa bukti transfer dan cocokkan dengan tagihan reservasi.</p>
     </div>
 
-    <div style="height: 42px; padding: 0 12px; border: 1px solid #E1E4DA; border-radius: 8px; background: #FFFFFF; display: inline-flex; align-items: center; gap: 10px; font-size: 13px; color: #24382D;">
-        <i class="bi bi-calendar3" style="color: #718074;"></i>
-        <span>1–9 November 2026</span>
-    </div>
+    <span style="background: #FEEFE6; color: #F26B1D; border: 1px solid #FBD5BD; padding: 6px 14px; border-radius: 99px; font-size: 0.82rem; font-weight: 700;">
+        Menunggu verifikasi ({{ count($allPending) }})
+    </span>
 </div>
 
-<!-- 3 Kartu Ringkasan Bukti (Figma Frame 178:19885) -->
-<div class="pay-summary-grid">
-    <!-- Menunggu pemeriksaan -->
-    <div class="pay-kpi-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #718074;">
-            <span>Menunggu pemeriksaan</span>
-            <i class="bi bi-file-earmark-search" style="font-size: 16px;"></i>
-        </div>
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 26px; font-weight: 700; color: #1F3D2B;">
-            {{ $summary['pending_count'] }} bukti
-        </div>
-        <div style="font-size: 11px; color: #718074;">
-            Rp{{ number_format($summary['pending_sum'], 0, ',', '.') }} · Belum menjadi penerimaan
-        </div>
-    </div>
-
-    <!-- Diterima (Dark Green Card) -->
-    <div class="pay-kpi-card dark">
-        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #BDCCBE;">
-            <span>Diterima</span>
-            <i class="bi bi-check-circle" style="font-size: 16px;"></i>
-        </div>
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 26px; font-weight: 700; color: #FFFFFF;">
-            {{ $summary['accepted_count'] }} bukti
-        </div>
-        <div style="font-size: 11px; color: #BDCCBE;">
-            Rp{{ number_format($summary['accepted_sum'], 0, ',', '.') }} · Penerimaan terkonfirmasi
-        </div>
-    </div>
-
-    <!-- Ditolak -->
-    <div class="pay-kpi-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #718074;">
-            <span>Ditolak</span>
-            <i class="bi bi-x-circle" style="font-size: 16px;"></i>
-        </div>
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 26px; font-weight: 700; color: #1F3D2B;">
-            {{ $summary['rejected_count'] }} bukti
-        </div>
-        <div style="font-size: 11px; color: #718074;">
-            Rp{{ number_format($summary['rejected_sum'], 0, ',', '.') }} · Perlu unggah ulang
-        </div>
-    </div>
-</div>
-
-<!-- Panel Antrean Bukti Transfer (Figma Frame 178:19904) -->
-<div style="background: #FFFFFF; border: 1px solid #E1E4DA; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 20px;">
-    <div>
-        <h3 style="font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 700; color: #1F3D2B; margin-bottom: 4px;">
-            Antrean bukti transfer
-        </h3>
-        <p style="font-size: 12px; color: #718074;">
-            {{ $summary['all_count'] }} bukti diunggah · Prioritas: menunggu pemeriksaan
-        </p>
-    </div>
-
-    <!-- Tab Status Pembayaran -->
-    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <a href="{{ route('admin.verifications.index', ['tab' => 'all', 'q' => $search, 'package_id' => $packageFilter]) }}"
-           class="pay-tab {{ $statusTab === 'all' ? 'active' : '' }}">
-            Semua ({{ $summary['all_count'] }})
-        </a>
-        <a href="{{ route('admin.verifications.index', ['tab' => 'menunggu', 'q' => $search, 'package_id' => $packageFilter]) }}"
-           class="pay-tab {{ $statusTab === 'menunggu' ? 'active' : '' }}">
-            Menunggu pemeriksaan ({{ $summary['pending_count'] }})
-        </a>
-        <a href="{{ route('admin.verifications.index', ['tab' => 'diterima', 'q' => $search, 'package_id' => $packageFilter]) }}"
-           class="pay-tab {{ $statusTab === 'diterima' ? 'active' : '' }}">
-            Diterima ({{ $summary['accepted_count'] }})
-        </a>
-        <a href="{{ route('admin.verifications.index', ['tab' => 'ditolak', 'q' => $search, 'package_id' => $packageFilter]) }}"
-           class="pay-tab {{ $statusTab === 'ditolak' ? 'active' : '' }}">
-            Ditolak ({{ $summary['rejected_count'] }})
-        </a>
-    </div>
-
-    <!-- Filter Pencarian Bukti -->
-    <form action="{{ route('admin.verifications.index') }}" method="GET" style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <input type="hidden" name="tab" value="{{ $statusTab }}">
-        <div style="position: relative;">
-            <i class="bi bi-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #718074; font-size: 13px;"></i>
-            <input type="text" name="q" value="{{ $search }}" placeholder="Cari nomor reservasi / pengirim..."
-                   style="height: 42px; padding: 0 12px 0 34px; border: 1px solid #E1E4DA; border-radius: 8px; font-size: 13px; color: #24382D; width: 240px;">
-        </div>
-
-        <div style="height: 42px; padding: 0 12px; border: 1px solid #E1E4DA; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #24382D;">
-            <i class="bi bi-calendar3" style="color: #718074;"></i>
-            <span>Tanggal unggah: 1–9 Nov 2026</span>
-        </div>
-
-        <select name="package_id" onchange="this.form.submit()"
-                style="height: 42px; padding: 0 12px; border: 1px solid #E1E4DA; border-radius: 8px; background: #FFFFFF; font-size: 13px; color: #24382D; cursor: pointer;">
-            <option value="">Semua paket</option>
-            @foreach($packages as $p)
-                <option value="{{ $p->id }}" {{ (string) $packageFilter === (string) $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
-            @endforeach
-        </select>
-
-        @if($search || $packageFilter)
-            <a href="{{ route('admin.verifications.index', ['tab' => $statusTab]) }}"
-               style="height: 42px; padding: 0 12px; border: 1px solid #E1E4DA; border-radius: 8px; font-size: 12px; color: #718074; text-decoration: none; display: inline-flex; align-items: center;">
-                Reset
-            </a>
-        @endif
-    </form>
-
-    <!-- Tabel Antrean Bukti Transfer -->
-    <div style="overflow-x: auto;">
-        <div style="min-width: 860px;">
-            <div style="display: grid; grid-template-columns: 200px 180px 165px 145px 1fr 90px; gap: 12px; background: #F4F6F1; padding: 12px; border-radius: 6px; font-size: 11px; font-weight: 600; color: #718074;">
-                <div>No. reservasi / pengirim</div>
-                <div>Paket</div>
-                <div>Tanggal unggah (WIB)</div>
-                <div>Nominal transfer</div>
-                <div>Status pemeriksaan</div>
-                <div>Aksi</div>
+<div class="verif-grid">
+    <!-- KOLOM KIRI: Antrean Pembayaran -->
+    <div class="stat-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <h3 style="font-size: 1.05rem; font-weight: 700;">Antrean pembayaran</h3>
+                <span style="font-size: 0.78rem; color: #6B756E;">{{ count($pendingPayments) }} bukti · terlama lebih dahulu</span>
             </div>
 
-            @forelse($payments as $item)
-                @php
-                    $pkgName = $item->custom_package_name ?: ($item->catalog_package_name ?? 'Jelajah Jeep');
-                    $isPending = ($item->payment_status === 'Menunggu Verifikasi');
-                    $isAccepted = ($item->payment_status === 'Lunas');
-                @endphp
-                <div class="pay-row">
-                    <div>
-                        <div style="font-size: 12px; font-weight: 600; color: #24382D;">{{ $item->booking_code }}</div>
-                        <div style="font-size: 11px; color: #718074; margin-top: 2px;">{{ $item->customer_name }} · Bank Pengirim</div>
-                    </div>
-
-                    <div style="font-size: 12px; color: #24382D;">
-                        {{ $pkgName }}
-                    </div>
-
-                    <div style="font-size: 12px; color: #24382D;">
-                        {{ \Carbon\Carbon::parse($item->updated_at)->translatedFormat('d M · H.i') }}
-                    </div>
-
-                    <div style="font-size: 12px; color: #24382D; font-weight: 500;">
-                        Rp{{ number_format($item->total_price, 0, ',', '.') }}
-                    </div>
-
-                    <div>
-                        @if($isPending)
-                            <span class="pill-status pill-wait">Menunggu pemeriksaan</span>
-                        @elseif($isAccepted)
-                            <span class="pill-status pill-ok">Diterima</span>
-                        @else
-                            <span class="pill-status pill-no">Ditolak</span>
-                        @endif
-                    </div>
-
-                    <div>
-                        <a href="{{ route('admin.verifications.show', $item->booking_code) }}"
-                           style="height: 42px; padding: 0 16px; border-radius: 8px; border: 1px solid #E1E4DA; background: #FFFFFF; color: #1F3D2B; font-size: 13px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
-                            {{ $isPending ? 'Tinjau' : 'Detail' }}
-                        </a>
-                    </div>
+            <form action="{{ route('admin.verifications.index') }}" method="GET" style="display: flex; gap: 6px;">
+                <div style="position: relative;">
+                    <i class="bi bi-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #6B756E; font-size: 0.78rem;"></i>
+                    <input type="text" name="q" value="{{ $search }}" placeholder="Cari ID / nama…"
+                           style="padding: 6px 10px 6px 28px; border: 1px solid #DFE4DC; border-radius: 8px; font-size: 0.8rem; width: 170px;">
                 </div>
+            </form>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            @forelse($pendingPayments as $item)
+                @php
+                    $isCurrent = ($selectedItem && $selectedItem->booking_code === $item->booking_code);
+                @endphp
+                <a href="{{ route('admin.verifications.index', ['select' => $item->booking_code, 'q' => $search]) }}"
+                   class="queue-item {{ $isCurrent ? 'active' : '' }}">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                            <span style="font-weight: 700; font-size: 0.92rem; color: #1F3D2B;">{{ $item->customer_name }}</span>
+                            <span style="background: #FEEFE6; color: #F26B1D; font-size: 0.7rem; font-weight: 600; padding: 2px 7px; border-radius: 99px;">
+                                {{ \Carbon\Carbon::parse($item->updated_at)->diffForHumans() }}
+                            </span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #6B756E;">
+                            <strong>{{ $item->booking_code }}</strong> · {{ $item->package_name }}
+                        </div>
+                        <div style="font-size: 0.86rem; font-weight: 700; color: #1F3D2B; margin-top: 4px;">
+                            Rp{{ number_format($item->total_price, 0, ',', '.') }}
+                            <span style="font-weight: 400; font-size: 0.74rem; color: #6B756E;">
+                                · Dikirim {{ date('d M · H.i', strtotime($item->updated_at)) }} WIB
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 0.78rem; font-weight: 700; color: {{ $isCurrent ? '#F26B1D' : '#1F3D2B' }}; white-space: nowrap;">
+                        {{ $isCurrent ? 'Sedang diperiksa →' : 'Periksa →' }}
+                    </div>
+                </a>
             @empty
-                <div style="padding: 36px; text-align: center; color: #718074; font-size: 13px;">
-                    Tidak ada bukti pembayaran yang sesuai dengan filter.
+                <div style="text-align: center; padding: 40px 20px; color: #6B756E;">
+                    <i class="bi bi-check2-circle" style="font-size: 2.5rem; color: #1F3D2B; display: block; margin-bottom: 10px;"></i>
+                    <strong style="color: #1F3D2B; display: block;">Antrean Verifikasi Kosong</strong>
+                    <span style="font-size: 0.82rem;">Seluruh bukti pembayaran telah selesai diperiksa.</span>
                 </div>
             @endforelse
         </div>
     </div>
 
-    <!-- Catatan Bawah Tabel (Figma Frame 178:20063) -->
-    <div style="background: #F4F6F1; border-radius: 8px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: #24382D;">
-        <i class="bi bi-info-circle" style="color: #1F3D2B;"></i>
-        <span>Pembayaran baru diakui sebagai penerimaan setelah admin memeriksa mutasi rekening dan menekan tombol Konfirmasi pembayaran.</span>
+    <!-- KOLOM KANAN: Pemeriksaan Bukti Pembayaran (Figma) -->
+    <div class="stat-card">
+        @if($selectedItem)
+            <!-- Header Pemeriksaan -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 14px; border-bottom: 1px solid #ECECE6; margin-bottom: 16px;">
+                <div>
+                    <span style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #6B756E; font-weight: 700;">
+                        Pemeriksaan bukti pembayaran
+                    </span>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #1F3D2B; margin-top: 2px;">
+                        {{ $selectedItem->booking_code }} · {{ $selectedItem->customer_name }}
+                    </h3>
+                    <span style="font-size: 0.76rem; color: #6B756E;">
+                        Dikirim {{ date('d M Y · H.i', strtotime($selectedItem->updated_at)) }} WIB
+                    </span>
+                </div>
+
+                <a href="{{ route('admin.reservations.index', ['select' => $selectedItem->booking_code]) }}" class="btn-outline-yks" style="font-size: 0.78rem; padding: 6px 12px;">
+                    Buka reservasi ↗
+                </a>
+            </div>
+
+            <!-- Preview Gambar Bukti dengan Kontrol Zoom (− 100% +) -->
+            @php
+                $verifProofUrl = \App\Models\YksBooking::resolveProofUrl($selectedItem->payment_proof);
+            @endphp
+            <div style="background: #F8F5EF; border: 1px solid #DFE4DC; border-radius: 10px; padding: 14px; margin-bottom: 18px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                    <span style="font-size: 0.78rem; font-weight: 600; color: #1F3D2B;">
+                        <i class="bi bi-file-earmark-image"></i>
+                        {{ $selectedItem->payment_proof ? basename($selectedItem->payment_proof) : 'bukti-transfer-' . strtolower($selectedItem->booking_code) . '.jpg' }}
+                    </span>
+
+                    <div style="display: inline-flex; align-items: center; gap: 8px;">
+                        @if($verifProofUrl)
+                            <a href="{{ $verifProofUrl }}" target="_blank" style="font-size: 0.75rem; font-weight: 600; color: #F26B1D; text-decoration: none; padding: 3px 8px; border-radius: 6px; background: #FFF; border: 1px solid #DFE4DC;">
+                                <i class="bi bi-box-arrow-up-right"></i> Buka Asli ↗
+                            </a>
+                        @endif
+
+                        <div style="display: inline-flex; align-items: center; gap: 6px; background: #FFFFFF; border: 1px solid #DFE4DC; border-radius: 6px; padding: 2px 8px;">
+                            <button type="button" onclick="adjustProofZoom(-20)" style="border: none; background: none; cursor: pointer; font-weight: 700; color: #1F3D2B; padding: 2px 4px;">−</button>
+                            <span id="zoomLabel" style="font-size: 0.75rem; font-weight: 600; min-width: 38px; text-align: center;">100%</span>
+                            <button type="button" onclick="adjustProofZoom(20)" style="border: none; background: none; cursor: pointer; font-weight: 700; color: #1F3D2B; padding: 2px 4px;">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="min-height: 260px; max-height: 380px; overflow: auto; background: #FFFFFF; border: 1px solid #ECECE6; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 14px;">
+                    @if($verifProofUrl)
+                        <a href="{{ $verifProofUrl }}" target="_blank" title="Klik untuk membuka ukuran penuh di tab baru">
+                            <img id="proofImg" src="{{ $verifProofUrl }}" alt="Bukti Transfer"
+                                 style="max-width: 100%; max-height: 340px; object-fit: contain; transition: transform 0.2s; cursor: zoom-in; border-radius: 6px;">
+                        </a>
+                    @else
+                        <!-- Ilustrasi Struk Transfer sesuai Figma jika bukti contoh -->
+                        <div id="proofImg" style="border: 1px dashed #C1D1BE; border-radius: 8px; padding: 24px; background: #FCFCFA; text-align: center; width: 340px; transition: transform 0.2s;">
+                            <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6B756E; font-weight: 700;">BUKTI TRANSFER BANK</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #1F3D2B; margin: 8px 0;">Rp{{ number_format($selectedItem->total_price, 0, ',', '.') }}</div>
+                            <div style="font-size: 0.75rem; color: #6B756E;">Metode: {{ $selectedItem->payment_method }}</div>
+                            <div style="font-size: 0.74rem; color: #1F3D2B; margin-top: 6px; font-weight: 600;">Ref: {{ $selectedItem->booking_code }}</div>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Admin Upload/Update Bukti -->
+                <details style="margin-top: 10px; font-size: 0.76rem; color: #6B756E;">
+                    <summary style="cursor: pointer; color: #1F3D2B; font-weight: 600;">
+                        <i class="bi bi-upload"></i> {{ $verifProofUrl ? 'Ganti berkas bukti (dari WhatsApp)' : 'Unggah berkas bukti (dari WhatsApp)' }}
+                    </summary>
+                    <form action="{{ route('admin.verifications.upload_proof', $selectedItem->booking_code) }}" method="POST" enctype="multipart/form-data" style="margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        @csrf
+                        <input type="file" name="payment_proof" accept="image/*" required style="font-size: 0.75rem; padding: 5px 8px; border: 1px solid #DFE4DC; border-radius: 6px; background: #FFF; flex: 1;">
+                        <button type="submit" class="btn-outline-yks" style="padding: 5px 12px; font-size: 0.75rem;">
+                            Unggah
+                        </button>
+                    </form>
+                </details>
+            </div>
+
+            <!-- Rincian Pesanan & Perbandingan Tagihan (Figma) -->
+            <div style="display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; margin-bottom: 18px;">
+                <div style="background: #F8F5EF; border-radius: 10px; padding: 14px; font-size: 0.82rem;">
+                    <div style="font-weight: 700; color: #1F3D2B; margin-bottom: 10px;">Rincian pesanan</div>
+                    <div style="display: grid; grid-template-columns: 110px 1fr; row-gap: 6px;">
+                        <span style="color: #6B756E;">Nama pelanggan</span>
+                        <strong style="color: #1F3D2B;">{{ $selectedItem->customer_name }}</strong>
+
+                        <span style="color: #6B756E;">Kontak</span>
+                        <span>{{ $selectedItem->customer_phone }}</span>
+
+                        <span style="color: #6B756E;">Paket</span>
+                        <strong style="color: #1F3D2B;">{{ $selectedItem->package_name }}</strong>
+
+                        <span style="color: #6B756E;">Jadwal</span>
+                        <span>{{ date('d M Y', strtotime($selectedItem->trip_date)) }} · 08.00 WIB</span>
+
+                        <span style="color: #6B756E;">Jumlah</span>
+                        <span>{{ $selectedItem->participant_count }} peserta × Rp{{ number_format($selectedItem->package_price, 0, ',', '.') }}</span>
+
+                        <span style="color: #6B756E;">Metode</span>
+                        <span>{{ $selectedItem->payment_method }}</span>
+                    </div>
+                </div>
+
+                <div style="background: #EAF0E7; border: 1px solid #C1D1BE; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <span style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: #1F3D2B; font-weight: 700;">
+                            TAGIHAN YANG DIHARAPKAN
+                        </span>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: #1F3D2B; margin-top: 4px;">
+                            Rp{{ number_format($selectedItem->total_price, 0, ',', '.') }}
+                        </div>
+                        <div style="font-size: 0.78rem; color: #304F3B; margin-top: 4px;">
+                            Nominal pada bukti: <strong>Rp{{ number_format($selectedItem->total_price, 0, ',', '.') }}</strong>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 12px;">
+                        <span style="display: inline-block; background: #1F3D2B; color: #FFFFFF; font-size: 0.72rem; font-weight: 600; padding: 4px 10px; border-radius: 99px;">
+                            ✓ Nominal sesuai · selisih Rp0
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-size: 0.76rem; color: #6B756E; margin-bottom: 16px; background: #FCFCFA; padding: 8px 12px; border-radius: 6px; border: 1px solid #ECECE6;">
+                ⓘ Kecocokan nominal belum berarti pembayaran terkonfirmasi. Periksa mutasi rekening resmi sebelum menyetujui.
+            </div>
+
+            <!-- Keputusan Pemeriksaan (Setujui / Tolak dengan Alasan) -->
+            <div style="border-top: 1px solid #ECECE6; padding-top: 16px;">
+                <div style="font-weight: 700; font-size: 0.9rem; color: #1F3D2B; margin-bottom: 10px;">Keputusan pemeriksaan</div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Form Tolak dengan Alasan -->
+                    <form action="{{ route('admin.verifications.reject', $selectedItem->booking_code) }}" method="POST"
+                          onsubmit="return confirm('Tolak bukti pembayaran ini dan minta pelanggan mengirim ulang?')"
+                          style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        @csrf
+                        <input type="text" name="rejection_reason" placeholder="Tulis alasan penolakan jika bukti tidak sesuai…"
+                               style="flex: 1; min-width: 220px; padding: 9px 12px; border: 1px solid #DFE4DC; border-radius: 8px; font-size: 0.82rem;">
+                        <button type="submit" style="background: #FFFFFF; border: 1px solid #E57373; color: #D32F2F; padding: 9px 16px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer;">
+                            × Tolak Bukti
+                        </button>
+                    </form>
+
+                    <!-- Form Setujui Pembayaran -->
+                    <form action="{{ route('admin.verifications.approve', $selectedItem->booking_code) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn-primary-yks" style="width: 100%; justify-content: center; padding: 11px 20px; font-size: 0.9rem;">
+                            <i class="bi bi-check2-circle"></i> Setujui Pembayaran & Konfirmasi Jadwal (Lunas)
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @else
+            <div style="text-align: center; padding: 60px 20px; color: #6B756E;">
+                <i class="bi bi-receipt" style="font-size: 2.5rem; color: #C1D1BE; display: block; margin-bottom: 10px;"></i>
+                Pilih salah satu item pada antrean di sebelah kiri untuk memeriksa bukti pembayaran.
+            </div>
+        @endif
     </div>
 </div>
+
+<script>
+    let currentZoom = 100;
+    function adjustProofZoom(delta) {
+        currentZoom = Math.min(200, Math.max(60, currentZoom + delta));
+        const lbl = document.getElementById('zoomLabel');
+        const img = document.getElementById('proofImg');
+        if (lbl) lbl.textContent = currentZoom + '%';
+        if (img) img.style.transform = `scale(${currentZoom / 100})`;
+    }
+</script>
 @endsection

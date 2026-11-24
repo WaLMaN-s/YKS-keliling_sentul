@@ -215,6 +215,23 @@
                         <span style="font-size: 0.78rem; color: var(--text-muted); display: block;">Metode Pembayaran:</span>
                         <strong style="color: var(--text-dark);">{{ $booking->payment_method }}</strong>
                     </div>
+                    @if(!empty($booking->jenis_trip))
+                    <div>
+                        <span style="font-size: 0.78rem; color: var(--text-muted); display: block;">Jenis Perjalanan & Armada:</span>
+                        <strong style="color: var(--text-dark);">
+                            {{ strtoupper($booking->jenis_trip) }} TRIP
+                            @if(!empty($booking->selected_units))
+                                · ({{ $booking->selected_units }})
+                            @endif
+                        </strong>
+                    </div>
+                    @endif
+                    @if(!empty($booking->selected_addons))
+                    <div>
+                        <span style="font-size: 0.78rem; color: var(--text-muted); display: block;">Layanan Tambahan (Add-On):</span>
+                        <strong style="color: var(--primary);">{{ $booking->selected_addons }} (Rp {{ number_format($booking->subtotal_addons ?? 0, 0, ',', '.') }})</strong>
+                    </div>
+                    @endif
                 </div>
 
                 <!-- Meeting Point Info -->
@@ -226,18 +243,6 @@
                         {{ $booking->package->meeting_point ?? 'Basecamp Yuk Keliling Sentul, Hambalang / Babakan Madang, Kab. Bogor' }}
                     </p>
                 </div>
-
-                @if (!empty($booking->admin_notes))
-                    <!-- Catatan Admin untuk Pelanggan -->
-                    <div style="background-color: #FFF0E4; border: 1px solid #F3C6A5; border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 24px;">
-                        <strong style="color: #A54B10; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.92rem;">
-                            <i class="bi bi-chat-left-text-fill"></i> Catatan dari Admin YKS:
-                        </strong>
-                        <p style="color: #24382D; font-size: 0.92rem; margin: 0; line-height: 1.55;">
-                            “{{ $booking->admin_notes }}”
-                        </p>
-                    </div>
-                @endif
 
                 <!-- Section Ganti Jadwal (Reschedule) Mandiri Min H-2 -->
                 <div style="background: #F9FAF8; border: 1.5px solid #C1D1BE; border-radius: var(--radius-md); padding: 18px 20px; margin-bottom: 24px;">
