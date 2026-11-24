@@ -75,6 +75,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 4. Data Reservasi
         Route::get('/reservasi', [AdminReservationController::class, 'index'])->name('reservations.index');
+        Route::get('/reservasi/{booking_code}/invoice', [AdminReservationController::class, 'invoice'])->name('reservations.invoice');
         Route::match(['post', 'patch'], '/reservasi/{id}/status', [AdminReservationController::class, 'updateStatus'])->name('reservations.update_status');
         Route::post('/reservasi/{id}/upload-bukti', [AdminReservationController::class, 'uploadProof'])->name('reservations.upload_proof');
 

@@ -88,6 +88,43 @@ class ReservationController extends Controller
     }
 
     /**
+     * Halaman Cetak Invoice / E-Tiket Resmi & Kirim WhatsApp Pelanggan
+     */
+    public function invoice($booking_code)
+    {
+        $booking = DB::table('yks_bookings')
+            ->join('yks_packages', 'yks_bookings.package_id', '=', 'yks_packages.id')
+            ->select(
+                'yks_bookings.*',
+                'yks_packages.name as package_name',
+                'yks_packages.price as package_price',
+                'yks_packages.duration as package_duration',
+                'yks_packages.meeting_point as meeting_point'
+            )
+            ->where('yks_bookings.booking_code', $booking_code)
+            ->first();
+
+        if (!$booking) {
+            abort(404, 'Data reservasi tidak ditemukan.');
+        }
+
+        $addons = collect();
+        if (\Illuminate\Support\Facades\Schema::hasTable('yks_booking_addons')) {
+            $addons = DB::table('yks_booking_addons')
+                ->join('yks_addons', 'yks_booking_addons.addon_id', '=', 'yks_addons.id')
+                ->select('yks_booking_addons.*', 'yks_addons.nama_addon')
+                ->where('yks_booking_addons.booking_id', $booking->id)
+                ->get();
+        }
+
+        $bankAccounts = \Illuminate\Support\Facades\Schema::hasTable('yks_bank_accounts')
+            ? DB::table('yks_bank_accounts')->where('is_aktif', true)->get()
+            : collect();
+
+        return view('admin.reservations.invoice', compact('booking', 'addons', 'bankAccounts'));
+    }
+
+    /**
      * Ubah Status Reservasi
      */
     public function updateStatus(Request $request, $booking_code)

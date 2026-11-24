@@ -409,9 +409,36 @@
                     </div>
                 </div>
 
-                <button type="button" onclick="window.print()" class="btn-outline-yks" style="font-size: 0.78rem; padding: 6px 12px;">
-                    <i class="bi bi-printer"></i> Cetak ↗
-                </button>
+                @php
+                    $selWaNum = preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $selectedBooking->customer_phone ?? ''));
+                    $selTripFmt = \Carbon\Carbon::parse($selectedBooking->trip_date)->translatedFormat('l, d F Y');
+                    $selWaMsg = rawurlencode(
+                        "*INVOICE RESERVASI RESMI — YKS KELILING SENTUL*\n" .
+                        "No. Invoice: INV-{$selectedBooking->booking_code}\n" .
+                        "Status: *{$selectedBooking->payment_status}*\n\n" .
+                        "Halo Kak *{$selectedBooking->customer_name}*, berikut rincian reservasi Anda:\n" .
+                        "• Paket: {$selectedBooking->package_name}\n" .
+                        "• Tanggal: {$selTripFmt} (08.00 WIB)\n" .
+                        "• Peserta: {$selectedBooking->participant_count} orang/unit\n" .
+                        "• Total Tagihan: *Rp " . number_format($selectedBooking->total_price, 0, ',', '.') . "*\n\n" .
+                        "Cek status & invoice Anda di:\n" .
+                        route('booking.track', ['kode' => $selectedBooking->booking_code])
+                    );
+                @endphp
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    @if($selWaNum)
+                        <a href="https://wa.me/{{ $selWaNum }}?text={{ $selWaMsg }}" target="_blank"
+                           class="btn-outline-yks" style="font-size: 0.76rem; padding: 6px 10px; background: #EAF0E7; border-color: #C1D1BE; color: #065F46;"
+                           title="Kirim Invoice langsung ke WhatsApp Pelanggan">
+                            <i class="bi bi-whatsapp"></i> Kirim Invoice WA
+                        </a>
+                    @endif
+                    <a href="{{ route('admin.reservations.invoice', $selectedBooking->booking_code) }}" target="_blank"
+                       class="btn-outline-yks" style="font-size: 0.76rem; padding: 6px 10px;"
+                       title="Buka & Cetak Invoice Resmi">
+                        <i class="bi bi-printer"></i> Cetak Invoice ↗
+                    </a>
+                </div>
             </div>
 
             <!-- Profil Pemesan -->
