@@ -228,12 +228,15 @@
 
 <div class="invoice-sheet">
     <div class="inv-header">
-        <div>
-            <div class="brand-title">YUK KELILING SENTUL (YKS)</div>
-            <div class="brand-meta">
-                Wisata Off-Road Jeep 4x4, Motor Trail &amp; Trekking Curug<br>
-                Pos Jelajah YKS, Kawasan Sentul / Hambalang, Babakan Madang, Kab. Bogor<br>
-                WhatsApp Admin: 0812-1084-2032 · Instagram: @yuk_keliling_sentul
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <img src="/assets/images/logo-yks.png" alt="Logo YKS" style="width: 60px; height: 60px; object-fit: contain; border-radius: 50%; flex-shrink: 0;">
+            <div>
+                <div class="brand-title">YUK KELILING SENTUL (YKS)</div>
+                <div class="brand-meta">
+                    Wisata Off-Road Jeep 4x4, Motor Trail &amp; Trekking Curug<br>
+                    Pos Jelajah YKS, Kawasan Sentul / Hambalang, Babakan Madang, Kab. Bogor<br>
+                    WhatsApp Admin: 0812-1084-2032 · Instagram: @yuk_keliling_sentul
+                </div>
             </div>
         </div>
         <div style="text-align: right;">

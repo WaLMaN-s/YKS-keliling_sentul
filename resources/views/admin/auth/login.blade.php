@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk Ruang Administrasi — Yuk Keliling Sentul (YKS)</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
 
     <!-- Google Fonts: Inter & Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -78,18 +79,23 @@
         }
 
         .brand-logo-box {
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
-            background-color: var(--forest-soft);
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--orange);
-            font-family: var(--font-head);
-            font-weight: 900;
-            font-size: 1.1rem;
-            border: 1px solid rgba(255, 255, 255, 0.14);
+            flex-shrink: 0;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.28));
+        }
+
+        .brand-logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            border-radius: 50%;
         }
 
         .brand-name {
@@ -400,7 +406,9 @@
     <div class="login-brand-panel">
         <div>
             <div class="brand-badge-row">
-                <div class="brand-logo-box">YKS.</div>
+                <div class="brand-logo-box">
+                    <img src="/assets/images/logo-yks.png" alt="Logo YKS - Yuk Keliling Sentul">
+                </div>
                 <div>
                     <span class="brand-name">Yuk Keliling Sentul</span>
                     <span class="brand-sub">Ruang Administrasi</span>

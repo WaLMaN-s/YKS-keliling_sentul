@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ isset($title) ? $title . ' — ' . config('app.name', 'YKS - Keliling Sentul') : config('app.name', 'YKS - Keliling Sentul') . ' · Petualangan Jelajah Alam & Wisata Sentul' }}</title>
     <meta name="description" content="Yuk Keliling Sentul (YKS) - Jelajahi rute perbukitan, jalur tanah offroad 4x4, curug tersembunyi, dan pesona alam Sentul bersama pemandu lokal berpengalaman.">
+    <link rel="icon" type="image/png" href="/favicon.png">
     
     <!-- Local Bundled Fonts: Montserrat (Heading) & Inter (Body) -->
     <link rel="stylesheet" href="/assets/vendor/fonts/fonts.css">
@@ -13,7 +14,7 @@
     <link rel="stylesheet" href="/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
     
     <!-- Custom Style (Root-relative with fast static cache) -->
-    <link rel="stylesheet" href="/assets/css/style.css?v=2.3">
+    <link rel="stylesheet" href="/assets/css/style.css?v=2.5">
 </head>
 <body>
 
@@ -23,10 +24,7 @@
         <!-- Logo & Brand Identity -->
         <a href="{{ route('home') }}" class="brand-logo">
             <div class="logo-icon-box">
-                <!-- Mountain SVG Icon matching Figma #7:62198 -->
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
-                </svg>
+                <img src="/assets/images/logo-yks.png" alt="Logo YKS - Yuk Keliling Sentul" class="brand-logo-img">
             </div>
             <div class="logo-brand-info">
                 <span class="logo-brand-title">YKS</span>
@@ -76,10 +74,8 @@
     <div class="mobile-drawer-content" role="dialog" aria-modal="true" aria-label="Menu Navigasi Seluler">
         <div class="mobile-drawer-header">
             <a href="{{ route('home') }}" class="brand-logo" onclick="toggleMobileNav()">
-                <div class="logo-icon-box" style="width: 38px; height: 38px; border-radius: 10px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
-                    </svg>
+                <div class="logo-icon-box" style="width: 40px; height: 40px;">
+                    <img src="/assets/images/logo-yks.png" alt="Logo YKS - Yuk Keliling Sentul" class="brand-logo-img">
                 </div>
                 <div class="logo-brand-info">
                     <span class="logo-brand-title" style="font-size: 1.25rem;">YKS</span>
@@ -206,8 +202,13 @@
         <div class="footer-top-grid">
             <!-- Brand & Tagline -->
             <div>
-                <h3 class="footer-brand-title">YKS</h3>
-                <span class="footer-brand-sub">Yuk Keliling Sentul</span>
+                <div class="footer-brand-header">
+                    <img src="/assets/images/logo-yks.png" alt="Logo YKS - Yuk Keliling Sentul" class="footer-brand-logo">
+                    <div>
+                        <h3 class="footer-brand-title" style="margin-bottom: 2px;">YKS</h3>
+                        <span class="footer-brand-sub" style="margin-bottom: 0;">Yuk Keliling Sentul</span>
+                    </div>
+                </div>
                 <p class="footer-brand-bio">
                     Jauh dari rutinitas. Dekat dengan alam. Jelajahi rute perbukitan, jalur tanah offroad 4x4, dan keindahan tersembunyi Sentul bersama tim kami.
                 </p>

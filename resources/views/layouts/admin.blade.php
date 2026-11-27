@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Ringkasan' }} — Administrasi YKS Keliling Sentul</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
 
     <!-- Local Bundled Fonts: Inter & Montserrat -->
     <link rel="stylesheet" href="/assets/vendor/fonts/fonts.css">
@@ -64,16 +65,23 @@
         }
 
         .brand-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            background-color: #304F3B;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--admin-accent);
-            font-size: 1.2rem;
-            font-weight: 800;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .brand-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            border-radius: 50%;
         }
 
         .brand-title {
@@ -380,7 +388,9 @@
     <!-- Sidebar Administrasi YKS (Figma Order) -->
     <aside class="admin-sidebar" id="adminSidebar">
         <a href="{{ route('admin.dashboard') }}" class="admin-brand">
-            <div class="brand-icon">YKS.</div>
+            <div class="brand-icon">
+                <img src="/assets/images/logo-yks.png" alt="Logo YKS - Yuk Keliling Sentul">
+            </div>
             <div>
                 <span class="brand-title">Yuk Keliling Sentul</span>
                 <span class="brand-subtitle">Ruang Administrasi</span>
