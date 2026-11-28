@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
     
     <!-- Custom Style (Root-relative with fast static cache) -->
-    <link rel="stylesheet" href="/assets/css/style.css?v=2.5">
+    <link rel="stylesheet" href="/assets/css/style.css?v=2.9">
 </head>
 <body>
 
@@ -73,7 +73,7 @@
 <div class="mobile-drawer" id="mobileDrawer" onclick="handleDrawerBackdrop(event)" aria-hidden="true">
     <div class="mobile-drawer-content" role="dialog" aria-modal="true" aria-label="Menu Navigasi Seluler">
         <div class="mobile-drawer-header">
-            <a href="{{ route('home') }}" class="brand-logo" onclick="toggleMobileNav()">
+            <a href="{{ route('home') }}" class="brand-logo" onclick="closeMobileNav()">
                 <div class="logo-icon-box" style="width: 40px; height: 40px;">
                     <img src="/assets/images/logo-yks.png" alt="Logo YKS - Yuk Keliling Sentul" class="brand-logo-img">
                 </div>
@@ -82,7 +82,7 @@
                     <span class="logo-brand-subtitle">Yuk Keliling Sentul</span>
                 </div>
             </a>
-            <button type="button" class="mobile-drawer-close" onclick="toggleMobileNav()" aria-label="Tutup Menu">
+            <button type="button" class="mobile-drawer-close" onclick="closeMobileNav()" aria-label="Tutup Menu">
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
@@ -90,42 +90,42 @@
         <div class="mobile-drawer-section-label">MENU JELAJAH</div>
 
         <nav class="mobile-drawer-links">
-            <a href="{{ route('home') }}" class="mobile-drawer-link {{ request()->routeIs('home') ? 'active' : '' }}" onclick="toggleMobileNav()">
+            <a href="{{ route('home') }}" class="mobile-drawer-link {{ request()->routeIs('home') ? 'active' : '' }}" onclick="closeMobileNav()">
                 <span class="mobile-drawer-link-left">
                     <span class="mobile-drawer-icon"><i class="bi bi-house-door"></i></span>
                     <span>Beranda</span>
                 </span>
                 <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
             </a>
-            <a href="{{ route('about') }}" class="mobile-drawer-link {{ request()->routeIs('about') ? 'active' : '' }}" onclick="toggleMobileNav()">
+            <a href="{{ route('about') }}" class="mobile-drawer-link {{ request()->routeIs('about') ? 'active' : '' }}" onclick="closeMobileNav()">
                 <span class="mobile-drawer-link-left">
                     <span class="mobile-drawer-icon"><i class="bi bi-compass"></i></span>
                     <span>Tentang YKS</span>
                 </span>
                 <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
             </a>
-            <a href="{{ route('packages.index') }}" class="mobile-drawer-link {{ request()->routeIs('packages.*') ? 'active' : '' }}" onclick="toggleMobileNav()">
+            <a href="{{ route('packages.index') }}" class="mobile-drawer-link {{ request()->routeIs('packages.*') ? 'active' : '' }}" onclick="closeMobileNav()">
                 <span class="mobile-drawer-link-left">
                     <span class="mobile-drawer-icon"><i class="bi bi-signpost-2"></i></span>
                     <span>Paket Wisata</span>
                 </span>
                 <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
             </a>
-            <a href="{{ route('gallery') }}" class="mobile-drawer-link {{ request()->routeIs('gallery') ? 'active' : '' }}" onclick="toggleMobileNav()">
+            <a href="{{ route('gallery') }}" class="mobile-drawer-link {{ request()->routeIs('gallery') ? 'active' : '' }}" onclick="closeMobileNav()">
                 <span class="mobile-drawer-link-left">
                     <span class="mobile-drawer-icon"><i class="bi bi-images"></i></span>
                     <span>Galeri & Testimoni</span>
                 </span>
                 <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
             </a>
-            <a href="{{ route('info') }}" class="mobile-drawer-link {{ request()->routeIs('info') ? 'active' : '' }}" onclick="toggleMobileNav()">
+            <a href="{{ route('info') }}" class="mobile-drawer-link {{ request()->routeIs('info') ? 'active' : '' }}" onclick="closeMobileNav()">
                 <span class="mobile-drawer-link-left">
                     <span class="mobile-drawer-icon"><i class="bi bi-info-circle"></i></span>
                     <span>Informasi Admin & Bank</span>
                 </span>
                 <i class="bi bi-chevron-right mobile-drawer-arrow"></i>
             </a>
-            <a href="{{ route('booking.track') }}" class="mobile-drawer-link {{ request()->routeIs('booking.track') ? 'active' : '' }}" onclick="toggleMobileNav()">
+            <a href="{{ route('booking.track') }}" class="mobile-drawer-link {{ request()->routeIs('booking.track') ? 'active' : '' }}" onclick="closeMobileNav()">
                 <span class="mobile-drawer-link-left">
                     <span class="mobile-drawer-icon"><i class="bi bi-search"></i></span>
                     <span>Lacak Status Booking</span>
@@ -135,10 +135,10 @@
         </nav>
 
         <div class="mobile-drawer-footer">
-            <a href="{{ route('booking.create') }}" class="btn btn-primary btn-block" style="padding: 13px 20px; margin-bottom: 10px;">
+            <a href="{{ route('booking.create') }}" class="btn btn-primary btn-block" style="padding: 13px 20px; margin-bottom: 10px;" onclick="closeMobileNav()">
                 Reservasi Sekarang &nbsp;↗
             </a>
-            <a href="{{ route('booking.track') }}" class="btn btn-outline btn-block" style="padding: 11px 16px; font-size: 0.88rem;">
+            <a href="{{ route('booking.track') }}" class="btn btn-outline btn-block" style="padding: 11px 16px; font-size: 0.88rem;" onclick="closeMobileNav()">
                 <i class="bi bi-search"></i> Lacak Status Booking
             </a>
 
@@ -196,6 +196,7 @@
     @yield('content')
 </main>
 
+@unless($hideFooter ?? request()->routeIs('booking.*', 'payment.*'))
 <!-- Footer (Kaki Halaman - Figma Deep Forest #1F3D2B) -->
 <footer class="figma-footer">
     <div class="container">
@@ -260,6 +261,7 @@
         </div>
     </div>
 </footer>
+@endunless
 
 <!-- Floating WhatsApp Action -->
 <a href="https://wa.me/{{ env('WHATSAPP_NUMBER', '6281234567890') }}?text=Halo%20Admin%20YKS,%20saya%20tertarik%20tanya%20paket%20wisata%20Sentul" 
@@ -277,6 +279,17 @@
         if (dropdown) dropdown.classList.toggle('show');
     }
 
+    function closeMobileNav() {
+        const drawer = document.getElementById('mobileDrawer');
+        const btn = document.getElementById('mobileMenuBtn');
+        if (drawer) {
+            drawer.classList.remove('active');
+            drawer.setAttribute('aria-hidden', 'true');
+        }
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+    }
+
     function toggleMobileNav() {
         const drawer = document.getElementById('mobileDrawer');
         const btn = document.getElementById('mobileMenuBtn');
@@ -289,27 +302,28 @@
 
     function handleDrawerBackdrop(event) {
         if (event.target.id === 'mobileDrawer') {
-            toggleMobileNav();
+            closeMobileNav();
         }
     }
 
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
-            const drawer = document.getElementById('mobileDrawer');
-            if (drawer && drawer.classList.contains('active')) {
-                toggleMobileNav();
-            }
+            closeMobileNav();
         }
     });
 
-    window.onclick = function(event) {
-        if (!event.target.closest('#userBtn') && !event.target.closest('#userDropdown')) {
+    window.addEventListener('pageshow', function() {
+        closeMobileNav();
+    });
+
+    document.addEventListener('click', function(event) {
+        if (event.target instanceof Element && !event.target.closest('#userBtn') && !event.target.closest('#userDropdown')) {
             const dropdown = document.getElementById('userDropdown');
             if (dropdown && dropdown.classList.contains('show')) {
                 dropdown.classList.remove('show');
             }
         }
-    };
+    });
 </script>
 @yield('scripts')
 </body>

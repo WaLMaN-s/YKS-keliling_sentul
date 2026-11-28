@@ -212,12 +212,18 @@
                     </h3>
 
                     <div class="form-group">
-                        <label class="form-label">Tujuan Rekening Transfer</label>
-                        <select name="payment_method" class="form-control">
-                            <option value="Transfer Bank BCA" {{ old('payment_method') === 'Transfer Bank BCA' ? 'selected' : '' }}>Bank BCA (PT Yuk Keliling Sentul)</option>
+                        <label class="form-label">Tujuan Rekening Transfer <span class="text-accent">*</span></label>
+                        <select name="payment_method" class="form-control" required>
+                            <option value="Transfer Bank BCA" {{ old('payment_method', 'Transfer Bank BCA') === 'Transfer Bank BCA' ? 'selected' : '' }}>Bank BCA (PT Yuk Keliling Sentul)</option>
                             <option value="Transfer Bank Mandiri" {{ old('payment_method') === 'Transfer Bank Mandiri' ? 'selected' : '' }}>Bank Mandiri (PT Yuk Keliling Sentul)</option>
-                            <option value="QRIS Digital" {{ old('payment_method') === 'QRIS Digital' ? 'selected' : '' }}>QRIS Real-time (BCA, Mandiri, GoPay, OVO, Dana)</option>
+                            <option value="QRIS Digital" disabled>QRIS Digital — Belum Tersedia (Segera Hadir)</option>
                         </select>
+                        <small style="color: var(--text-muted); font-size: 0.78rem; display: block; margin-top: 6px;">
+                            <i class="bi bi-info-circle"></i> Saat ini hanya tersedia Transfer Bank BCA atau Mandiri (QRIS belum tersedia). Rekening tujuan pada halaman pembayaran akan tampil sesuai bank yang Anda pilih.
+                        </small>
+                        @error('payment_method')
+                            <small style="color: #DC2626; font-size: 0.8rem; display: block; margin-top: 4px;">{{ $message }}</small>
+                        @enderror
                     </div>
 
                     <div class="form-group" style="margin-bottom: 0;">

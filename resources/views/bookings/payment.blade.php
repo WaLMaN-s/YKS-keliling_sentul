@@ -41,57 +41,54 @@
         <div class="booking-layout-grid">
             <!-- Left Column: Bank Accounts & Upload Bukti -->
             <div>
+                @php
+                    $selectedMethod = strtolower((string) ($booking->payment_method ?? 'Transfer Bank BCA'));
+                    $isMandiri = str_contains($selectedMethod, 'mandiri');
+                    $isBca = str_contains($selectedMethod, 'bca') || !$isMandiri;
+                @endphp
+
                 <!-- Transfer Bank Card -->
                 <div class="resp-card-pad" style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 32px;">
                     <h3 style="font-size: 1.3rem; color: var(--primary); margin-bottom: 8px;">
                         Tujuan Transfer Resmi YKS
                     </h3>
-                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px;">
-                        Silakan transfer sesuai nominal tagihan ke salah satu rekening bank resmi kami:
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">
+                        Silakan transfer sesuai nominal tagihan ke rekening pilihan Anda (<strong>{{ $booking->payment_method }}</strong>):
                     </p>
 
-                    <!-- BCA Card -->
-                    <div style="background-color: var(--primary); color: #FFFFFF; border-radius: var(--radius-md); padding: 24px; margin-bottom: 18px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <strong style="font-size: 1.2rem; letter-spacing: 1px; color: #FFFFFF;">BANK BCA</strong>
-                            <span style="background-color: rgba(255,255,255,0.15); font-size: 0.75rem; padding: 4px 10px; border-radius: 20px;">Prioritas</span>
+                    @if($isBca)
+                        <!-- BCA Card (Dipilih Pelanggan) -->
+                        <div style="background-color: var(--primary); color: #FFFFFF; border-radius: var(--radius-md); padding: 24px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;">
+                                <strong style="font-size: 1.2rem; letter-spacing: 1px; color: #FFFFFF;">BANK BCA</strong>
+                                <span style="background-color: rgba(255,255,255,0.18); font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;">Metode Dipilih</span>
+                            </div>
+                            <span style="font-size: 0.75rem; color: #CBD9C8; text-transform: uppercase;">Nomor Rekening:</span>
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 4px 0 10px;">
+                                <span style="font-family: var(--font-heading); font-size: clamp(1.25rem, 4.5vw, 1.6rem); font-weight: 800; letter-spacing: 1.5px;">8450-1234-5678</span>
+                                <button type="button" onclick="copyRek('845012345678', this)" class="btn btn-sm" style="background-color: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3);">
+                                    <i class="bi bi-clipboard"></i> Salin
+                                </button>
+                            </div>
+                            <small style="color: #E3E9E0;">a.n. PT YUK KELILING SENTUL</small>
                         </div>
-                        <span style="font-size: 0.75rem; color: #CBD9C8; text-transform: uppercase;">Nomor Rekening:</span>
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin: 4px 0 10px;">
-                            <span style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; letter-spacing: 2px;">8450-1234-5678</span>
-                            <button type="button" onclick="copyRek('845012345678', this)" class="btn btn-sm" style="background-color: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3);">
-                                <i class="bi bi-clipboard"></i> Salin
-                            </button>
+                    @elseif($isMandiri)
+                        <!-- Mandiri Card (Dipilih Pelanggan) -->
+                        <div style="background-color: var(--primary); color: #FFFFFF; border-radius: var(--radius-md); padding: 24px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;">
+                                <strong style="font-size: 1.2rem; letter-spacing: 1px; color: #FFFFFF;">BANK MANDIRI</strong>
+                                <span style="background-color: rgba(255,255,255,0.18); font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;">Metode Dipilih</span>
+                            </div>
+                            <span style="font-size: 0.75rem; color: #CBD9C8; text-transform: uppercase;">Nomor Rekening:</span>
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 4px 0 10px;">
+                                <span style="font-family: var(--font-heading); font-size: clamp(1.25rem, 4.5vw, 1.6rem); font-weight: 800; letter-spacing: 1.5px;">1330-0987-6543-2</span>
+                                <button type="button" onclick="copyRek('1330098765432', this)" class="btn btn-sm" style="background-color: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3);">
+                                    <i class="bi bi-clipboard"></i> Salin
+                                </button>
+                            </div>
+                            <small style="color: #E3E9E0;">a.n. PT YUK KELILING SENTUL</small>
                         </div>
-                        <small style="color: #E3E9E0;">a.n. PT YUK KELILING SENTUL</small>
-                    </div>
-
-                    <!-- Mandiri Card -->
-                    <div style="background-color: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 22px; margin-bottom: 18px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <strong style="font-size: 1.15rem; color: var(--primary);">BANK MANDIRI</strong>
-                            <span style="background-color: var(--bg-sage); font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; color: var(--primary);">Alternatif</span>
-                        </div>
-                        <span style="font-size: 0.75rem; color: var(--text-sub); text-transform: uppercase;">Nomor Rekening:</span>
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin: 4px 0 10px;">
-                            <span style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: 2px;">1330-0987-6543-2</span>
-                            <button type="button" onclick="copyRek('1330098765432', this)" class="btn btn-sm btn-outline">
-                                <i class="bi bi-clipboard"></i> Salin
-                            </button>
-                        </div>
-                        <small style="color: var(--text-dark);">a.n. PT YUK KELILING SENTUL</small>
-                    </div>
-
-                    <!-- QRIS Card -->
-                    <div style="background-color: var(--bg-sage); border: 1px solid var(--bg-pill); border-radius: var(--radius-md); padding: 20px; display: flex; align-items: center; gap: 20px;">
-                        <div style="width: 52px; height: 52px; background-color: var(--primary); color: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0;">
-                            <i class="bi bi-qr-code"></i>
-                        </div>
-                        <div>
-                            <strong style="color: var(--primary); font-size: 0.98rem; display: block;">QRIS Semua E-Wallet & M-Banking</strong>
-                            <small style="color: var(--text-muted);">BCA Mobile, Livin Mandiri, GoPay, OVO, Dana, ShopeePay</small>
-                        </div>
-                    </div>
+                    @endif
                 </div>
 
                 <!-- Upload Bukti Form -->
@@ -162,6 +159,7 @@
                             <div><i class="bi bi-people"></i> Jumlah Peserta: <strong>{{ $booking->participant_count }} Orang</strong></div>
                             <div><i class="bi bi-person"></i> Atas Nama: <strong>{{ $booking->customer_name }}</strong></div>
                             <div><i class="bi bi-whatsapp"></i> No. WA: <strong>{{ $booking->customer_phone }}</strong></div>
+                            <div><i class="bi bi-credit-card"></i> Metode: <strong>{{ $booking->payment_method }}</strong></div>
                         </div>
                     </div>
 

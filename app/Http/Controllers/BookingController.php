@@ -103,12 +103,14 @@ class BookingController extends Controller
             'trip_date' => 'required|date|after_or_equal:today',
             'participant_count' => 'required|integer|min:1|max:100',
             'motor_pribadi' => 'nullable|boolean',
-            'payment_method' => 'required|string',
+            'payment_method' => 'required|in:Transfer Bank BCA,Transfer Bank Mandiri',
             'notes' => 'nullable|string|max:500',
             'addons' => 'nullable|array',
             'addons.*' => 'nullable|integer|min:0|max:50',
             'unit_ids' => 'nullable|array',
             'unit_ids.*' => 'nullable|exists:yks_units,id',
+        ], [
+            'payment_method.in' => 'Saat ini hanya tersedia metode Transfer Bank BCA atau Transfer Bank Mandiri. Pembayaran QRIS belum tersedia.',
         ]);
 
         $tripDateStr = substr($validated['trip_date'], 0, 10);

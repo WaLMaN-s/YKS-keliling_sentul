@@ -149,11 +149,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (max-width: 768px) {
+  .section-wrapper {
+    padding: 36px 0 48px;
+  }
+  .section-tag {
+    font-size: 0.72rem;
+    letter-spacing: 1.1px;
+    margin-bottom: 8px;
+  }
   .section-title {
-    font-size: 1.75rem;
+    font-size: 1.55rem !important;
+    line-height: 1.24;
+    letter-spacing: -0.02em;
   }
   .section-desc {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
+    line-height: 1.6;
   }
 }
 
@@ -243,7 +254,6 @@ h1, h2, h3, h4, h5, h6 {
   z-index: 1000;
   background-color: var(--bg-body);
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(10px);
 }
 
 .header-inner {
@@ -469,13 +479,12 @@ h1, h2, h3, h4, h5, h6 {
   inset: 0;
   width: 100vw;
   height: 100dvh;
-  background-color: rgba(14, 33, 24, 0.62);
-  backdrop-filter: blur(4px);
+  background-color: rgba(14, 33, 24, 0.56);
   z-index: 3000;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.28s ease, visibility 0.28s ease;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 .mobile-drawer.active {
@@ -922,15 +931,149 @@ body:has(.home-highlights) .figma-footer {
   gap: 28px;
 }
 
+.package-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.pkg-filter-card {
+  background-color: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 36px;
+}
+
+.pkg-filter-form {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.pkg-help-banner {
+  background-color: var(--bg-sage);
+  border: 1px solid var(--bg-pill);
+  border-radius: var(--radius-lg);
+  padding: 36px 40px;
+  margin-top: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 1024px) {
   .packages-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 }
 
 @media (max-width: 640px) {
   .packages-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .package-card {
+    border-radius: var(--radius-md);
+  }
+
+  .package-badge-tag {
+    top: 8px;
+    left: 8px;
+    padding: 3px 8px;
+    font-size: 0.62rem;
+    letter-spacing: 0.2px;
+  }
+
+  .package-card-media {
+    aspect-ratio: 1 / 1;
+  }
+
+  .package-card-content {
+    padding: 11px;
+  }
+
+  .package-category-chip {
+    font-size: 0.6rem;
+    letter-spacing: 0.4px;
+    margin-bottom: 3px;
+  }
+
+  .package-name {
+    font-size: 0.86rem;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .package-desc {
+    font-size: 0.72rem;
+    line-height: 1.42;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .package-meta-row {
+    gap: 4px 8px;
+    flex-wrap: wrap;
+    padding: 6px 0;
+    font-size: 0.67rem;
+    margin-bottom: 8px;
+  }
+
+  .pkg-meta-loc {
+    display: none;
+  }
+
+  .package-bottom-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .package-price-label {
+    font-size: 0.64rem;
+  }
+
+  .package-price-val {
+    font-size: 0.94rem;
+    font-weight: 800;
+    line-height: 1.15;
+  }
+
+  .package-card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .package-card-actions .btn {
+    padding: 7px 4px;
+    font-size: 0.72rem;
+    justify-content: center;
+  }
+
+  .pkg-filter-card {
+    padding: 16px;
+    margin-bottom: 22px;
+  }
+
+  .pkg-help-banner {
+    padding: 20px 18px;
+    margin-top: 32px;
+    gap: 16px;
   }
 }
 
@@ -952,7 +1095,7 @@ body:has(.home-highlights) .figma-footer {
 
 .package-card-media {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 5 / 4;
   overflow: hidden;
   background-color: #E2E8F0;
 }
@@ -961,7 +1104,7 @@ body:has(.home-highlights) .figma-footer {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 62%;
+  object-position: center 46%;
   transition: transform 0.5s ease;
 }
 
@@ -973,49 +1116,53 @@ body:has(.home-highlights) .figma-footer {
   position: absolute;
   top: 16px;
   left: 16px;
-  background-color: rgba(31, 61, 43, 0.9);
+  background-color: rgba(31, 61, 43, 0.94);
   color: #FFFFFF;
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.5px;
-  backdrop-filter: blur(4px);
 }
 
 .package-card-content {
-  padding: 24px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
 
 .package-category-chip {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   color: var(--text-sub);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .package-name {
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: 1.15rem;
+  font-weight: 700;
   color: var(--primary);
-  margin-bottom: 10px;
-  line-height: 1.35;
+  margin-bottom: 8px;
+  line-height: 1.32;
+  letter-spacing: -0.015em;
 }
 
 .package-desc {
-  font-size: 0.9rem;
+  font-size: 0.87rem;
   color: var(--text-muted);
-  line-height: 1.6;
-  margin-bottom: 20px;
-  flex-grow: 1;
+  line-height: 1.55;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .package-meta-row {
+  margin-top: auto;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -1927,7 +2074,7 @@ body:has(.home-highlights) .figma-footer {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 58%;
+  object-position: center 46%;
 }
 
 .pkg-hero-side-grid {
@@ -2072,5 +2219,513 @@ body:has(.home-highlights) .figma-footer {
 
   .step-indicator-item.active .step-badge {
     color: #FFFFFF;
+  }
+}
+
+/* ==========================================================================
+   Detail Paket (UI-04) — Desktop & Mobile Polish + Font Hierarchy
+   ========================================================================== */
+.pkg-detail-top {
+  padding-top: 32px;
+}
+
+.pkg-breadcrumb {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.pkg-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.pkg-detail-title-col {
+  flex: 1 1 340px;
+  min-width: 0;
+}
+
+.pkg-detail-meta {
+  display: flex;
+  gap: 10px 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.pkg-detail-price-box {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.pkg-price-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: block;
+}
+
+.pkg-detail-price {
+  font-family: var(--font-heading);
+  font-size: 2.05rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  display: block;
+  margin: 2px 0;
+}
+
+.pkg-price-unit {
+  font-size: 0.84rem;
+  color: var(--text-sub);
+  display: block;
+  font-weight: 500;
+}
+
+.pkg-section-heading {
+  font-family: var(--font-heading);
+  font-size: 1.32rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 14px;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pkg-sub-heading {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pkg-desc-text {
+  font-size: 0.98rem;
+  color: var(--text-dark);
+  line-height: 1.78;
+  margin-bottom: 32px;
+}
+
+.pkg-meeting-box {
+  background-color: var(--bg-sage);
+  border: 1px solid var(--bg-pill);
+  border-radius: var(--radius-md);
+  padding: 20px 22px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.pkg-meeting-icon {
+  color: var(--primary);
+  font-size: 1.65rem;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.pkg-meeting-title {
+  color: var(--primary);
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.pkg-meeting-addr {
+  color: var(--text-dark);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  display: block;
+}
+
+.pkg-meeting-note {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-top: 6px;
+  line-height: 1.45;
+}
+
+.pkg-itinerary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding-left: 4px;
+}
+
+.pkg-itinerary-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.pkg-itinerary-num {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--bg-sage);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+}
+
+.pkg-itinerary-time {
+  font-family: var(--font-heading);
+  color: var(--primary);
+  font-size: 0.94rem;
+  font-weight: 800;
+  display: block;
+}
+
+.pkg-itinerary-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+  line-height: 1.55;
+}
+
+.pkg-divider {
+  border: none;
+  border-top: 1px solid var(--border-light);
+  margin: 30px 0;
+}
+
+.pkg-facilities-grid {
+  gap: 28px;
+}
+
+.pkg-check-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  line-height: 1.5;
+}
+
+.pkg-check-list-muted {
+  color: var(--text-muted);
+}
+
+.pkg-check-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.pkg-addon-grid {
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.pkg-addon-item {
+  padding: 13px 15px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-body);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.pkg-addon-info {
+  min-width: 0;
+}
+
+.pkg-addon-info strong {
+  color: var(--primary);
+  font-size: 0.9rem;
+  display: block;
+  line-height: 1.35;
+}
+
+.pkg-addon-info small {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  display: block;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+.pkg-addon-price {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pkg-basecamp-grid {
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.pkg-facility-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg-sage);
+  border-radius: var(--radius-md);
+  font-size: 0.86rem;
+  color: var(--primary);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.pkg-term-card {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-md);
+  background: #FFFFFF;
+}
+
+.pkg-term-card.pkg-term-danger {
+  border-left-color: #DC2626;
+}
+
+.pkg-term-card strong {
+  color: var(--primary);
+  font-size: 0.92rem;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.pkg-term-card.pkg-term-danger strong {
+  color: #991B1B;
+}
+
+.pkg-term-card p {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.pkg-sidebar-price-box {
+  background-color: var(--bg-body);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.pkg-sidebar-price {
+  font-family: var(--font-heading);
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.15;
+  margin: 4px 0;
+}
+
+.pkg-sidebar-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 22px;
+  font-size: 0.88rem;
+  color: var(--text-dark);
+}
+
+.pkg-sidebar-perks > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 0.93rem;
+    line-height: 1.6;
+  }
+
+  .booking-layout-grid {
+    gap: 20px;
+  }
+
+  .pkg-detail-top {
+    padding-top: 20px;
+  }
+
+  .pkg-breadcrumb {
+    font-size: 0.76rem;
+    margin-bottom: 8px;
+  }
+
+  .pkg-detail-header {
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .pkg-detail-title-col {
+    flex: none;
+    width: 100%;
+  }
+
+  .pkg-detail-meta {
+    font-size: 0.82rem;
+    gap: 8px 12px;
+  }
+
+  .pkg-detail-price-box {
+    text-align: left;
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 15px;
+  }
+
+  .pkg-detail-price {
+    font-size: 1.55rem;
+  }
+
+  .pkg-hero-gallery {
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .pkg-hero-main-img {
+    height: 270px;
+    border-radius: var(--radius-md);
+  }
+
+  .pkg-hero-side-grid {
+    gap: 10px;
+  }
+
+  .pkg-hero-side-img {
+    height: 120px;
+  }
+
+  .pkg-detail-card {
+    padding: 18px 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .pkg-section-heading {
+    font-size: 1.08rem;
+    margin-bottom: 10px;
+  }
+
+  .pkg-sub-heading {
+    font-size: 0.96rem;
+    margin-bottom: 10px;
+  }
+
+  .pkg-desc-text {
+    font-size: 0.9rem;
+    line-height: 1.68;
+    margin-bottom: 22px;
+  }
+
+  .pkg-meeting-box {
+    padding: 14px 15px;
+    margin-bottom: 22px;
+    gap: 12px;
+  }
+
+  .pkg-meeting-icon {
+    font-size: 1.35rem;
+  }
+
+  .pkg-meeting-title {
+    font-size: 0.92rem;
+  }
+
+  .pkg-meeting-addr {
+    font-size: 0.86rem;
+  }
+
+  .pkg-itinerary-list {
+    gap: 12px;
+    margin-bottom: 22px;
+    padding-left: 0;
+  }
+
+  .pkg-itinerary-num {
+    width: 28px;
+    height: 28px;
+    font-size: 0.78rem;
+  }
+
+  .pkg-itinerary-time {
+    font-size: 0.88rem;
+  }
+
+  .pkg-itinerary-desc {
+    font-size: 0.85rem;
+  }
+
+  .pkg-divider {
+    margin: 22px 0;
+  }
+
+  .pkg-facilities-grid {
+    gap: 20px;
+  }
+
+  .pkg-check-list {
+    font-size: 0.86rem;
+    gap: 8px;
+  }
+
+  .pkg-addon-item {
+    padding: 12px 13px;
+  }
+
+  .pkg-addon-price {
+    font-size: 0.86rem;
+  }
+
+  .pkg-facility-chip {
+    padding: 10px 12px;
+    font-size: 0.83rem;
+  }
+
+  .pkg-term-card {
+    padding: 12px 14px;
+  }
+
+  .pkg-term-card strong {
+    font-size: 0.88rem;
+  }
+
+  .pkg-term-card p {
+    font-size: 0.82rem;
+  }
+
+  .pkg-sidebar-price {
+    font-size: 1.55rem;
+  }
+
+  .pkg-sidebar-perks {
+    font-size: 0.84rem;
+    margin-bottom: 18px;
   }
 }
